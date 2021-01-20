@@ -9,39 +9,39 @@ const client = require("contentful").createClient({
 
 import { useRouter } from "next/router";
 
-function Article() {
-  const [blurbs, setBlurbs] = useState([]);
-  const [article, setArticle] = useState([]);
+function Article({ blurbs, article }) {
+  // const [blurbs, setBlurbs] = useState([]);
+  // const [article, setArticle] = useState([]);
   const router = useRouter();
   const { slug } = router.query;
 
-  async function fetchEntries() {
-    const entries = await client.getEntries({
-      "fields.slug": slug,
-      content_type: "movieBlurb",
-    });
-    if (entries.items) return entries.items;
-    console.log(`Error getting Entries for ${contentType.name}.`);
-  }
+  // async function fetchEntries() {
+  //   const entries = await client.getEntries({
+  //     "fields.slug": slug,
+  //     content_type: "movieBlurb",
+  //   });
+  //   if (entries.items) return entries.items;
+  //   console.log(`Error getting Entries for ${contentType.name}.`);
+  // }
 
-  async function fetchArticle() {
-    const entries = await client.getEntries({
-      "fields.slug": slug,
-      content_type: "articleTitle",
-    });
-    if (entries.items) return entries.items;
-    console.log(`Error getting Entries for ${contentType.name}.`);
-  }
+  // async function fetchArticle() {
+  //   const entries = await client.getEntries({
+  //     "fields.slug": slug,
+  //     content_type: "articleTitle",
+  //   });
+  //   if (entries.items) return entries.items;
+  //   console.log(`Error getting Entries for ${contentType.name}.`);
+  // }
 
-  useEffect(() => {
-    async function getDetails() {
-      const allBlurbs = await fetchEntries();
-      const articleDetails = await fetchArticle();
-      setBlurbs([...allBlurbs]);
-      setArticle([...articleDetails]);
-    }
-    getDetails();
-  }, []);
+  // useEffect(() => {
+  //   async function getDetails() {
+  //     const allBlurbs = await fetchEntries();
+  //     const articleDetails = await fetchArticle();
+  //     setBlurbs([...allBlurbs]);
+  //     setArticle([...articleDetails]);
+  //   }
+  //   getDetails();
+  // }, []);
   console.log("blurbs", blurbs);
   console.log("article", article);
 
@@ -77,6 +77,63 @@ function Article() {
         : null}
     </>
   );
+}
+
+export async function getStaticProps(context) {
+  const client = require("contentful").createClient({
+    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
+  });
+
+  async function fetchEntries() {
+    const entries = await client.getEntries({
+      "fields.slug": context.params.slug,
+      content_type: "movieBlurb",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
+  async function fetchArticle() {
+    const entries = await client.getEntries({
+      "fields.slug": context.params.slug,
+      content_type: "articleTitle",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+  const blurbs = await fetchEntries();
+  const article = await fetchArticle();
+
+  return {
+    props: {
+      blurbs,
+      article,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const client = require("contentful").createClient({
+    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
+  });
+
+  async function fetchEntries() {
+    const entries = await client.getEntries({
+      content_type: "articleTitle",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+  const posts = await fetchEntries();
+
+  const paths = posts.map(({ fields: { slug } }) => ({ params: { slug } }));
+
+  return {
+    paths,
+    fallback: false,
+  };
 }
 
 export default Article;
