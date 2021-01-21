@@ -3,7 +3,6 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 // import logoImage from "../assets/tv-ex-small.png";
-import Image from "next/image";
 
 function Logo({ setPage }) {
   const styles = {
@@ -29,7 +28,7 @@ function Logo({ setPage }) {
   return (
     <div css={styles.logo} onClick={() => setPage("SearchPage")}>
       <div>
-        <Image
+        <img
           src="/tv-ex-small.png"
           alt="CouchBuddy Logo"
           width={40}

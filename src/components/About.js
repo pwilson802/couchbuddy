@@ -2,10 +2,8 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React from "react";
-// import tmdLogo from "../assets/tmd-block.svg";
 import Logo from "./Logo";
 import LightModes from "./LightModes";
-import Image from "next/image";
 
 const colors = {
   light: {
@@ -67,7 +65,7 @@ function About({ setPage, mode, changeMode }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Image
+            <img
               src="/tmd-block.svg"
               alt="The Movie Database Logo"
               width={70}
