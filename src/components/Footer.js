@@ -2,6 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React from "react";
+import Link from "next/link";
 
 const colors = {
   light: {
@@ -26,12 +27,21 @@ function Footer({ setPage, mode }) {
       color: colors[mode]["text"],
       cursor: "pointer",
     }),
+    blogLink: css({
+      display: "inline",
+      color: colors[mode]["text"],
+      cursor: "pointer",
+      marginLeft: "30px",
+    }),
   };
   return (
     <div css={styles.footerWrap}>
       <div css={styles.about} onClick={() => setPage("about")}>
         About & Settings
       </div>
+      <Link href={"/blog"}>
+        <div css={styles.blogLink}>Blog</div>
+      </Link>
     </div>
   );
 }
