@@ -8,9 +8,16 @@
     "start": "next start"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^0.2.34",
+    "@emotion/react": "^11.1.4",
+    "aws-amplify": "^3.3.14",
     "contentful": "^8.1.7",
     "next": "10.0.5",
+    "rc-slider": "^9.7.1",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "react-lottie": "^1.2.3",
+    "react-share": "^4.3.1",
+    "react-slider": "^1.1.2"
   }
 }

@@ -10,6 +10,11 @@
       "StackName": "amplify-couchbuddy-dev-184803",
       "StackId": "arn:aws:cloudformation:ap-southeast-2:766223306101:stack/amplify-couchbuddy-dev-184803/d573f030-5af3-11eb-bf6c-02ab98fb27bc",
       "AmplifyAppId": "d2g5eovt7l3jud"
+    },
+    "categories": {
+      "auth": {
+        "couchbuddyc19e30d7": {}
+      }
     }
   },
   "prod": {
@@ -23,6 +28,11 @@
       "StackName": "amplify-couchbuddy-prod-184918",
       "StackId": "arn:aws:cloudformation:ap-southeast-2:766223306101:stack/amplify-couchbuddy-prod-184918/01a14b80-5af4-11eb-8547-06b3cf898d98",
       "AmplifyAppId": "d2g5eovt7l3jud"
+    },
+    "categories": {
+      "auth": {
+        "couchbuddyc19e30d7": {}
+      }
     }
   }
 }
