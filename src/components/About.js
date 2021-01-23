@@ -24,9 +24,7 @@ function About({ setPage, mode, changeMode }) {
       display: "flex",
       margin: 10,
       flexDirection: "row",
-      "@media(min-width: 700px)": {
-        justifyContent: "center",
-      },
+      justifyContent: "space-evenly",
     }),
     aboutWrapper: css({
       margin: "0 10%",
@@ -44,10 +42,15 @@ function About({ setPage, mode, changeMode }) {
   };
   return (
     <div>
-      <div css={styles.nav}>
-        <Logo setPage={setPage} />
-      </div>
       <div css={styles.aboutWrapper}>
+        <div css={styles.nav}>
+          <div css={styles.logoWrap}>
+            <Logo setPage={setPage} logo={"main"} width={250} />
+          </div>
+          <div css={styles.logoWrap}>
+            <Logo setPage={setPage} logo={"blog"} width={250} />
+          </div>
+        </div>
         <p css={styles.text}>
           CouchBuddy was created to help you choose a movie to watch when you
           don’t know what to watch. Filter by the streaming providers you have,

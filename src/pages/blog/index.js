@@ -1,6 +1,17 @@
+import Amplify from "aws-amplify";
+import config from "../../aws-exports";
+Amplify.configure(config);
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import PostPreview from "../../components/PostPreview";
+
+function changeBackground(mode) {
+  if (mode === "dark") {
+    document.body.style = "background: #15202A";
+  } else {
+    document.body.style = "background: white";
+  }
+}
 
 const client = require("contentful").createClient({
   space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
@@ -8,6 +19,16 @@ const client = require("contentful").createClient({
 });
 
 function HomePage() {
+  const [location, setLocation] = useState("AU");
+  const [previews, setPreviews] = useState([]);
+  const [mode, setMode] = useState("dark");
+
+  const changeMode = (mode) => {
+    localStorage.setItem("mode", mode);
+    changeBackground(mode);
+    setMode(mode);
+  };
+
   async function fetchEntries() {
     const entries = await client.getEntries({
       content_type: "articleTitle",
@@ -16,7 +37,10 @@ function HomePage() {
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
 
-  const [previews, setPreviews] = useState([]);
+  useEffect(() => {
+    const currentMode = localStorage.getItem("mode") || "dark";
+    changeMode(currentMode);
+  }, []);
 
   useEffect(() => {
     async function getPreviews() {

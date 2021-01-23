@@ -310,7 +310,7 @@ export default function SearchPage({
       <div css={styles.wrapper}>
         <div css={styles.nav}>
           <div css={styles.logoWrap}>
-            <Logo setPage={setPage} />
+            <Logo setPage={setPage} logo={"main"} />
           </div>
           <div css={styles.locationWrap}>
             <LocationSelect

@@ -48,8 +48,6 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
         vote_average,
       } = await getMovieDetails(id);
       setTitle(title);
-      // const overviewCharacters = screenSize === "large" ? 400 : 160;
-      // setOverview(overview.slice(0, overviewCharacters) + "...");
       setOverview(overview);
       setTagline(tagline);
       setRuntime(runtime);
