@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import SearchPage from "./SearchPage";
 import ResultsPage from "./ResultsPage";
 import Footer from "./Footer";
-import About from "./About";
 
 function App({ mode, changeMode }) {
   const [page, setPage] = useState("SearchPage");
@@ -58,15 +57,6 @@ function App({ mode, changeMode }) {
           width={width}
           screenSize={screenSize}
           mode={mode}
-        />
-      )}
-      {page === "about" && (
-        <About
-          setPage={setPage}
-          width={width}
-          screenSize={screenSize}
-          mode={mode}
-          changeMode={changeMode}
         />
       )}
       <Footer setPage={setPage} mode={mode} />

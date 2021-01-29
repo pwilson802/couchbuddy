@@ -316,6 +316,7 @@ export default function SearchPage({
             <LocationSelect
               handleLocation={handleLocation}
               location={location}
+              mode={mode}
             />
           </div>
         </div>

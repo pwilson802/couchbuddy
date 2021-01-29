@@ -8,10 +8,39 @@ const options = [
   { value: "US", label: "United States" },
 ];
 
-function LocationSelect({ handleLocation, location }) {
+const colors = {
+  light: {
+    text: "black",
+    locationBackground: "white",
+    selectBackground: "white",
+  },
+  dark: {
+    text: "white",
+    locationBackground: "#15202A",
+    selectBackground: "#15202Ab",
+  },
+  darkNav: {
+    text: "white",
+    locationBackground: "transparent",
+    selectBackground: "#15202A",
+  },
+  lightNav: {
+    text: "white",
+    locationBackground: "transparent",
+    selectBackground: "#15202A",
+    // selectBackground: "rgba(254,244,225,1)",
+  },
+};
+
+function LocationSelect({ handleLocation, location, mode }) {
   const styles = {
     locationSelect: css({
-      border: "none",
+      backgroundColor: colors[mode]["locationBackground"],
+      color: colors[mode]["text"],
+    }),
+    option: css({
+      backgroundColor: colors[mode]["selectBackground"],
+      color: colors[mode]["text"],
     }),
   };
   return (
@@ -21,8 +50,12 @@ function LocationSelect({ handleLocation, location }) {
         value={location}
         onChange={handleLocation}
       >
-        <option value="AU">Australia</option>
-        <option value="US">United States</option>
+        <option css={styles.option} value="AU">
+          Australia
+        </option>
+        <option css={styles.option} value="US">
+          United States
+        </option>
       </select>
     </div>
   );

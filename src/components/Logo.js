@@ -22,9 +22,11 @@ function Logo({ setPage, logo, width }) {
   return (
     <div>
       {logo === "main" && (
-        <div css={styles.logo} onClick={() => setPage("SearchPage")}>
-          <img src={logoImage} alt="CouchBuddy Logo" width={width} />
-        </div>
+        <Link href={"/"}>
+          <div css={styles.logo}>
+            <img src={logoImage} alt="CouchBuddy Logo" width={width} />
+          </div>
+        </Link>
       )}
       {logo === "blog" && (
         <Link href={"/blog"}>

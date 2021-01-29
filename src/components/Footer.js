@@ -36,9 +36,9 @@ function Footer({ setPage, mode }) {
   };
   return (
     <div css={styles.footerWrap}>
-      <div css={styles.about} onClick={() => setPage("about")}>
-        About & Settings
-      </div>
+      <Link href={"/about"}>
+        <div css={styles.about}>About & Settings</div>
+      </Link>
       <Link href={"/blog"}>
         <div css={styles.blogLink}>Blog</div>
       </Link>
