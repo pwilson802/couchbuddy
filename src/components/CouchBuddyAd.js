@@ -2,6 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Logo from "./Logo";
+import Link from "next/link";
 
 const colors = {
   light: {
@@ -22,19 +23,22 @@ function CouchBuddyAdd({ mode }) {
       borderColor: "#F1888F",
       justifyContent: "space-around",
       alignItems: "center",
+      cursor: "pointer",
     }),
     text: css({
       color: colors[mode]["text"],
     }),
   };
   return (
-    <div css={styles.wrapper}>
-      <div css={styles.textWrapper}>
-        <p css={styles.text}>What are you watching tonight?</p>
-        <p css={styles.text}>Find out on CouchBuddy</p>
+    <Link href={"/"}>
+      <div css={styles.wrapper}>
+        <div css={styles.textWrapper}>
+          <p css={styles.text}>What are you watching tonight?</p>
+          <p css={styles.text}>Find out on CouchBuddy</p>
+        </div>
+        <img src="./tv-65.png" alt="CouchBuddy Television" />
       </div>
-      <img src="./tv-65.png" alt="CouchBuddy Television" />
-    </div>
+    </Link>
   );
 }
 

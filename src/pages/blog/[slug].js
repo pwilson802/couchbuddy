@@ -10,12 +10,6 @@ import Head from "next/head";
 import MovieBlurb from "../../components/MovieBlurb";
 import { useRouter } from "next/router";
 import NavBlog from "../../components/NavBlog";
-import {
-  getCouchmovie,
-  getWatchOn,
-  listProviders,
-  getCertification,
-} from "../../graphql/queries";
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -25,37 +19,16 @@ function changeBackground(mode) {
   }
 }
 
-async function getLocalProviders(country) {
-  const locProviders = await API.graphql({
-    query: getWatchOn,
-    variables: { country: country },
-  });
-  return JSON.parse(locProviders.data.getWatchOn.data);
-}
-
-async function getAllProviderData() {
-  const allProviders = await API.graphql({
-    query: listProviders,
-  });
-  const providerList = allProviders.data.listProviders.items;
-  const result = providerList.reduce((acc, curr) => {
-    let providerID = curr["providerID"];
-    let providerName = curr["providerName"];
-    let providerLogo = curr["providerLogo"];
-    acc[providerID] = {};
-    acc[providerID]["name"] = providerName;
-    acc[providerID]["logo"] = "http://image.tmdb.org/t/p/w185" + providerLogo;
-    return acc;
-  }, {});
-  return result;
-}
-
 const colors = {
   light: {
     text: "black",
+    author: "#878787",
+    heading: "black",
   },
   dark: {
     text: "white",
+    author: "rgba(225,44,134, 0.8)",
+    heading: "rgba(150,208,211, 1)",
   },
 };
 
@@ -63,10 +36,17 @@ function Article({ blurbs, article }) {
   const [location, setLocation] = useState("AU");
   const [mode, setMode] = useState("dark");
   const [loaded, setLoaded] = useState(false);
-  const [localProviderMovies, setLocalProviderMovies] = useState({});
-  const [allProviderData, setAllProviderData] = useState();
   const router = useRouter();
   const { slug } = router.query;
+  const {
+    heading,
+    sharingDescription,
+    sharingTitle,
+    sharingImage,
+    articleType,
+    introduction,
+    author,
+  } = article[0].fields;
 
   const changeMode = (mode) => {
     localStorage.setItem("mode", mode);
@@ -79,23 +59,49 @@ function Article({ blurbs, article }) {
     setLocation(loc.target.value);
   }
 
-  async function configureProviders() {
-    const localProviderData = await getLocalProviders(location);
-    const allProviderData = await getAllProviderData();
-    setLocalProviderMovies(localProviderData);
-    setAllProviderData(allProviderData);
-    setLoaded(true);
-  }
-
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
     const currentLocation = localStorage.getItem("country") || "US";
     setLocation(currentLocation);
-    configureProviders();
   }, []);
 
-  console.log("allProviderData", allProviderData);
+  const styles = {
+    image: css({
+      borderRadius: "20px",
+      width: "100%",
+      "@media(min-width: 1024px)": {
+        width: "80%",
+        textAlign: "center",
+      },
+    }),
+    imageWrapper: css({
+      textAlign: "center",
+    }),
+    pageWrapper: css({
+      margin: "1rem 3%",
+    }),
+    heading: css({
+      textAlign: "center",
+      margin: 0,
+      color: colors[mode]["heading"],
+    }),
+    introduction: css({
+      color: colors[mode]["text"],
+    }),
+    author: css({
+      color: colors[mode]["author"],
+      marginTop: "0.5rem",
+    }),
+    articlesWrapper: css({
+      "@media(min-width: 1024px)": {
+        margin: "0 20%",
+      },
+      "@media(min-width: 768px)": {
+        margin: "0 10%",
+      },
+    }),
+  };
 
   return (
     <>
@@ -123,17 +129,28 @@ function Article({ blurbs, article }) {
         location={location}
         mode={mode}
       />
-      <h1>{article[0].fields.heading}</h1>
-      {blurbs.length > 0
-        ? blurbs.map((p) => (
-            <MovieBlurb
-              id={p.fields.movieId}
-              body={p.fields.body}
-              key={p.fields.movieId}
-              mode={mode}
-            />
-          ))
-        : null}
+      <div css={styles.pageWrapper}>
+        <div css={styles.imageWrapper}>
+          <img css={styles.image} src={sharingImage} alt={heading} />
+        </div>
+        <div css={styles.articlesWrapper}>
+          <h1 css={styles.heading}>{articleType + " " + heading}</h1>
+          <p css={styles.author}>by {author}</p>
+          <p css={styles.introduction}>{introduction}</p>
+          {blurbs.length > 0
+            ? blurbs.map((p) => (
+                <MovieBlurb
+                  id={p.fields.movieId}
+                  body={p.fields.body}
+                  key={p.fields.movieId}
+                  providers={p.fields.providers[location]}
+                  movieDetails={p.fields.movieDetails}
+                  mode={mode}
+                />
+              ))
+            : null}
+        </div>
+      </div>
     </>
   );
 }
@@ -143,6 +160,23 @@ export async function getStaticProps(context) {
     space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
   });
+
+  async function getMovieProviders(id) {
+    let TMB_KEY = process.env.TMB_KEY;
+    let url = `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${TMB_KEY}`;
+    const response = await fetch(url);
+    const providers = await response.json();
+    return providers.results;
+  }
+
+  async function getMovieDetails(id) {
+    let TMB_KEY = process.env.TMB_KEY;
+    let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
+    const response = await fetch(url);
+    const movieDetails = await response.json();
+    return movieDetails;
+  }
+  // getMovieDetails("127585").then((data) => console.log(data));
 
   async function fetchEntries() {
     const entries = await client.getEntries({
@@ -163,6 +197,14 @@ export async function getStaticProps(context) {
   }
   const blurbs = await fetchEntries();
   const article = await fetchArticle();
+  console.log();
+  for (let i = 0; i < blurbs.length; i++) {
+    let id = blurbs[i].fields.movieId;
+    let providers = await getMovieProviders(id);
+    let movieDetails = await getMovieDetails(id);
+    blurbs[i].fields.providers = providers;
+    blurbs[i].fields.movieDetails = movieDetails;
+  }
 
   return {
     props: {

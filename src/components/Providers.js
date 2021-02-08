@@ -46,8 +46,8 @@ function Providers({ selectedProviders, handleProvider, allProviderData }) {
     }
     return comparison;
   });
-  console.log("Providers - allProviderData", allProviderData);
-  console.log("Providers - ProviderIDs", providerIDs);
+  // console.log("Providers - allProviderData", allProviderData);
+  // console.log("Providers - ProviderIDs", providerIDs);
   return (
     <div css={styles.genreWrapper}>
       {providerIDs.map((item) => (

@@ -6,9 +6,11 @@ import Link from "next/link";
 const colors = {
   light: {
     text: "black",
+    heading: "black",
   },
   dark: {
     text: "white",
+    heading: "#96D0D3",
   },
 };
 
@@ -27,8 +29,9 @@ function PostPreview({
 
   const styles = {
     heading: css({
-      color: colors[mode]["text"],
+      color: colors[mode]["heading"],
       fontSize: "1.8rem",
+      lineHeight: "1.9rem",
       margin: "0",
     }),
     introduction: css({
@@ -38,6 +41,9 @@ function PostPreview({
     image: css({
       borderRadius: "20px",
       width: "100%",
+    }),
+    wrapper: css({
+      cursor: "pointer",
     }),
   };
   return (

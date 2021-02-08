@@ -235,7 +235,7 @@ export default function SearchPage({
       display: "flex",
       margin: 10,
       flexDirection: "row",
-      "@media(min-width: 700px)": {
+      "@media(min-width: 768px)": {
         justifyContent: "center",
       },
     }),

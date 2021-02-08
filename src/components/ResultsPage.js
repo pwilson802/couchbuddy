@@ -15,30 +15,6 @@ import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
 
-// async function getMoviesByLength(duration) {
-//   let firstQuery = await API.graphql({
-//     query: listMovieLengths,
-//     limit: 1000,
-//   });
-//   let allMovies = firstQuery.data.listMovieLengths.items;
-//   let nextToken = firstQuery.data.listMovieLengths.nextToken;
-//   while (nextToken != null) {
-//     let nextPage = await API.graphql({
-//       query: listMovieLengths,
-//       variables: {
-//         limit: 1000,
-//         nextToken,
-//       },
-//     });
-//     allMovies = [...allMovies, ...nextPage.data.listMovieLengths.items];
-//     nextToken = nextPage.data.listMovieLengths.nextToken;
-//   }
-//   const moviesUnderDuration = allMovies
-//     .filter((item) => item.runtime < duration)
-//     .map((item) => Number(item.movieID));
-//   return moviesUnderDuration;
-// }
-
 async function filterMoviesByData(duration, sortByVote) {
   let firstQuery = await API.graphql({
     query: listMovieDatas,

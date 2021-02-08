@@ -1,57 +1,52 @@
-import { getCouchmovie } from "../graphql/queries";
-import React, { useState, useEffect } from "react";
-import { API, graphqlOperation } from "aws-amplify";
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx, css } from "@emotion/react";
+import React from "react";
+import BlogProviders from "./BlogProviders";
 
-async function getMovieDetails(id) {
-  const movieDetails = await API.graphql({
-    query: getCouchmovie,
-    variables: { movieID: id },
-  });
-  console.log(movieDetails.data.getCouchmovie);
-  return movieDetails.data.getCouchmovie;
-}
+const colors = {
+  light: {
+    text: "black",
+  },
+  dark: {
+    text: "white",
+  },
+};
 
-function MovieBlurb({ id, body }) {
-  const [title, setTitle] = useState();
-  const [tagline, setTagline] = useState();
-  const [runtime, setRuntime] = useState();
-  const [image, setImage] = useState();
-  const [loaded, setLoaded] = useState(false);
+function MovieBlurb({ id, body, providers, movieDetails, mode }) {
+  const title = movieDetails.original_title;
+  const tagline = movieDetails.tagline;
+  const runtime = movieDetails.runtime;
+  const image = "http://image.tmdb.org/t/p/w185" + movieDetails.poster_path;
 
-  useEffect(() => {
-    async function setMovieCard() {
-      const {
-        title,
-        overview,
-        tagline,
-        runtime,
-        image,
-        vote_average,
-      } = await getMovieDetails(id);
-      setTitle(title);
-      setTagline(tagline);
-      setRuntime(runtime);
-      const imagePath = "http://image.tmdb.org/t/p/w185" + image;
-      setImage(imagePath);
-      // const providerLogos = providers.map(
-      //   (item) => allProviderData[item]["logo"]
-      // );
-      // console.log("providerLogos", providerLogos);
-      // setProviderImages(providerLogos);
-      setLoaded(true);
-    }
-    setMovieCard();
-  }, [id]);
+  const styles = {
+    image: css({
+      // width: "30%",
+      float: "left",
+      marginRight: "0.5rem",
+      marginBottom: "0.5rem",
+    }),
+    wrapper: css({
+      color: colors[mode]["text"],
+      "&:after": {
+        content: '""',
+        clear: "both",
+        display: "table",
+      },
+    }),
+    title: css({
+      color: colors[mode]["text"],
+    }),
+  };
 
   return (
     <div>
-      {loaded && (
-        <div>
-          <h1>{title}</h1>
-          <img src={image} alt="" />
-          <p>{body}</p>
-        </div>
-      )}
+      <h2 css={styles.title}>{title}</h2>
+      <div css={styles.wrapper}>
+        <img css={styles.image} src={image} alt="" />
+        {body}
+      </div>
+      <BlogProviders providers={providers} mode={mode} />
     </div>
   );
 }

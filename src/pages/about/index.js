@@ -50,10 +50,8 @@ function About() {
     aboutWrapper: css({
       margin: "0 5%",
       display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
       flexDirection: "column",
-      "@media(min-width: 700px)": {
+      "@media(min-width: 778px)": {
         margin: "0 20%",
       },
     }),

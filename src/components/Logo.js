@@ -5,7 +5,8 @@ import React from "react";
 import Link from "next/link";
 // import logoImage from "../assets/tv-ex-small.png";
 
-function Logo({ setPage, logo, width }) {
+function Logo({ setPage, logo, width, fromPage }) {
+  fromPage = fromPage || "";
   const styles = {
     logo: css({
       display: "inline-flex",
@@ -27,6 +28,11 @@ function Logo({ setPage, logo, width }) {
             <img src={logoImage} alt="CouchBuddy Logo" width={width} />
           </div>
         </Link>
+      )}
+      {logo === "mainSetPage" && (
+        <div css={styles.logo} onClick={setPage("SearchPage")}>
+          <img src={logoImage} alt="CouchBuddy Logo" width={width} />
+        </div>
       )}
       {logo === "blog" && (
         <Link href={"/blog"}>
