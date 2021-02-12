@@ -78,7 +78,7 @@ function About() {
           CouchBuddy was created to help you choose a movie to watch when you
           don’t know what to watch. Filter by the streaming providers you have,
           what you’re interested in and how much time you’ve got then let
-          CouchBuddy do the searching.
+          CouchBuddy do the searching..
         </p>
         <p css={styles.text}>
           All data and images on this website are sourced from The Movie
