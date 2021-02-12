@@ -5,9 +5,9 @@ import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import App from "../components/App";
-import Amplify from "aws-amplify";
-import config from "../aws-exports";
-Amplify.configure(config);
+// import Amplify from "aws-amplify";
+// import config from "../aws-exports";
+// Amplify.configure(config);
 
 function changeBackground(mode) {
   if (mode === "dark") {

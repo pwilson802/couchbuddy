@@ -2,26 +2,29 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
-import { API, graphqlOperation } from "aws-amplify";
-import { getCouchmovie, getGenre, listMovieLengths } from "../graphql/queries";
+// import { API, graphqlOperation } from "aws-amplify";
+// import { getCouchmovie, getGenre, listMovieLengths } from "../graphql/queries";
 import ShareButtons from "./ShareButtons";
-
-async function getMovieDetails(id) {
-  const movieDetails = await API.graphql({
-    query: getCouchmovie,
-    variables: { movieID: id },
-  });
-  console.log(movieDetails.data.getCouchmovie);
-  return movieDetails.data.getCouchmovie;
-}
+// import getMovieDetails from "../pages/api/getMovie";
 
 // async function getMovieDetails(id) {
-//   let TMB_KEY = process.env.TMB_KEY;
-//   let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
-//   const response = await fetch(url);
-//   const movieDetails = await response.json();
-//   return movieDetails;
+//   const movieDetails = await API.graphql({
+//     query: getCouchmovie,
+//     variables: { movieID: id },
+//   });
+//   console.log(movieDetails.data.getCouchmovie);
+//   return movieDetails.data.getCouchmovie;
 // }
+
+async function getMovieDetails(id) {
+  let TMB_KEY = process.env.TMB_KEY;
+  // let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
+  let url = `/api/movie/${id}`;
+  const response = await fetch(url);
+  const movieDetails = await response.json();
+  console.log(movieDetails);
+  return movieDetails;
+}
 
 const colors = {
   light: {

@@ -1,10 +1,10 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import Amplify from "aws-amplify";
-import { API, graphqlOperation } from "aws-amplify";
-import config from "../../aws-exports";
-Amplify.configure(config);
+// import Amplify from "aws-amplify";
+// import { API, graphqlOperation } from "aws-amplify";
+// import config from "../../aws-exports";
+// Amplify.configure(config);
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import MovieBlurb from "../../components/MovieBlurb";

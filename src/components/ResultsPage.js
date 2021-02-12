@@ -2,7 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
-import { API, graphqlOperation } from "aws-amplify";
+// import { API, graphqlOperation } from "aws-amplify";
 // import { getGenre, listMovieDatas } from "../graphql/queries";
 import Logo from "./Logo";
 import MovieCard from "./MovieCard";
