@@ -1,7 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-// import { button } from "aws-amplify";
 import React from "react";
 
 const colors = {

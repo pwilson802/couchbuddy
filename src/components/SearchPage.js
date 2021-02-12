@@ -2,13 +2,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
-// import { API, graphqlOperation } from "aws-amplify";
-// import {
-//   getCouchmovie,
-//   getWatchOn,
-//   listProviders,
-//   getCertification,
-// } from "../graphql/queries";
 import Logo from "./Logo";
 import LocationSelect from "./LocationSelect";
 import Genres from "./Genres";
