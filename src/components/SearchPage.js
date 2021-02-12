@@ -3,12 +3,12 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import { API, graphqlOperation } from "aws-amplify";
-import {
-  getCouchmovie,
-  getWatchOn,
-  listProviders,
-  getCertification,
-} from "../graphql/queries";
+// import {
+//   getCouchmovie,
+//   getWatchOn,
+//   listProviders,
+//   getCertification,
+// } from "../graphql/queries";
 import Logo from "./Logo";
 import LocationSelect from "./LocationSelect";
 import Genres from "./Genres";
@@ -41,11 +41,15 @@ const genreObj = {
 };
 
 async function getLocalProviders(country) {
-  const locProviders = await API.graphql({
-    query: getWatchOn,
-    variables: { country: country },
-  });
-  return JSON.parse(locProviders.data.getWatchOn.data);
+  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
+  console.log(url);
+  const response = await fetch(url);
+  return await response.json();
+  // const locProviders = await API.graphql({
+  //   query: getWatchOn,
+  //   variables: { country: country },
+  // });
+  // return JSON.parse(locProviders.data.getWatchOn.data);
 }
 
 function makeProvidersObj(data) {
@@ -56,12 +60,16 @@ function makeProvidersObj(data) {
 }
 
 async function getLocalCertifications(country) {
-  const locProviders = await API.graphql({
-    query: getCertification,
-    variables: { country: country },
-  });
-  // console.log("certifications", locProviders);
-  return JSON.parse(locProviders.data.getCertification.data);
+  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
+  console.log(url);
+  const response = await fetch(url);
+  return await response.json();
+  // const locProviders = await API.graphql({
+  //   query: getCertification,
+  //   variables: { country: country },
+  // });
+  // // console.log("certifications", locProviders);
+  // return JSON.parse(locProviders.data.getCertification.data);
 }
 
 function makeCertificationsObj(data) {
@@ -73,20 +81,24 @@ function makeCertificationsObj(data) {
 }
 
 async function getAllProviderData() {
-  const allProviders = await API.graphql({
-    query: listProviders,
-  });
-  const providerList = allProviders.data.listProviders.items;
-  const result = providerList.reduce((acc, curr) => {
-    let providerID = curr["providerID"];
-    let providerName = curr["providerName"];
-    let providerLogo = curr["providerLogo"];
-    acc[providerID] = {};
-    acc[providerID]["name"] = providerName;
-    acc[providerID]["logo"] = "http://image.tmdb.org/t/p/w185" + providerLogo;
-    return acc;
-  }, {});
-  return result;
+  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
+  console.log(url);
+  const response = await fetch(url);
+  return await response.json();
+  // const allProviders = await API.graphql({
+  //   query: listProviders,
+  // });
+  // const providerList = allProviders.data.listProviders.items;
+  // const result = providerList.reduce((acc, curr) => {
+  //   let providerID = curr["providerID"];
+  //   let providerName = curr["providerName"];
+  //   let providerLogo = curr["providerLogo"];
+  //   acc[providerID] = {};
+  //   acc[providerID]["name"] = providerName;
+  //   acc[providerID]["logo"] = "http://image.tmdb.org/t/p/w185" + providerLogo;
+  //   return acc;
+  // }, {});
+  // return result;
 }
 
 function makeSelectedProviders(selectedProviders, localProviderMovies) {
@@ -303,8 +315,6 @@ export default function SearchPage({
       alignSelf: "center",
     }),
   };
-  // console.log("selectedCertifications", selectedCertifications);
-  // console.log("allProviderData", allProviderData);
   return (
     <div>
       <div css={styles.wrapper}>
@@ -320,10 +330,6 @@ export default function SearchPage({
             />
           </div>
         </div>
-        {/* <p css={styles.introText}>
-          Not sure what movie to watch tonight? Let couch buddy help you out
-          with some suggestions.
-        </p> */}
         {loaded && (
           <div>
             {width < 700 ? (
@@ -371,13 +377,6 @@ export default function SearchPage({
                 mode={mode}
                 buttonText={"Sort by Rating"}
               />
-              {/* <button
-                css={sortByVote ? styles.voteButtonSelected : styles.voteButton}
-                onClick={() => setSortByVote(!sortByVote)}
-                value={sortByVote}
-              >
-                Sort by Rating
-              </button> */}
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
           </div>

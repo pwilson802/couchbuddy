@@ -15,6 +15,14 @@ async function getMovieDetails(id) {
   return movieDetails.data.getCouchmovie;
 }
 
+// async function getMovieDetails(id) {
+//   let TMB_KEY = process.env.TMB_KEY;
+//   let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
+//   const response = await fetch(url);
+//   const movieDetails = await response.json();
+//   return movieDetails;
+// }
+
 const colors = {
   light: {
     text: "black",
@@ -40,19 +48,19 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
   useEffect(() => {
     async function setMovieCard() {
       const {
-        title,
+        original_title,
         overview,
         tagline,
         runtime,
-        image,
+        poster_path,
         vote_average,
       } = await getMovieDetails(id);
-      setTitle(title);
+      setTitle(original_title);
       setOverview(overview);
       setTagline(tagline);
       setRuntime(runtime);
       setVoteAverage(vote_average);
-      const imagePath = "http://image.tmdb.org/t/p/w185" + image;
+      const imagePath = "http://image.tmdb.org/t/p/w185" + poster_path;
       setImage(imagePath);
       const providerLogos = providers.map(
         (item) => allProviderData[item]["logo"]

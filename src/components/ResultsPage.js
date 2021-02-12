@@ -3,12 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import { API, graphqlOperation } from "aws-amplify";
-import {
-  getCouchmovie,
-  getGenre,
-  listMovieLengths,
-  listMovieDatas,
-} from "../graphql/queries";
+// import { getGenre, listMovieDatas } from "../graphql/queries";
 import Logo from "./Logo";
 import MovieCard from "./MovieCard";
 import SpinnerMovie from "./SpinnerMovie";
@@ -16,55 +11,71 @@ import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
 
 async function filterMoviesByData(duration, sortByVote) {
-  let firstQuery = await API.graphql({
-    query: listMovieDatas,
-    limit: 1000,
-  });
-  let allMovies = firstQuery.data.listMovieDatas.items;
-  let nextToken = firstQuery.data.listMovieDatas.nextToken;
-  while (nextToken != null) {
-    let nextPage = await API.graphql({
-      query: listMovieDatas,
-      variables: {
-        limit: 1000,
-        nextToken,
-      },
-    });
-    allMovies = [...allMovies, ...nextPage.data.listMovieDatas.items];
-    nextToken = nextPage.data.listMovieDatas.nextToken;
-  }
-  const moviesUnderDuration = allMovies.filter(
-    (item) => item.runtime < duration
-  );
+  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
+  console.log(url);
+  const response = await fetch(url);
+  const allMovies = await response.json();
+  // console.log("movie object:", movieObject);
+  // let firstQuery = await API.graphql({
+  //   query: listMovieDatas,
+  //   limit: 1000,
+  // });
+  // let allMovies = firstQuery.data.listMovieDatas.items;
+  // let nextToken = firstQuery.data.listMovieDatas.nextToken;
+  // while (nextToken != null) {
+  //   let nextPage = await API.graphql({
+  //     query: listMovieDatas,
+  //     variables: {
+  //       limit: 1000,
+  //       nextToken,
+  //     },
+  //   });
+  //   allMovies = [...allMovies, ...nextPage.data.listMovieDatas.items];
+  //   nextToken = nextPage.data.listMovieDatas.nextToken;
+  // }
+  // const moviesUnderDuration = allMovies.filter(
+  //   (item) => item.runtime < duration
+  // );
+  const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
   if (sortByVote === true) {
     console.log("sortByVote", sortByVote);
     console.log("moviesUnderDuration", moviesUnderDuration);
     console.log("sorting by vote");
     moviesUnderDuration.sort(compare);
     console.log("sorted Movies: ", moviesUnderDuration);
-    const result = moviesUnderDuration.map((item) => Number(item.movieID));
+    // const result = moviesUnderDuration.map((item) => Number(item.movieID));
+    const result = moviesUnderDuration.map((item) => Number(item.id));
+    console.log("result in function", result);
     return result;
   }
-  return moviesUnderDuration.map((item) => Number(item.movieID));
+  return moviesUnderDuration.map((item) => Number(item.id));
+  // return moviesUnderDuration.map((item) => Number(item.movieID));
 }
 
-async function getMoviesByGenre(genre) {
-  const movies = await API.graphql({
-    query: getGenre,
-    variables: { genre: genre },
-  });
-  if (movies.data.getGenre == null) {
-    return [];
-  }
-  const moviesList = JSON.parse(movies.data.getGenre.movieIDs);
-  return moviesList;
-}
+// async function getMoviesByGenre(genre) {
+//   const movies = await API.graphql({
+//     query: getGenre,
+//     variables: { genre: genre },
+//   });
+//   if (movies.data.getGenre == null) {
+//     return [];
+//   }
+//   const moviesList = JSON.parse(movies.data.getGenre.movieIDs);
+//   return moviesList;
+// }
 
 async function getMovieIDsforGenres(genres) {
+  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
+  console.log(url);
+  const response = await fetch(url);
+  const genresObject = await response.json();
+  console.log("genres json response", genresObject);
   let result = [];
   for (let i = 0; i < genres.length; i++) {
-    let movies = await getMoviesByGenre(genres[i]);
-    result = [...result, ...movies];
+    if (Object.keys(genresObject).includes(genres[i])) {
+      let movies = genresObject[genres[i]];
+      result = [...result, ...movies];
+    }
   }
   return result;
 }
@@ -212,6 +223,7 @@ export default function ResultsPage({
                   allProviderData={allProviderData}
                   screenSize={screenSize}
                   mode={mode}
+                  key={item.id}
                 ></MovieCard>
               ))}
             </div>
@@ -252,8 +264,10 @@ function shuffle(data) {
 }
 
 function compare(a, b) {
-  const voteA = Number(a.vote_average);
-  const voteB = Number(b.vote_average);
+  // const voteA = Number(a.vote_average);
+  // const voteB = Number(b.vote_average);
+  const voteA = Number(a.v);
+  const voteB = Number(b.v);
 
   let comparison = 0;
   if (voteA > voteB) {
