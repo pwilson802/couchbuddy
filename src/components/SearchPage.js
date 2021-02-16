@@ -104,13 +104,21 @@ function makeSelectedProviders(selectedProviders, localProviderMovies) {
   return selected;
 }
 
-function getSelectedProviders(location) {
+function getSelectedProviders(location, allProviders) {
+  // Getting providers from the local storage, filtering it with the providers from the json in case some of the selected providers are no longer active.
+  // Because if the providers were in the cache and no longer valid they would be undefined and cause an error on the result page
   const localItem = "selectedProviders" + location;
-  const selectedProviders = localStorage.getItem(localItem);
+  const selectedProvidersJson = localStorage.getItem(localItem);
   if (selectedProviders === null) {
     return [];
   }
-  return JSON.parse(selectedProviders);
+  const selectedProviders = JSON.parse(selectedProvidersJson);
+  const returedProviders = selectedProviders.filter((item) =>
+    allProviders.includes(item)
+  );
+  console.log(returedProviders);
+  return returedProviders;
+  // return JSON.parse(returedProviders);
 }
 
 function updateLocalSelectedProviders(location, providers) {
@@ -139,10 +147,14 @@ export default function SearchPage({
   const [loaded, setLoaded] = useState(false);
 
   async function configureProviders() {
+    console.log("configuring providers");
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
-    const cachedProviders = getSelectedProviders(location);
+    const cachedProviders = getSelectedProviders(
+      location,
+      Object.keys(providersObj)
+    );
     for (let provider of cachedProviders) {
       providersObj[provider] = true;
     }
