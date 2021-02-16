@@ -4,8 +4,28 @@ import { jsx, css } from "@emotion/react";
 import React from "react";
 
 const options = [
+  { value: "US", label: "Unites States" },
+  { value: "CA", label: "Canada" },
   { value: "AU", label: "Australia" },
-  { value: "US", label: "United States" },
+  { value: "DE", label: "Germany" },
+  { value: "FR", label: "France" },
+  { value: "NZ", label: "New Zealand" },
+  { value: "IN", label: "India" },
+  { value: "GB", label: "Great Britian" },
+  { value: "NL", label: "NetherLands" },
+  { value: "BR", label: "Brazil" },
+  { value: "FI", label: "Finland" },
+  { value: "ES", label: "Spain" },
+  { value: "PT", label: "Portugal" },
+  { value: "MY", label: "Malaysia" },
+  { value: "SE", label: "Sweden" },
+  { value: "DK", label: "Denmark" },
+  { value: "NO", label: "NO" },
+  { value: "HU", label: "Hungary" },
+  { value: "LT", label: "Lithuania" },
+  { value: "RU", label: "RU" },
+  { value: "PH", label: "PH" },
+  { value: "IT", label: "Italy" },
 ];
 
 const colors = {
