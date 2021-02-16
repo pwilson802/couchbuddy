@@ -111,6 +111,8 @@ export default function ResultsPage({
   console.log("certificationMovies", certificationMovies);
 
   function getProviders(id) {
+    console.log("id", id);
+    console.log("selectedProviders", selectedProviders);
     return Object.keys(selectedProviders).filter((item) =>
       selectedProviders[item].includes(id)
     );
