@@ -17,7 +17,6 @@ const options = [
   { value: "FI", label: "Finland" },
   { value: "ES", label: "Spain" },
   { value: "PT", label: "Portugal" },
-  { value: "MY", label: "Malaysia" },
   { value: "SE", label: "Sweden" },
   { value: "DK", label: "Denmark" },
   { value: "NO", label: "Norway" },
