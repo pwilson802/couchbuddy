@@ -13,27 +13,6 @@ async function filterMoviesByData(duration, sortByVote) {
   console.log(url);
   const response = await fetch(url);
   const allMovies = await response.json();
-  // console.log("movie object:", movieObject);
-  // let firstQuery = await API.graphql({
-  //   query: listMovieDatas,
-  //   limit: 1000,
-  // });
-  // let allMovies = firstQuery.data.listMovieDatas.items;
-  // let nextToken = firstQuery.data.listMovieDatas.nextToken;
-  // while (nextToken != null) {
-  //   let nextPage = await API.graphql({
-  //     query: listMovieDatas,
-  //     variables: {
-  //       limit: 1000,
-  //       nextToken,
-  //     },
-  //   });
-  //   allMovies = [...allMovies, ...nextPage.data.listMovieDatas.items];
-  //   nextToken = nextPage.data.listMovieDatas.nextToken;
-  // }
-  // const moviesUnderDuration = allMovies.filter(
-  //   (item) => item.runtime < duration
-  // );
   const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
   if (sortByVote === true) {
     console.log("sortByVote", sortByVote);
@@ -41,26 +20,12 @@ async function filterMoviesByData(duration, sortByVote) {
     console.log("sorting by vote");
     moviesUnderDuration.sort(compare);
     console.log("sorted Movies: ", moviesUnderDuration);
-    // const result = moviesUnderDuration.map((item) => Number(item.movieID));
     const result = moviesUnderDuration.map((item) => Number(item.id));
     console.log("result in function", result);
     return result;
   }
   return moviesUnderDuration.map((item) => Number(item.id));
-  // return moviesUnderDuration.map((item) => Number(item.movieID));
 }
-
-// async function getMoviesByGenre(genre) {
-//   const movies = await API.graphql({
-//     query: getGenre,
-//     variables: { genre: genre },
-//   });
-//   if (movies.data.getGenre == null) {
-//     return [];
-//   }
-//   const moviesList = JSON.parse(movies.data.getGenre.movieIDs);
-//   return moviesList;
-// }
 
 async function getMovieIDsforGenres(genres) {
   const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
@@ -128,7 +93,6 @@ export default function ResultsPage({
       (item) => selectedGenres[item]
     );
     async function updateMovies() {
-      // const moviesByLength = await getMoviesByLength(duration);
       const matchedMoviesByGenre = await getMovieIDsforGenres(genres);
       const matchedMoviesbyProvider = Object.values(selectedProviders).flat();
       const moviesInProvider = matchedMoviesByGenre.filter((movie) =>
@@ -143,6 +107,7 @@ export default function ResultsPage({
         moviesInProvider.includes(item)
       );
       const moviesInCertification =
+        // TODO - Check this is working to skip the filter for certifiation movies
         certificationMovies === true
           ? moviesInLength
           : filterCertification(moviesInLength);

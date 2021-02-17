@@ -109,10 +109,10 @@ function getSelectedProviders(location, allProviders) {
   // Because if the providers were in the cache and no longer valid they would be undefined and cause an error on the result page
   const localItem = "selectedProviders" + location;
   const selectedProvidersJson = localStorage.getItem(localItem);
+  const selectedProviders = JSON.parse(selectedProvidersJson);
   if (selectedProviders === null) {
     return [];
   }
-  const selectedProviders = JSON.parse(selectedProvidersJson);
   const returedProviders = selectedProviders.filter((item) =>
     allProviders.includes(item)
   );

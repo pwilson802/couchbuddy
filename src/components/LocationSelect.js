@@ -20,11 +20,11 @@ const options = [
   { value: "MY", label: "Malaysia" },
   { value: "SE", label: "Sweden" },
   { value: "DK", label: "Denmark" },
-  { value: "NO", label: "NO" },
+  { value: "NO", label: "Norway" },
   { value: "HU", label: "Hungary" },
   { value: "LT", label: "Lithuania" },
-  { value: "RU", label: "RU" },
-  { value: "PH", label: "PH" },
+  { value: "RU", label: "Russia" },
+  { value: "PH", label: "Philippines" },
   { value: "IT", label: "Italy" },
 ];
 
@@ -70,13 +70,15 @@ function LocationSelect({ handleLocation, location, mode }) {
         value={location}
         onChange={handleLocation}
       >
-        <option css={styles.option} value="AU">
-          Australia
-        </option>
-        <option css={styles.option} value="US">
-          United States
-        </option>
+        {options.map((country) => {
+          return (
+            <option css={styles.option} value={country.value}>
+              {country.label}
+            </option>
+          );
+        })}
       </select>
+      ;
     </div>
   );
 }
