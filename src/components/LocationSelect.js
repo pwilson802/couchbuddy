@@ -25,6 +25,8 @@ const options = [
   { value: "RU", label: "Russia" },
   { value: "PH", label: "Philippines" },
   { value: "IT", label: "Italy" },
+  { value: "JP", label: "Japan" },
+  { value: "IE", label: "Ireland" },
 ];
 
 const colors = {

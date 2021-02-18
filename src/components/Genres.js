@@ -85,13 +85,6 @@ function Genres({ selectedGenres, handleGenre, mode }) {
           key={item}
           buttonText={item}
         />
-        // <button
-        //   css={selectedGenres[item] ? styles.buttonSelected : styles.button}
-        //   onClick={() => handleGenre(item)}
-        //   key={item}
-        // >
-        //   {item}
-        // </button>
       ))}
     </div>
   );

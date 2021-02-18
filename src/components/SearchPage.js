@@ -57,12 +57,6 @@ async function getLocalCertifications(country) {
   console.log(url);
   const response = await fetch(url);
   return await response.json();
-  // const locProviders = await API.graphql({
-  //   query: getCertification,
-  //   variables: { country: country },
-  // });
-  // // console.log("certifications", locProviders);
-  // return JSON.parse(locProviders.data.getCertification.data);
 }
 
 function makeCertificationsObj(data) {
@@ -78,20 +72,6 @@ async function getAllProviderData() {
   console.log(url);
   const response = await fetch(url);
   return await response.json();
-  // const allProviders = await API.graphql({
-  //   query: listProviders,
-  // });
-  // const providerList = allProviders.data.listProviders.items;
-  // const result = providerList.reduce((acc, curr) => {
-  //   let providerID = curr["providerID"];
-  //   let providerName = curr["providerName"];
-  //   let providerLogo = curr["providerLogo"];
-  //   acc[providerID] = {};
-  //   acc[providerID]["name"] = providerName;
-  //   acc[providerID]["logo"] = "http://image.tmdb.org/t/p/w185" + providerLogo;
-  //   return acc;
-  // }, {});
-  // return result;
 }
 
 function makeSelectedProviders(selectedProviders, localProviderMovies) {
@@ -135,7 +115,7 @@ export default function SearchPage({
   width,
   mode,
 }) {
-  const [location, setLocation] = useState("AU");
+  const [location, setLocation] = useState("ZZ");
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
   const [localProviderMovies, setLocalProviderMovies] = useState({});
@@ -146,7 +126,7 @@ export default function SearchPage({
   const [sortByVote, setSortByVote] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  async function configureProviders() {
+  async function configureProviders(location) {
     console.log("configuring providers");
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
@@ -165,7 +145,7 @@ export default function SearchPage({
     setLoaded(true);
   }
 
-  async function configureCertifications() {
+  async function configureCertifications(location) {
     const localCertificationData = await getLocalCertifications(location);
     const certificationsObj = await makeCertificationsObj(
       localCertificationData
@@ -238,8 +218,8 @@ export default function SearchPage({
     setLocation(currentLocation);
     setSelectedGenres(genreObj);
     async function pageLoad() {
-      await configureProviders(location);
-      await configureCertifications();
+      await configureProviders(currentLocation);
+      await configureCertifications(currentLocation);
     }
     pageLoad();
   }, [location]);
