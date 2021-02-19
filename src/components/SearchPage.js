@@ -82,7 +82,7 @@ async function getIPLocation() {
     "ZA",
     "CH",
   ];
-  const response = await fetch("http://ip-api.com/json/?fields=countryCode");
+  const response = await fetch("https://ipapi.co/country_code/");
   const json = await response.json();
   console.log("country json response", json);
   const countryCode = json["countryCode"];
