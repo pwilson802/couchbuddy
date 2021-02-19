@@ -25,6 +25,7 @@ const genreObj = {
   Fantasy: false,
   History: false,
   Horror: false,
+  Music: false,
   Mystery: false,
   Romance: false,
   "Science Fiction": false,
@@ -38,11 +39,6 @@ async function getLocalProviders(country) {
   console.log(url);
   const response = await fetch(url);
   return await response.json();
-  // const locProviders = await API.graphql({
-  //   query: getWatchOn,
-  //   variables: { country: country },
-  // });
-  // return JSON.parse(locProviders.data.getWatchOn.data);
 }
 
 function makeProvidersObj(data) {
@@ -98,7 +94,6 @@ function getSelectedProviders(location, allProviders) {
   );
   console.log(returedProviders);
   return returedProviders;
-  // return JSON.parse(returedProviders);
 }
 
 function updateLocalSelectedProviders(location, providers) {

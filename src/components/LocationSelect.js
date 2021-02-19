@@ -72,7 +72,6 @@ const colors = {
     text: "white",
     locationBackground: "transparent",
     selectBackground: "#15202A",
-    // selectBackground: "rgba(254,244,225,1)",
   },
 };
 
