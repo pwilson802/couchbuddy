@@ -169,7 +169,7 @@ export default function SearchPage({
   width,
   mode,
 }) {
-  const [location, setLocation] = useState("ZZ");
+  const [location, setLocation] = useState(null);
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
   const [localProviderMovies, setLocalProviderMovies] = useState({});
@@ -207,7 +207,7 @@ export default function SearchPage({
   }
 
   function handleLocation(loc) {
-    localStorage.setItem("country", loc.target.value);
+    // localStorage.setItem("country", loc.target.value);
     setLocation(loc.target.value);
   }
 
@@ -266,10 +266,11 @@ export default function SearchPage({
   useEffect(() => {
     setLoaded(false);
     async function pageLoad() {
-      const cachedLocation = localStorage.getItem("country");
-      const currentLocation = cachedLocation
-        ? cachedLocation
-        : await getIPLocation();
+      // const cachedLocation = localStorage.getItem("country");
+      // const currentLocation = cachedLocation
+      //   ? cachedLocation
+      //   : await getIPLocation();
+      const currentLocation = location || (await getIPLocation());
       setLocation(currentLocation);
       setSelectedGenres(genreObj);
       await configureProviders(currentLocation);
@@ -362,13 +363,15 @@ export default function SearchPage({
           <div css={styles.logoWrap}>
             <Logo setPage={setPage} logo={"main"} />
           </div>
-          <div css={styles.locationWrap}>
-            <LocationSelect
-              handleLocation={handleLocation}
-              location={location}
-              mode={mode}
-            />
-          </div>
+          {location && (
+            <div css={styles.locationWrap}>
+              <LocationSelect
+                handleLocation={handleLocation}
+                location={location}
+                mode={mode}
+              />
+            </div>
+          )}
         </div>
         {loaded && (
           <div>
