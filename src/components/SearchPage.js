@@ -9,7 +9,6 @@ import Providers from "./Providers";
 import Duration from "./Duration";
 import DropDownGenres from "./DropDownGenres";
 import DropDownProviders from "./DropDownProviders";
-import TheMovieDatabase from "./TheMovieDatabase";
 import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
 
@@ -33,6 +32,65 @@ const genreObj = {
   War: false,
   Western: false,
 };
+
+async function getIPLocation() {
+  const validCodes = [
+    "AR",
+    "AT",
+    "AU",
+    "BE",
+    "BR",
+    "CA",
+    "CL",
+    "CO",
+    "CZ",
+    "DE",
+    "DK",
+    "EC",
+    "EE",
+    "ES",
+    "FI",
+    "FR",
+    "GB",
+    "GR",
+    "HU",
+    "ID",
+    "IE",
+    "IN",
+    "IT",
+    "JP",
+    "KR",
+    "LT",
+    "LV",
+    "MX",
+    "MY",
+    "NL",
+    "NO",
+    "NZ",
+    "PE",
+    "PH",
+    "PL",
+    "PT",
+    "RO",
+    "RU",
+    "SE",
+    "SG",
+    "TH",
+    "TR",
+    "US",
+    "VE",
+    "ZA",
+    "CH",
+  ];
+  const response = await fetch("http://ip-api.com/json/?fields=countryCode");
+  const json = await response.json();
+  console.log("country json response", json);
+  const countryCode = json["countryCode"];
+  if (validCodes.includes(countryCode)) {
+    return countryCode;
+  }
+  return "US";
+}
 
 async function getLocalProviders(country) {
   const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
@@ -133,11 +191,9 @@ export default function SearchPage({
     for (let provider of cachedProviders) {
       providersObj[provider] = true;
     }
-    // console.log("providersObj", providersObj);
     setLocalProviderMovies(localProviderData);
     setSelectedProviders(providersObj);
     setAllProviderData(allProviderData);
-    setLoaded(true);
   }
 
   async function configureCertifications(location) {
@@ -171,7 +227,6 @@ export default function SearchPage({
   };
 
   const handleProvider = (provider) => {
-    // console.log("handleProvider", provider);
     const newProviderObj = {
       ...selectedProviders,
     };
@@ -209,12 +264,16 @@ export default function SearchPage({
 
   useEffect(() => {
     setLoaded(false);
-    const currentLocation = localStorage.getItem("country") || "US";
-    setLocation(currentLocation);
-    setSelectedGenres(genreObj);
     async function pageLoad() {
+      const cachedLocation = localStorage.getItem("country");
+      const currentLocation = cachedLocation
+        ? cachedLocation
+        : await getIPLocation();
+      setLocation(currentLocation);
+      setSelectedGenres(genreObj);
       await configureProviders(currentLocation);
       await configureCertifications(currentLocation);
+      setLoaded(true);
     }
     pageLoad();
   }, [location]);
