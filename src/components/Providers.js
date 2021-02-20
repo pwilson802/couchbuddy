@@ -3,7 +3,12 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 
-function Providers({ selectedProviders, handleProvider, allProviderData }) {
+function Providers({
+  selectedProviders,
+  handleProvider,
+  allProviderData,
+  sortedProviders,
+}) {
   const providerIDs = Object.keys(selectedProviders).filter((item) =>
     Object.keys(allProviderData).includes(item)
   );
@@ -38,13 +43,20 @@ function Providers({ selectedProviders, handleProvider, allProviderData }) {
   providerIDs.sort((a, b) => {
     const optionA = selectedProviders[a];
     const optionB = selectedProviders[b];
-    let comparison = 0;
+    const rankA = sortedProviders.indexOf(a);
+    const rankB = sortedProviders.indexOf(b);
     if (optionA > optionB) {
-      comparison = -1;
+      return -1;
     } else if (optionA < optionB) {
-      comparison = 1;
+      return 1;
     }
-    return comparison;
+    if (rankA > rankB) {
+      return 1;
+    } else if (rankA < rankB) {
+      return -1;
+    }
+
+    return 0;
   });
   // console.log("Providers - allProviderData", allProviderData);
   // console.log("Providers - ProviderIDs", providerIDs);

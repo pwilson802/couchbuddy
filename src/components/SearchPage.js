@@ -100,6 +100,19 @@ async function getLocalProviders(country) {
   return await response.json();
 }
 
+function sortProviders(json) {
+  const result = Object.keys(json).sort((a, b) => {
+    if (json[a].length > json[b].length) {
+      return -1;
+    }
+    if (json[a].length < json[b].length) {
+      return 1;
+    }
+    return 0;
+  });
+  return result;
+}
+
 function makeProvidersObj(data) {
   return Object.keys(data).reduce((acc, curr) => {
     acc[curr] = false;
@@ -174,6 +187,7 @@ export default function SearchPage({
   const [selectedProviders, setSelectedProviders] = useState({});
   const [localProviderMovies, setLocalProviderMovies] = useState({});
   const [allProviderData, setAllProviderData] = useState();
+  const [sortedProviders, setSortedProviders] = useState();
   const [selectedCertifications, setSelectedCertifications] = useState({});
   const [localCertificationMovies, setLocalCertificationMovies] = useState({});
   const [duration, setDuration] = useState(400);
@@ -181,7 +195,6 @@ export default function SearchPage({
   const [loaded, setLoaded] = useState(false);
 
   async function configureProviders(location) {
-    console.log("configuring providers");
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
@@ -195,6 +208,7 @@ export default function SearchPage({
     setLocalProviderMovies(localProviderData);
     setSelectedProviders(providersObj);
     setAllProviderData(allProviderData);
+    setSortedProviders(sortProviders(localProviderData));
   }
 
   async function configureCertifications(location) {
@@ -393,6 +407,7 @@ export default function SearchPage({
                 selectedProviders={selectedProviders}
                 handleProvider={handleProvider}
                 allProviderData={allProviderData}
+                sortedProviders={sortedProviders}
                 mode={mode}
               />
             ) : (
@@ -400,6 +415,7 @@ export default function SearchPage({
                 selectedProviders={selectedProviders}
                 handleProvider={handleProvider}
                 allProviderData={allProviderData}
+                sortedProviders={sortedProviders}
                 mode={mode}
               />
             )}

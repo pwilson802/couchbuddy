@@ -48,6 +48,7 @@ function DropDownProviders({
           selectedProviders={selectedProviders}
           handleProvider={handleProvider}
           allProviderData={allProviderData}
+          sortedProviders={sortedProviders}
         />
       )}
     </div>
