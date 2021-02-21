@@ -7,9 +7,11 @@ import MovieCard from "./MovieCard";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
+const DATA_BUCKET = process.env.DATA_BUCKET;
 
 async function filterMoviesByData(duration, sortByVote) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/movie-filter.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
   console.log(url);
   const response = await fetch(url);
   const allMovies = await response.json();
@@ -28,7 +30,8 @@ async function filterMoviesByData(duration, sortByVote) {
 }
 
 async function getMovieIDsforGenres(genres) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/genres.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
   console.log(url);
   const response = await fetch(url);
   const genresObject = await response.json();

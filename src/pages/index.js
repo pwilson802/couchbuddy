@@ -45,7 +45,7 @@ export default function Home() {
         <meta name="twitter:site" content="@couch_buddy" />
         <meta
           name="twitter:image"
-          content="https://couchbuddy.s3-ap-southeast-2.amazonaws.com/twitterCard.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main.png"
         />
         <meta property="og:title" content="CouchBuddy" />
         <meta
@@ -54,7 +54,7 @@ export default function Home() {
         />
         <meta
           property="og:image"
-          content="https://couchbuddy.s3-ap-southeast-2.amazonaws.com/twitterCard.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main.png"
         />
       </Head>
 

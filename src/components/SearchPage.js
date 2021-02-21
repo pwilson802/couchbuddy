@@ -11,6 +11,8 @@ import DropDownGenres from "./DropDownGenres";
 import DropDownProviders from "./DropDownProviders";
 import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
+import SpinnerMovie from "./SpinnerMovie";
+const DATA_BUCKET = process.env.DATA_BUCKET;
 
 const genreObj = {
   Action: false,
@@ -94,7 +96,9 @@ async function getIPLocation() {
 }
 
 async function getLocalProviders(country) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
+  //couchbuddy-data.s3.amazonaws.com/certifications-AR.json
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/providers-${country}.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
   console.log(url);
   const response = await fetch(url);
   return await response.json();
@@ -121,7 +125,8 @@ function makeProvidersObj(data) {
 }
 
 async function getLocalCertifications(country) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/certifications-${country}.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
   console.log(url);
   const response = await fetch(url);
   return await response.json();
@@ -136,7 +141,8 @@ function makeCertificationsObj(data) {
 }
 
 async function getAllProviderData() {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/all-data-providers.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
   console.log(url);
   const response = await fetch(url);
   return await response.json();
@@ -387,7 +393,7 @@ export default function SearchPage({
             </div>
           )}
         </div>
-        {loaded && (
+        {loaded ? (
           <div>
             {width < 700 ? (
               <DropDownGenres
@@ -439,6 +445,8 @@ export default function SearchPage({
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
           </div>
+        ) : (
+          <SpinnerMovie />
         )}
       </div>
     </div>
