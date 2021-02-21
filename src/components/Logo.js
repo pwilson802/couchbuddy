@@ -18,7 +18,9 @@ function Logo({ setPage, logo, width, fromPage }) {
     }),
   };
   const logoImage =
-    logo === "main" ? "/CouchBuddyLogo.png" : "/CouchBuddyBlogLogo.png";
+    logo === "main" || logo === "mainSetPage"
+      ? "/CouchBuddyLogo.png"
+      : "/CouchBuddyBlogLogo.png";
 
   return (
     <div>
@@ -30,7 +32,7 @@ function Logo({ setPage, logo, width, fromPage }) {
         </Link>
       )}
       {logo === "mainSetPage" && (
-        <div css={styles.logo} onClick={setPage("SearchPage")}>
+        <div css={styles.logo} onClick={() => setPage("SearchPage")}>
           <img src={logoImage} alt="CouchBuddy Logo" width={width} />
         </div>
       )}

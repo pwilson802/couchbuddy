@@ -286,10 +286,6 @@ export default function SearchPage({
   useEffect(() => {
     setLoaded(false);
     async function pageLoad() {
-      // const cachedLocation = localStorage.getItem("country");
-      // const currentLocation = cachedLocation
-      //   ? cachedLocation
-      //   : await getIPLocation();
       const currentLocation = location || (await getIPLocation());
       setLocation(currentLocation);
       setSelectedGenres(genreObj);

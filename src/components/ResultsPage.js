@@ -176,11 +176,11 @@ export default function ResultsPage({
   return (
     <div>
       <div css={styles.logoWrap}>
-        <Logo setPage={setPage} logo={"main"} />
+        <Logo setPage={setPage} logo={"mainSetPage"} />
       </div>
       {loaded ? (
         nothingFound ? (
-          <NothingFound setPage={setPage} />
+          <NothingFound setPage={setPage} logo={"main"} />
         ) : (
           <div css={styles.resultsWrap}>
             <div>
