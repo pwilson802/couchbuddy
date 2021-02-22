@@ -1,7 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React from "react";
+import React, { useState } from "react";
+import Select from "react-select";
 
 const options = [
   { value: "AR", label: "Argentina" },
@@ -52,26 +53,57 @@ const options = [
   { value: "CH", label: "Switzerland" },
 ];
 
+const countryMap = options.reduce((acc, curr) => {
+  const countryCode = curr["value"];
+  const country = curr["label"];
+  acc[countryCode] = country;
+  return acc;
+}, {});
+
+function makeSelectOption(value) {
+  return options.filter((item) => item.value === value)[0];
+}
+
 const colors = {
   light: {
     text: "black",
+    selectedText: "black",
     locationBackground: "white",
+    menuBackground: "white",
     selectBackground: "white",
+    locationFocus: "rgba(225,44,134, 0.2)",
+    selected: "#96D0D3",
+    activeOption: "rgba(225,44,134, 0.5)",
   },
   dark: {
     text: "white",
+    selectedText: "white",
     locationBackground: "#15202A",
+    menuBackground: "#15202A",
     selectBackground: "#15202Ab",
+    locationFocus: "rgba(225,44,134, 0.2)",
+    selected: "#E12C86",
+    activeOption: "rgba(225,44,134, 0.5)",
   },
   darkNav: {
     text: "white",
+    selectedText: "white",
     locationBackground: "transparent",
+    menuBackground: "#15202A",
     selectBackground: "#15202A",
+    locationFocus: "rgba(225,44,134, 0.2)",
+    selected: "#E12C86",
+    activeOption: "rgba(225,44,134, 0.5)",
   },
   lightNav: {
-    text: "white",
+    text: "black",
+    selectedText: "white",
     locationBackground: "transparent",
+    menuBackground: "white",
     selectBackground: "#15202A",
+    locationFocus: "rgba(225,44,134, 0.2)",
+    selected: "#E12C86",
+    activeOption: "rgba(225,44,134, 0.5)",
   },
 };
 
@@ -85,23 +117,82 @@ function LocationSelect({ handleLocation, location, mode }) {
       backgroundColor: colors[mode]["selectBackground"],
       color: colors[mode]["text"],
     }),
+    wrapper: css({
+      width: "12rem",
+    }),
+  };
+  const customStyles = {
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused
+        ? colors[mode]["locationFocus"]
+        : colors[mode]["locationBackground"],
+      color: state.isSelected ? colors[mode]["selected"] : colors[mode]["text"],
+      // color: state.isSelected ? "red" : "blue",
+      padding: 20,
+      border: "none",
+      "&:active": {
+        backgroundColor: colors[mode]["activeOption"],
+      },
+    }),
+    control: (provided, state) => ({
+      ...provided,
+      border: "none",
+      boxShadow: "none",
+      backgroundColor: colors[mode]["locationBackground"],
+      color: colors[mode]["text"],
+    }),
+    singleValue: (provided, state) => ({
+      ...provided,
+      border: "none",
+      boxShadow: "none",
+      backgroundColor: colors[mode]["locationBackground"],
+      color: colors[mode]["selectedText"],
+      textAlign: "right",
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      border: "none",
+      boxShadow: "none",
+      backgroundColor: colors[mode]["menuBackground"],
+    }),
+    input: (provided, state) => ({
+      ...provided,
+      border: "none",
+      boxShadow: "none",
+      backgroundColor: colors[mode]["locationBackground"],
+      color: colors[mode]["text"],
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: colors[mode]["selectedText"],
+      border: "none",
+    }),
+    indicatorSeparator: (provided, state) => ({
+      ...provided,
+      backgroundColor: colors[mode]["selectedText"],
+    }),
+    valueContainer: (provided, state) => ({
+      ...provided,
+      justifyContent: "flex-end",
+    }),
+    menuList: (provided, state) => ({
+      ...provided,
+      border: "none",
+      boxShadow: "none",
+      scrollbarColor: colors[mode]["locationBackground"],
+      color: colors[mode]["selectedText"],
+      textAlign: "right",
+    }),
   };
   return (
-    <div>
-      <select
-        css={styles.locationSelect}
-        value={location}
+    <div css={styles.wrapper}>
+      <Select
+        options={options}
         onChange={handleLocation}
-      >
-        {options.map((country) => {
-          return (
-            <option css={styles.option} value={country.value}>
-              {country.label}
-            </option>
-          );
-        })}
-      </select>
-      ;
+        styles={customStyles}
+        value={makeSelectOption(location)}
+      />
     </div>
   );
 }
