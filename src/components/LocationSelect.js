@@ -195,6 +195,20 @@ function LocationSelect({ handleLocation, location, mode }) {
         isSearchable={false}
         autoFocus={true}
       />
+      <select
+        css={styles.locationSelect}
+        value={location}
+        onChange={handleLocation}
+      >
+        {" "}
+        {options.map((country) => {
+          return (
+            <option css={styles.option} value={country.value}>
+              {country.label}
+            </option>
+          );
+        })}
+      </select>
     </div>
   );
 }
