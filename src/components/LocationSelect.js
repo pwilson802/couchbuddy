@@ -192,6 +192,7 @@ function LocationSelect({ handleLocation, location, mode }) {
         onChange={handleLocation}
         styles={customStyles}
         value={makeSelectOption(location)}
+        isSearchable={false}
       />
     </div>
   );
