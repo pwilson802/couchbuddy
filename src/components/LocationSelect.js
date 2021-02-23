@@ -194,6 +194,7 @@ function LocationSelect({ handleLocation, location, mode }) {
         value={makeSelectOption(location)}
         isSearchable={false}
         autoFocus={true}
+        menuList={true}
       />
       <select
         css={styles.locationSelect}
