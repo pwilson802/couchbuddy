@@ -110,16 +110,21 @@ const colors = {
 function LocationSelect({ handleLocation, location, mode }) {
   const styles = {
     locationSelect: css({
+      WebkitAppearance: "none",
+      MozAppearance: "none",
+      appearance: "none",
       backgroundColor: colors[mode]["locationBackground"],
       color: colors[mode]["text"],
+      padding: 10,
+      fontSize: "1rem",
     }),
     option: css({
       backgroundColor: colors[mode]["selectBackground"],
       color: colors[mode]["text"],
     }),
-    wrapper: css({
-      width: "12rem",
-    }),
+    // wrapper: css({
+    //   width: "12rem",
+    // }),
   };
   const customStyles = {
     option: (provided, state) => ({
@@ -187,7 +192,7 @@ function LocationSelect({ handleLocation, location, mode }) {
   };
   return (
     <div css={styles.wrapper}>
-      <Select
+      {/* <Select
         options={options}
         onChange={handleLocation}
         styles={customStyles}
@@ -195,13 +200,12 @@ function LocationSelect({ handleLocation, location, mode }) {
         isSearchable={false}
         autoFocus={true}
         menuList={true}
-      />
+      /> */}
       <select
         css={styles.locationSelect}
         value={location}
         onChange={handleLocation}
       >
-        {" "}
         {options.map((country) => {
           return (
             <option css={styles.option} value={country.value}>

@@ -229,7 +229,8 @@ export default function SearchPage({
   function handleLocation(loc) {
     console.log("handle location", loc);
     // localStorage.setItem("country", loc.target.value);
-    setLocation(loc.value);
+    // setLocation(loc.value);
+    setLocation(loc.target.value);
   }
 
   const handleGenre = (genre) => {
