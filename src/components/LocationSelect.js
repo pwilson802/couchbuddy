@@ -193,6 +193,7 @@ function LocationSelect({ handleLocation, location, mode }) {
         styles={customStyles}
         value={makeSelectOption(location)}
         isSearchable={false}
+        autoFocus={true}
       />
     </div>
   );
