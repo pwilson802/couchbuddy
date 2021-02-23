@@ -117,13 +117,28 @@ function LocationSelect({ handleLocation, location, mode }) {
       color: colors[mode]["text"],
       padding: 10,
       fontSize: "1rem",
+      border: "none",
+      "&:focus": {
+        border: "none",
+        outline: "none",
+      },
+      "&:active": {
+        border: "none",
+      },
     }),
     option: css({
       backgroundColor: colors[mode]["selectBackground"],
       color: colors[mode]["text"],
+      "&:focus": {
+        backgroundColor: colors[mode]["locationFocus"],
+      },
     }),
     // wrapper: css({
-    //   width: "12rem",
+    //   width: 32,
+    //   "&:after": {
+    //     content: '"XXXXXXXXXXXXXXXX"',
+    //     color: "white",
+    //   },
     // }),
   };
   const customStyles = {
