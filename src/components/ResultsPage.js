@@ -7,7 +7,8 @@ import MovieCard from "./MovieCard";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
-const DATA_BUCKET = process.env.DATA_BUCKET;
+// const DATA_BUCKET = process.env.DATA_BUCKET;
+const DATA_BUCKET = "couchbuddy-data";
 
 async function filterMoviesByData(duration, sortByVote) {
   const url = `https://${DATA_BUCKET}.s3.amazonaws.com/movie-filter.json`;

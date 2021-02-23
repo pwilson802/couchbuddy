@@ -125,6 +125,10 @@ function LocationSelect({ handleLocation, location, mode }) {
       "&:active": {
         border: "none",
       },
+      "&:after": {
+        content: '"XXXXXXXXXXXXXXXX"',
+        color: "white",
+      },
     }),
     option: css({
       backgroundColor: colors[mode]["selectBackground"],
@@ -133,13 +137,12 @@ function LocationSelect({ handleLocation, location, mode }) {
         backgroundColor: colors[mode]["locationFocus"],
       },
     }),
-    // wrapper: css({
-    //   width: 32,
-    //   "&:after": {
-    //     content: '"XXXXXXXXXXXXXXXX"',
-    //     color: "white",
-    //   },
-    // }),
+    dropArrow: css({
+      position: "relative",
+      color: "white",
+      right: 5,
+      pointerEvents: "none",
+    }),
   };
   const customStyles = {
     option: (provided, state) => ({
@@ -229,6 +232,7 @@ function LocationSelect({ handleLocation, location, mode }) {
           );
         })}
       </select>
+      <span css={styles.dropArrow}>&#9660;</span>
     </div>
   );
 }

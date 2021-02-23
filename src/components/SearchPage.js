@@ -12,7 +12,8 @@ import DropDownProviders from "./DropDownProviders";
 import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
-const DATA_BUCKET = process.env.DATA_BUCKET;
+// const DATA_BUCKET = process.env.DATA_BUCKET;
+const DATA_BUCKET = "couchbuddy-data";
 
 const genreObj = {
   Action: false,
