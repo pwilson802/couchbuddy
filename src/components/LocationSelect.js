@@ -115,7 +115,8 @@ function LocationSelect({ handleLocation, location, mode }) {
       appearance: "none",
       backgroundColor: colors[mode]["locationBackground"],
       color: colors[mode]["text"],
-      padding: 10,
+      paddingLeft: 20,
+      paddingRight: 10,
       fontSize: "1rem",
       border: "none",
       "&:focus": {
@@ -140,8 +141,19 @@ function LocationSelect({ handleLocation, location, mode }) {
     dropArrow: css({
       position: "relative",
       color: "white",
-      right: 5,
+      right: 10,
       pointerEvents: "none",
+      border: "solid white",
+      borderWidth: "0 3px 3px 0",
+      display: "inline-block",
+      padding: "3px",
+      transform: "rotate(45deg)",
+      webkitTransform: "rotate(45deg)",
+      height: 10,
+    }),
+    wrapper: css({
+      display: "flex",
+      flexWrap: "nowrap",
     }),
   };
   const customStyles = {
@@ -232,7 +244,8 @@ function LocationSelect({ handleLocation, location, mode }) {
           );
         })}
       </select>
-      <span css={styles.dropArrow}>&#9660;</span>
+      {/* <span css={styles.dropArrow}>&#9660;</span> */}
+      <span css={styles.dropArrow}></span>
     </div>
   );
 }
