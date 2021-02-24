@@ -19,6 +19,7 @@ function DropDownProviders({
   selectedProviders,
   handleProvider,
   allProviderData,
+  sortedProviders,
   mode,
 }) {
   const [show, setShow] = useState(false);
@@ -49,6 +50,7 @@ function DropDownProviders({
           handleProvider={handleProvider}
           allProviderData={allProviderData}
           sortedProviders={sortedProviders}
+          mode={mode}
         />
       )}
     </div>
