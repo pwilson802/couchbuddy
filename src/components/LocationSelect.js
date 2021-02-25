@@ -2,7 +2,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
-import Select from "react-select";
 
 const options = [
   { value: "AR", label: "Argentina" },
@@ -100,7 +99,7 @@ const colors = {
     selectedText: "white",
     locationBackground: "transparent",
     menuBackground: "white",
-    selectBackground: "#15202A",
+    selectBackground: "white",
     locationFocus: "rgba(225,44,134, 0.2)",
     selected: "#E12C86",
     activeOption: "rgba(225,44,134, 0.5)",
@@ -116,7 +115,7 @@ function LocationSelect({ handleLocation, location, mode }) {
       backgroundColor: colors[mode]["locationBackground"],
       color: colors[mode]["text"],
       paddingLeft: 20,
-      paddingRight: 10,
+      paddingRight: 15,
       fontSize: "1rem",
       border: "none",
       "&:focus": {
@@ -126,10 +125,6 @@ function LocationSelect({ handleLocation, location, mode }) {
       "&:active": {
         border: "none",
       },
-      "&:after": {
-        content: '"XXXXXXXXXXXXXXXX"',
-        color: "white",
-      },
     }),
     option: css({
       backgroundColor: colors[mode]["selectBackground"],
@@ -138,99 +133,32 @@ function LocationSelect({ handleLocation, location, mode }) {
         backgroundColor: colors[mode]["locationFocus"],
       },
     }),
+    optionSelected: css({
+      backgroundColor: colors[mode]["selectBackground"],
+      color: colors[mode]["selected"],
+      "&:focus": {
+        backgroundColor: colors[mode]["locationFocus"],
+      },
+    }),
     dropArrow: css({
       position: "relative",
-      color: "white",
       right: 10,
+      top: 4,
       pointerEvents: "none",
-      border: "solid white",
-      borderWidth: "0 3px 3px 0",
-      display: "inline-block",
-      padding: "3px",
+      borderRight: `solid ${colors[mode]["text"]}`,
+      borderBottom: `solid ${colors[mode]["text"]}`,
+      height: "10px",
+      width: "10px",
       transform: "rotate(45deg)",
       webkitTransform: "rotate(45deg)",
-      height: 10,
     }),
     wrapper: css({
       display: "flex",
       flexWrap: "nowrap",
     }),
   };
-  const customStyles = {
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused
-        ? colors[mode]["locationFocus"]
-        : colors[mode]["locationBackground"],
-      color: state.isSelected ? colors[mode]["selected"] : colors[mode]["text"],
-      // color: state.isSelected ? "red" : "blue",
-      padding: 20,
-      border: "none",
-      "&:active": {
-        backgroundColor: colors[mode]["activeOption"],
-      },
-    }),
-    control: (provided, state) => ({
-      ...provided,
-      border: "none",
-      boxShadow: "none",
-      backgroundColor: colors[mode]["locationBackground"],
-      color: colors[mode]["text"],
-    }),
-    singleValue: (provided, state) => ({
-      ...provided,
-      border: "none",
-      boxShadow: "none",
-      backgroundColor: colors[mode]["locationBackground"],
-      color: colors[mode]["selectedText"],
-      textAlign: "right",
-    }),
-    menu: (provided, state) => ({
-      ...provided,
-      border: "none",
-      boxShadow: "none",
-      backgroundColor: colors[mode]["menuBackground"],
-    }),
-    input: (provided, state) => ({
-      ...provided,
-      border: "none",
-      boxShadow: "none",
-      backgroundColor: colors[mode]["locationBackground"],
-      color: colors[mode]["text"],
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: colors[mode]["selectedText"],
-      border: "none",
-    }),
-    indicatorSeparator: (provided, state) => ({
-      ...provided,
-      backgroundColor: colors[mode]["selectedText"],
-    }),
-    valueContainer: (provided, state) => ({
-      ...provided,
-      justifyContent: "flex-end",
-    }),
-    menuList: (provided, state) => ({
-      ...provided,
-      border: "none",
-      boxShadow: "none",
-      scrollbarColor: colors[mode]["locationBackground"],
-      color: colors[mode]["selectedText"],
-      textAlign: "right",
-    }),
-  };
   return (
     <div css={styles.wrapper}>
-      {/* <Select
-        options={options}
-        onChange={handleLocation}
-        styles={customStyles}
-        value={makeSelectOption(location)}
-        isSearchable={false}
-        autoFocus={true}
-        menuList={true}
-      /> */}
       <select
         css={styles.locationSelect}
         value={location}
@@ -238,7 +166,14 @@ function LocationSelect({ handleLocation, location, mode }) {
       >
         {options.map((country) => {
           return (
-            <option css={styles.option} value={country.value}>
+            <option
+              css={
+                country.value === location
+                  ? styles.optionSelected
+                  : styles.option
+              }
+              value={country.value}
+            >
               {country.label}
             </option>
           );
