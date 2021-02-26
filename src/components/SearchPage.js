@@ -12,6 +12,7 @@ import DropDownProviders from "./DropDownProviders";
 import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
+import Burger from "./Burger";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 
@@ -382,7 +383,12 @@ export default function SearchPage({
           <div css={styles.logoWrap}>
             <Logo setPage={setPage} logo={"main"} width={250} />
           </div>
-          {location && (
+          <Burger
+            handleLocation={handleLocation}
+            location={location}
+            mode={mode}
+          />
+          {/* {location && (
             <div css={styles.locationWrap}>
               <LocationSelect
                 handleLocation={handleLocation}
@@ -390,7 +396,7 @@ export default function SearchPage({
                 mode={mode}
               />
             </div>
-          )}
+          )} */}
         </div>
         {loaded ? (
           <div>

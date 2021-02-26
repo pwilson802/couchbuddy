@@ -2,6 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
+import Flag from "./Flag";
 
 const options = [
   { value: "AR", label: "Argentina" },
@@ -67,7 +68,7 @@ const colors = {
   light: {
     text: "black",
     selectedText: "black",
-    locationBackground: "white",
+    locationBackground: "transparent",
     menuBackground: "white",
     selectBackground: "white",
     locationFocus: "rgba(225,44,134, 0.2)",
@@ -75,9 +76,9 @@ const colors = {
     activeOption: "rgba(225,44,134, 0.5)",
   },
   dark: {
-    text: "white",
+    text: "black",
     selectedText: "white",
-    locationBackground: "#15202A",
+    locationBackground: "transparent",
     menuBackground: "#15202A",
     selectBackground: "#15202Ab",
     locationFocus: "rgba(225,44,134, 0.2)",
@@ -114,9 +115,10 @@ function LocationSelect({ handleLocation, location, mode }) {
       appearance: "none",
       backgroundColor: colors[mode]["locationBackground"],
       color: colors[mode]["text"],
-      paddingLeft: 20,
-      paddingRight: 15,
-      fontSize: "1rem",
+      paddingLeft: 54,
+      marginLeft: 10,
+      fontSize: 22,
+      fontWeight: "bold",
       border: "none",
       "&:focus": {
         border: "none",
@@ -142,8 +144,8 @@ function LocationSelect({ handleLocation, location, mode }) {
     }),
     dropArrow: css({
       position: "relative",
-      right: 10,
-      top: 4,
+      right: 15,
+      top: 5,
       pointerEvents: "none",
       borderRight: `solid ${colors[mode]["text"]}`,
       borderBottom: `solid ${colors[mode]["text"]}`,
@@ -155,10 +157,19 @@ function LocationSelect({ handleLocation, location, mode }) {
     wrapper: css({
       display: "flex",
       flexWrap: "nowrap",
+      alignItems: "center",
+    }),
+    flag: css({
+      marginRight: -48,
+      display: "flex",
+      alignItems: "center",
     }),
   };
   return (
     <div css={styles.wrapper}>
+      <div css={styles.flag}>
+        <Flag country={location} />
+      </div>
       <select
         css={styles.locationSelect}
         value={location}
@@ -180,7 +191,7 @@ function LocationSelect({ handleLocation, location, mode }) {
         })}
       </select>
       {/* <span css={styles.dropArrow}>&#9660;</span> */}
-      <span css={styles.dropArrow}></span>
+      {/* <span css={styles.dropArrow}></span> */}
     </div>
   );
 }
