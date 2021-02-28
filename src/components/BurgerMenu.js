@@ -1,9 +1,53 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, css } from "@emotion/react";
+import styled from "@emotion/styled";
+import { motion } from "framer-motion";
 import React, { useState } from "react";
 import Link from "next/link";
 import LocationSelect from "./LocationSelect";
+
+const MenuContainer = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  user-select: none;
+  background-color: rgba(253, 215, 130, 0.95);
+  padding-top: 70px;
+  padding-left: 30px;
+  padding-bottom: 50px;
+  padding-right: 30px;
+  height: 100%;
+  margin: -10;
+  width: 50%;
+  box-shadow: -2px 0 2px rgba(15, 15, 15, 0.3);
+  z-index: 90;
+  transform: translateX(4em);
+  user-select: none;
+`;
+
+const MenuItemContainer = styled.div`
+  margin: 30px;
+  font-size: 22px;
+  font-weight: "bold";
+  color: "black";
+`;
+
+const menuVariants = {
+  open: {
+    transform: "translateX(3%)",
+  },
+  closed: {
+    transform: "translateX(103%)",
+  },
+};
+
+const menuTransition = {
+  type: "spring",
+  duration: 1,
+  stiffness: 33,
+  delay: 0.1,
+};
 
 const colors = {
   light: {
@@ -17,61 +61,67 @@ const colors = {
   },
 };
 
-function BurgerMenu({ handleLocation, location, mode }) {
-  const styles = {
-    wrapper: css({
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      position: "fixed",
-      top: "0x",
-      right: "3px",
-      backgroundColor: colors[mode]["backgroundColor"],
-      paddingTop: 70,
-      paddingLeft: 30,
-      paddingBottom: 50,
-      paddingRight: 30,
-      height: "100%",
-      margin: -10,
-      width: "50%",
-      zIndex: 1,
-      "@media(min-width: 768px)": {
-        width: "33%",
-      },
-      "@media(min-width: 1024px)": {
-        width: "25%",
-      },
-      "@media(min-width: 1396px)": {
-        width: "20%",
-      },
-    }),
-    menuItem: css({
-      margin: 30,
-      fontSize: 22,
-      fontWeight: "bold",
-      color: colors[mode]["text"],
-    }),
-  };
+function BurgerMenu({ handleLocation, location, mode, isOpen }) {
+  //   const styles = {
+  //     wrapper: css({
+  //       display: "flex",
+  //       flexDirection: "column",
+  //       justifyContent: "flex-start",
+  //       position: "fixed",
+  //       top: "0px",
+  //       right: "0px",
+  //       userSelect: "none",
+  //       backgroundColor: colors[mode]["backgroundColor"],
+  //       paddingTop: 70,
+  //       paddingLeft: 30,
+  //       paddingBottom: 50,
+  //       paddingRight: 30,
+  //       height: "100%",
+  //       margin: -10,
+  //       width: "50%",
+  //       zIndex: 90,
+  //       "@media(min-width: 768px)": {
+  //         width: "33%",
+  //       },
+  //       "@media(min-width: 1024px)": {
+  //         width: "25%",
+  //       },
+  //       "@media(min-width: 1396px)": {
+  //         width: "20%",
+  //       },
+  //     }),
+  //     menuItem: css({
+  //       margin: 30,
+  //       fontSize: 22,
+  //       fontWeight: "bold",
+  //       color: colors[mode]["text"],
+  //     }),
+  //   };
   return (
-    <div css={styles.wrapper}>
-      <div css={styles.menuItem}>
+    <MenuContainer
+      initial={false}
+      animate={isOpen ? "open" : "closed"}
+      variants={menuVariants}
+      transition={menuTransition}
+    >
+      <MenuItemContainer>
         <Link href={"/about"}>
-          <div>About & Settings</div>
+          <div>About</div>
         </Link>
-      </div>
-      <div css={styles.menuItem}>
+      </MenuItemContainer>
+      <MenuItemContainer>
         <Link href={"/blog"}>
           <div>Blog</div>
         </Link>
-      </div>
-      <div css={styles.menuItem}>
+      </MenuItemContainer>
+      <MenuItemContainer>
         <LocationSelect
           handleLocation={handleLocation}
           location={location}
           mode={mode}
         />
-      </div>
-    </div>
+      </MenuItemContainer>
+    </MenuContainer>
   );
 }
 
