@@ -375,6 +375,12 @@ export default function SearchPage({
       alignItems: "center",
       alignSelf: "center",
     }),
+    locationWrap: css({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: "50px",
+    }),
   };
   return (
     <div>
@@ -449,6 +455,13 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
+            <div css={styles.locationWrap}>
+              <LocationSelect
+                handleLocation={handleLocation}
+                location={location}
+                mode={mode}
+              />
+            </div>
           </div>
         ) : (
           <SpinnerMovie />

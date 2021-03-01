@@ -25,7 +25,7 @@ function Burger({ handleLocation, location, mode }) {
   return (
     <div>
       <div css={styles.burger} onClick={toggle}>
-        <HamburgerToggle toggle={toggle} isOpen={isOpen} />
+        <HamburgerToggle toggle={toggle} isOpen={isOpen} mode={mode} />
       </div>
       {location && (
         <BurgerMenu

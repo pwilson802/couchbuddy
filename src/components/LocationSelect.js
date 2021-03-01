@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Flag from "./Flag";
 
 const options = [
@@ -108,6 +108,7 @@ const colors = {
 };
 
 function LocationSelect({ handleLocation, location, mode }) {
+  const [width, setWidth] = useState("auto");
   const styles = {
     locationSelect: css({
       WebkitAppearance: "none",
@@ -120,6 +121,8 @@ function LocationSelect({ handleLocation, location, mode }) {
       fontSize: 22,
       fontWeight: "bold",
       border: "none",
+      cursor: "pointer",
+      width: width,
       "&:focus": {
         border: "none",
         outline: "none",
@@ -154,7 +157,7 @@ function LocationSelect({ handleLocation, location, mode }) {
       transform: "rotate(45deg)",
       webkitTransform: "rotate(45deg)",
     }),
-    wrapper: css({
+    locationWrapper: css({
       display: "flex",
       flexWrap: "nowrap",
       alignItems: "center",
@@ -164,32 +167,50 @@ function LocationSelect({ handleLocation, location, mode }) {
       display: "flex",
       alignItems: "center",
     }),
+    hiddenLocation: css({
+      fontSize: 22,
+      visibility: "hidden",
+    }),
   };
+
+  useEffect(() => {
+    const optionEle = document.getElementById("selectedOptionHidden");
+    const newWidth = optionEle.offsetWidth + 60; // padding width or arrows
+    setWidth(newWidth);
+  }, [location]);
+
   return (
-    <div css={styles.wrapper}>
-      <div css={styles.flag}>
-        <Flag country={location} />
+    <div>
+      <div css={styles.locationWrapper}>
+        <div css={styles.flag}>
+          <Flag country={location} />
+        </div>
+        <select
+          css={styles.locationSelect}
+          value={location}
+          onChange={handleLocation}
+        >
+          {options.map((country) => {
+            return (
+              <option
+                css={
+                  country.value === location
+                    ? styles.optionSelected
+                    : styles.option
+                }
+                value={country.value}
+              >
+                {country.label}
+              </option>
+            );
+          })}
+        </select>
       </div>
-      <select
-        css={styles.locationSelect}
-        value={location}
-        onChange={handleLocation}
-      >
-        {options.map((country) => {
-          return (
-            <option
-              css={
-                country.value === location
-                  ? styles.optionSelected
-                  : styles.option
-              }
-              value={country.value}
-            >
-              {country.label}
-            </option>
-          );
-        })}
-      </select>
+      <div>
+        <span css={styles.hiddenLocation} id="selectedOptionHidden">
+          {options.filter((item) => item.value === location)[0].label}
+        </span>
+      </div>
       {/* <span css={styles.dropArrow}>&#9660;</span> */}
       {/* <span css={styles.dropArrow}></span> */}
     </div>
