@@ -27,12 +27,14 @@ function Burger({ handleLocation, location, mode }) {
       <div css={styles.burger} onClick={toggle}>
         <HamburgerToggle toggle={toggle} isOpen={isOpen} />
       </div>
-      <BurgerMenu
-        handleLocation={handleLocation}
-        location={location}
-        mode={mode}
-        isOpen={isOpen}
-      />
+      {location && (
+        <BurgerMenu
+          handleLocation={handleLocation}
+          location={location}
+          mode={mode}
+          isOpen={isOpen}
+        />
+      )}
     </div>
   );
 }
