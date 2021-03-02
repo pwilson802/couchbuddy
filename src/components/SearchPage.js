@@ -189,6 +189,7 @@ export default function SearchPage({
   setPage,
   width,
   mode,
+  changeMode,
 }) {
   const [location, setLocation] = useState(null);
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
@@ -201,6 +202,7 @@ export default function SearchPage({
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  console.log("changeMode in SearchPage", changeMode);
 
   async function configureProviders(location) {
     const localProviderData = await getLocalProviders(location);
@@ -393,6 +395,7 @@ export default function SearchPage({
             handleLocation={handleLocation}
             location={location}
             mode={mode}
+            changeMode={changeMode}
           />
           {/* {location && (
             <div css={styles.locationWrap}>
@@ -459,7 +462,7 @@ export default function SearchPage({
               <LocationSelect
                 handleLocation={handleLocation}
                 location={location}
-                mode={mode}
+                mode={mode === "dark" ? "darkFooter" : "light"}
               />
             </div>
           </div>

@@ -11,6 +11,7 @@ function App({ mode, changeMode }) {
   const [width, setWidth] = useState(0);
   const [screenSize, setScreenSize] = useState("small");
   const [searchDetails, setSearchDetails] = useState({});
+  console.log("changeMode in App", changeMode);
 
   const handleSearchDetails = (item) => {
     setSearchDetails(item);
@@ -48,6 +49,7 @@ function App({ mode, changeMode }) {
           width={width}
           screenSize={screenSize}
           mode={mode}
+          changeMode={changeMode}
         />
       )}
       {page === "ResultsPage" && (

@@ -85,6 +85,16 @@ const colors = {
     selected: "#E12C86",
     activeOption: "rgba(225,44,134, 0.5)",
   },
+  darkFooter: {
+    text: "white",
+    selectedText: "white",
+    locationBackground: "#15202A",
+    menuBackground: "#15202A",
+    selectBackground: "#15202Ab",
+    locationFocus: "rgba(225,44,134, 0.2)",
+    selected: "#E12C86",
+    activeOption: "rgba(225,44,134, 0.5)",
+  },
   darkNav: {
     text: "white",
     selectedText: "white",
@@ -166,6 +176,7 @@ function LocationSelect({ handleLocation, location, mode }) {
       marginRight: -48,
       display: "flex",
       alignItems: "center",
+      zIndex: 2,
     }),
     hiddenLocation: css({
       fontSize: 22,

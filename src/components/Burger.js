@@ -6,7 +6,8 @@ import HamburgerToggle from "./HamburgerToggle";
 
 import BurgerMenu from "./BurgerMenu";
 
-function Burger({ handleLocation, location, mode }) {
+function Burger({ handleLocation, location, mode, changeMode }) {
+  console.log("changeMode", changeMode);
   const [isOpen, setOpen] = useState(false);
   const toggle = () => {
     setOpen(!isOpen);
@@ -33,6 +34,7 @@ function Burger({ handleLocation, location, mode }) {
           location={location}
           mode={mode}
           isOpen={isOpen}
+          changeMode={changeMode}
         />
       )}
     </div>

@@ -82,7 +82,7 @@ const colors = {
   },
 };
 
-function BurgerMenu({ handleLocation, location, mode, isOpen }) {
+function BurgerMenu({ handleLocation, location, mode, isOpen, changeMode }) {
   return (
     <MenuContainer
       backgroundColor={colors[mode]["backgroundColor"]}
@@ -106,7 +106,7 @@ function BurgerMenu({ handleLocation, location, mode, isOpen }) {
         }}
       >
         <Link href={"/blog"}>
-          <ModeSwitch mode={mode} />
+          <ModeSwitch mode={mode} changeMode={changeMode} />
         </Link>
       </MenuContainerItem>
       <MenuContainerItem
