@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import LocationSelect from "./LocationSelect";
 import ModeSwitch from "./ModeSwitch";
@@ -82,90 +82,115 @@ const colors = {
   },
 };
 
-function BurgerMenu({ handleLocation, location, mode, isOpen, changeMode }) {
+function BurgerMenu({
+  handleLocation,
+  location,
+  mode,
+  isOpen,
+  changeMode,
+  setOpen,
+}) {
+  const [clickedOutside, setClickedOutside] = useState(false);
+  const myRef = useRef();
+
+  const handleClickOutside = (e) => {
+    if (!myRef.current.contains(e.target)) {
+      setClickedOutside(true);
+    }
+  };
+
+  const handleClickInside = () => setClickedOutside(false);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  });
+
   return (
-    <MenuContainer
-      backgroundColor={colors[mode]["backgroundColor"]}
-      initial={false}
-      animate={isOpen ? "open" : "closed"}
-      variants={menuVariants}
-      transition={menuTransition}
-    >
-      <MenuContainerItem
+    <div ref={myRef} onClick={handleClickInside}>
+      <MenuContainer
+        backgroundColor={colors[mode]["backgroundColor"]}
         initial={false}
-        animate={isOpen ? "show" : "hide"}
-        variants={{
-          show: {
-            ...itemVariants.show,
-            transition: { delay: 0.3, duration: 0.2 },
-          },
-          hide: {
-            ...itemVariants.hide,
-            transition: { delay: 0.05, duration: 0.05 },
-          },
-        }}
+        animate={isOpen ? "open" : "closed"}
+        variants={menuVariants}
+        transition={menuTransition}
       >
-        <Link href={"/blog"}>
-          <ModeSwitch mode={mode} changeMode={changeMode} />
-        </Link>
-      </MenuContainerItem>
-      <MenuContainerItem
-        initial={false}
-        animate={isOpen ? "show" : "hide"}
-        variants={{
-          show: {
-            ...itemVariants.show,
-            transition: { delay: 0.4, duration: 0.2 },
-          },
-          hide: {
-            ...itemVariants.hide,
-            transition: { delay: 0.1, duration: 0.05 },
-          },
-        }}
-      >
-        <Link href={"/about"}>
-          <div>About</div>
-        </Link>
-      </MenuContainerItem>
-      <MenuContainerItem
-        initial={false}
-        animate={isOpen ? "show" : "hide"}
-        variants={{
-          show: {
-            ...itemVariants.show,
-            transition: { delay: 0.5, duration: 0.2 },
-          },
-          hide: {
-            ...itemVariants.hide,
-            transition: { delay: 0.15, duration: 0.05 },
-          },
-        }}
-      >
-        <Link href={"/blog"}>
-          <div>Blog</div>
-        </Link>
-      </MenuContainerItem>
-      <MenuContainerItem
-        initial={false}
-        animate={isOpen ? "show" : "hide"}
-        variants={{
-          show: {
-            ...itemVariants.show,
-            transition: { delay: 0.6, duration: 0.2 },
-          },
-          hide: {
-            ...itemVariants.hide,
-            transition: { delay: 0.2, duration: 0.05 },
-          },
-        }}
-      >
-        <LocationSelect
-          handleLocation={handleLocation}
-          location={location}
-          mode={mode}
-        />
-      </MenuContainerItem>
-    </MenuContainer>
+        <MenuContainerItem
+          initial={false}
+          animate={isOpen ? "show" : "hide"}
+          variants={{
+            show: {
+              ...itemVariants.show,
+              transition: { delay: 0.3, duration: 0.2 },
+            },
+            hide: {
+              ...itemVariants.hide,
+              transition: { delay: 0.05, duration: 0.05 },
+            },
+          }}
+        >
+          <Link href={"/blog"}>
+            <ModeSwitch mode={mode} changeMode={changeMode} />
+          </Link>
+        </MenuContainerItem>
+        <MenuContainerItem
+          initial={false}
+          animate={isOpen ? "show" : "hide"}
+          variants={{
+            show: {
+              ...itemVariants.show,
+              transition: { delay: 0.4, duration: 0.2 },
+            },
+            hide: {
+              ...itemVariants.hide,
+              transition: { delay: 0.1, duration: 0.05 },
+            },
+          }}
+        >
+          <Link href={"/about"}>
+            <div>About</div>
+          </Link>
+        </MenuContainerItem>
+        <MenuContainerItem
+          initial={false}
+          animate={isOpen ? "show" : "hide"}
+          variants={{
+            show: {
+              ...itemVariants.show,
+              transition: { delay: 0.5, duration: 0.2 },
+            },
+            hide: {
+              ...itemVariants.hide,
+              transition: { delay: 0.15, duration: 0.05 },
+            },
+          }}
+        >
+          <Link href={"/blog"}>
+            <div>Blog</div>
+          </Link>
+        </MenuContainerItem>
+        <MenuContainerItem
+          initial={false}
+          animate={isOpen ? "show" : "hide"}
+          variants={{
+            show: {
+              ...itemVariants.show,
+              transition: { delay: 0.6, duration: 0.2 },
+            },
+            hide: {
+              ...itemVariants.hide,
+              transition: { delay: 0.2, duration: 0.05 },
+            },
+          }}
+        >
+          <LocationSelect
+            handleLocation={handleLocation}
+            location={location}
+            mode={mode}
+          />
+        </MenuContainerItem>
+      </MenuContainer>
+    </div>
   );
 }
 
