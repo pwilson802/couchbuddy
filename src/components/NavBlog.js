@@ -5,6 +5,7 @@ import LocationSelect from "./LocationSelect";
 import Logo from "./Logo";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Burger from "./Burger";
 
 const colors = {
   light: {
@@ -27,6 +28,7 @@ function NavBlog({ handleLocation, location, mode }) {
       flexDirection: "row",
       justifyContent: "flex-end",
       height: "40px",
+      marginTop: "10px",
       // alignContent: "center",
       // alignItems: "center",
     }),
@@ -79,7 +81,12 @@ function NavBlog({ handleLocation, location, mode }) {
         />
       </Link>
       <nav css={styles.navLinks}>
-        <div css={styles.buttonWrapper}>
+        <Burger
+          handleLocation={handleLocation}
+          location={location}
+          mode={mode}
+        />
+        {/* <div css={styles.buttonWrapper}>
           <Link href={"/about"}>
             <button css={styles.about}>About</button>
           </Link>
@@ -90,7 +97,7 @@ function NavBlog({ handleLocation, location, mode }) {
             location={location}
             mode={mode === "dark" ? "darkNav" : "lightNav"}
           />
-        </div>
+        </div> */}
       </nav>
     </div>
   );
