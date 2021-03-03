@@ -90,24 +90,8 @@ function BurgerMenu({
   changeMode,
   setOpen,
 }) {
-  const [clickedOutside, setClickedOutside] = useState(false);
-  const myRef = useRef();
-
-  const handleClickOutside = (e) => {
-    if (!myRef.current.contains(e.target)) {
-      setClickedOutside(true);
-    }
-  };
-
-  const handleClickInside = () => setClickedOutside(false);
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  });
-
   return (
-    <div ref={myRef} onClick={handleClickInside}>
+    <div>
       <MenuContainer
         backgroundColor={colors[mode]["backgroundColor"]}
         initial={false}
