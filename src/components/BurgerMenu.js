@@ -171,6 +171,8 @@ function BurgerMenu({
             handleLocation={handleLocation}
             location={location}
             mode={mode}
+            isOpen={isOpen}
+            setOpen={setOpen}
           />
         </MenuContainerItem>
       </MenuContainer>

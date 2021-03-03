@@ -117,7 +117,7 @@ const colors = {
   },
 };
 
-function LocationSelect({ handleLocation, location, mode }) {
+function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
   const [width, setWidth] = useState("auto");
   const styles = {
     locationSelect: css({
@@ -184,9 +184,18 @@ function LocationSelect({ handleLocation, location, mode }) {
     }),
   };
 
+  const updateLocation = (loc) => {
+    handleLocation(loc);
+    if (isOpen) {
+      setOpen(false);
+    }
+  };
+
   useEffect(() => {
+    // getting the width of the hidden element with the same width of the selected country
+    // This is so the select box wiht can be set and appear centered at the bottom of the page
     const optionEle = document.getElementById("selectedOptionHidden");
-    const newWidth = optionEle.offsetWidth + 60; // padding width or arrows
+    const newWidth = optionEle.offsetWidth + 60;
     setWidth(newWidth);
   }, [location]);
 
@@ -199,7 +208,7 @@ function LocationSelect({ handleLocation, location, mode }) {
         <select
           css={styles.locationSelect}
           value={location}
-          onChange={handleLocation}
+          onChange={updateLocation}
         >
           {options.map((country) => {
             return (
@@ -222,8 +231,6 @@ function LocationSelect({ handleLocation, location, mode }) {
           {options.filter((item) => item.value === location)[0].label}
         </span>
       </div>
-      {/* <span css={styles.dropArrow}>&#9660;</span> */}
-      {/* <span css={styles.dropArrow}></span> */}
     </div>
   );
 }

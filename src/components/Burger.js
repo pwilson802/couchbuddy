@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useRef, useEffect } from "react";
 import HamburgerToggle from "./HamburgerToggle";
+import OutsideClickHandler from "react-outside-click-handler";
 
 import BurgerMenu from "./BurgerMenu";
 
@@ -24,19 +25,25 @@ function Burger({ handleLocation, location, mode, changeMode }) {
   };
   return (
     <div>
-      <div css={styles.burger} onClick={toggle}>
-        <HamburgerToggle toggle={toggle} isOpen={isOpen} mode={mode} />
-      </div>
-      {location && (
-        <BurgerMenu
-          handleLocation={handleLocation}
-          location={location}
-          mode={mode}
-          isOpen={isOpen}
-          changeMode={changeMode}
-          setOpen={setOpen}
-        />
-      )}
+      <OutsideClickHandler
+        onOutsideClick={() => {
+          setOpen(false);
+        }}
+      >
+        <div css={styles.burger} onClick={toggle}>
+          <HamburgerToggle toggle={toggle} isOpen={isOpen} mode={mode} />
+        </div>
+        {location && (
+          <BurgerMenu
+            handleLocation={handleLocation}
+            location={location}
+            mode={mode}
+            isOpen={isOpen}
+            changeMode={changeMode}
+            setOpen={setOpen}
+          />
+        )}
+      </OutsideClickHandler>
     </div>
   );
 }
