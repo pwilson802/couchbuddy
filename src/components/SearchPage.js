@@ -397,15 +397,6 @@ export default function SearchPage({
             mode={mode}
             changeMode={changeMode}
           />
-          {/* {location && (
-            <div css={styles.locationWrap}>
-              <LocationSelect
-                handleLocation={handleLocation}
-                location={location}
-                mode={mode}
-              />
-            </div>
-          )} */}
         </div>
         {loaded ? (
           <div>

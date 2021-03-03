@@ -14,34 +14,44 @@ const MenuContainer = styled(motion.div)`
   right: 0px;
   user-select: none;
   background-color: ${(props) => props.backgroundColor};
-  padding-top: 70px;
-  padding-left: 30px;
+  padding-top: 40px;
+  padding-left: 5px;
   padding-bottom: 50px;
   padding-right: 30px;
   height: 100%;
   margin: -10;
-  width: 50%;
+  width: 60%;
   box-shadow: -2px 0 2px rgba(15, 15, 15, 0.3);
   z-index: 90;
   transform: translateX(4em);
   user-select: none;
+  @media (min-width: 500px) {
+    width: 40%;
+    padding-left: 30px;
+  }
   @media (min-width: 768px) {
     width: 33%;
+    padding-left: 30px;
   }
   @media (min-width: 1024px) {
     width: 25%;
+    padding-left: 30px;
   }
   @media (min-width: 1396px) {
     width: 20%;
+    padding-left: 30px;
   }
 `;
 
 const MenuContainerItem = styled(motion.div)`
-  margin: 30px;
-  font-size: 22px;
+  margin: 20px;
+  font-size: 18px;
   font-weight: bold;
   color: black;
   cursor: pointer;
+  @media (min-width: 768px) {
+    font-size: 22px;
+  }
 `;
 
 const menuVariants = {

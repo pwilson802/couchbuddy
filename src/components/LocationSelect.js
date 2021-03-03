@@ -195,7 +195,7 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
     // getting the width of the hidden element with the same width of the selected country
     // This is so the select box wiht can be set and appear centered at the bottom of the page
     const optionEle = document.getElementById("selectedOptionHidden");
-    const newWidth = optionEle.offsetWidth + 60;
+    const newWidth = optionEle.offsetWidth;
     setWidth(newWidth);
   }, [location]);
 
@@ -227,7 +227,10 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
         </select>
       </div>
       <div>
-        <span css={styles.hiddenLocation} id="selectedOptionHidden">
+        <span
+          css={[styles.hiddenLocation, styles.locationSelect]}
+          id="selectedOptionHidden"
+        >
           {options.filter((item) => item.value === location)[0].label}
         </span>
       </div>
