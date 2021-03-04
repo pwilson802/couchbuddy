@@ -172,6 +172,15 @@ export default function ResultsPage({
       justifyContent: "center",
       flexDirection: "row",
     }),
+    logoWrap: css({
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }),
+    cardsWrap: css({
+      display: "flex",
+      flexDirection: "column",
+    }),
   };
 
   return (
@@ -184,7 +193,7 @@ export default function ResultsPage({
           <NothingFound setPage={setPage} logo={"main"} />
         ) : (
           <div css={styles.resultsWrap}>
-            <div>
+            <div css={styles.cardsWrap}>
               {activeMovies.map((item) => (
                 <MovieCard
                   id={item.id}

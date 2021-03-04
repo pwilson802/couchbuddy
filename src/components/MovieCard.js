@@ -64,25 +64,13 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
   }, [id]);
 
   const styles = {
-    cardWrapperLarge: css({
+    wrapper: css({
       display: "flex",
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      borderColor: colors[mode]["cardBorder"],
-      borderStyle: "solid",
-      marginTop: 8,
-      borderWidth: 1,
-      paddingHorizontal: 5,
-      paddingVertical: 2,
-      width: "80%",
-      alignSelf: "center",
     }),
-    cardWrapperSmall: css({
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
+    cardWrapper: css({
       borderColor: colors[mode]["cardBorder"],
       borderStyle: "solid",
       marginTop: 8,
@@ -91,6 +79,15 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       paddingVertical: 2,
       width: "95%",
       alignSelf: "center",
+      "@media(min-width: 768px)": {
+        width: "90%",
+      },
+      "@media(min-width: 1024px)": {
+        width: "80%",
+      },
+      "@media(min-width: 1900px)": {
+        width: "60%",
+      },
     }),
     mobileImage: css({
       width: 92.5,
@@ -103,9 +100,14 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       width: "90%",
     }),
     title: css({
-      fontSize: 20,
+      fontSize: 14,
+      fontWeight: "bold",
       color: colors[mode]["text"],
       margin: 0,
+      textAlign: "center",
+      "@media(min-width: 768px)": {
+        fontSize: 22,
+      },
     }),
     runtime: css({
       color: colors[mode]["text"],
@@ -135,11 +137,6 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       justifyContent: "space-between",
       alignItems: "flex-end",
     }),
-    cardWrapper: css({
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    }),
     voteAverage: css({
       margin: 0,
       marginLeft: 10,
@@ -157,42 +154,53 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       margin: 0,
       fontSize: 10,
     }),
+    bodyWrapper: css({
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    }),
   };
 
   return (
     <div css={styles.cardWrapper}>
       {loaded && (
-        <div
-          css={
-            screenSize === "large"
-              ? styles.cardWrapperLarge
-              : styles.cardWrapperSmall
-          }
-        >
-          <div css={styles.imageBox}>
-            <img css={styles.mobileImage} src={image} alt={`${title} poster`} />
-          </div>
-          <div css={styles.infoBox}>
-            <p css={styles.title}>{title}</p>
-            <div css={styles.dataWrap}>
-              <p css={styles.runtime}>{runtime} minutes</p>
-              <p css={styles.voteAverage}>{voteAverage}</p>
+        <div>
+          {screenSize === "small" && <p css={styles.title}>{title}</p>}
+          <div css={styles.bodyWrapper}>
+            <div css={styles.imageBox}>
+              <img
+                css={styles.mobileImage}
+                src={image}
+                alt={`${title} poster`}
+              />
             </div>
-            <p css={styles.overview}>
-              {screenSize === "large"
-                ? overview
-                : overview.slice(0, 160) + "..."}
-            </p>
-            <div css={styles.providerSharingWrapper}>
-              <div css={styles.providerWrapper}>
-                {providerImages.map((item) => (
-                  <div key={item}>
-                    <img css={styles.providerImage} src={item} alt="provider" />
-                  </div>
-                ))}
+            <div css={styles.infoBox}>
+              {screenSize === "large" && <p css={styles.title}>{title}</p>}
+              <div css={styles.dataWrap}>
+                <p css={styles.runtime}>{runtime} minutes</p>
+                <p css={styles.voteAverage}>{voteAverage}</p>
               </div>
-              <div>
-                <ShareButtons movie={title} tagline={tagline} />
+              <p css={styles.overview}>
+                {screenSize === "large"
+                  ? overview
+                  : overview.slice(0, 120) + "..."}
+              </p>
+              <div css={styles.providerSharingWrapper}>
+                <div css={styles.providerWrapper}>
+                  {providerImages.map((item) => (
+                    <div key={item}>
+                      <img
+                        css={styles.providerImage}
+                        src={item}
+                        alt="provider"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <ShareButtons movie={title} tagline={tagline} />
+                </div>
               </div>
             </div>
           </div>
