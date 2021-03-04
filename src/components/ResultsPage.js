@@ -13,18 +13,17 @@ const DATA_BUCKET = "couchbuddy-data";
 async function filterMoviesByData(duration, sortByVote) {
   const url = `https://${DATA_BUCKET}.s3.amazonaws.com/movie-filter.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
-  console.log(url);
   const response = await fetch(url);
   const allMovies = await response.json();
   const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
   if (sortByVote === true) {
-    console.log("sortByVote", sortByVote);
-    console.log("moviesUnderDuration", moviesUnderDuration);
-    console.log("sorting by vote");
+    // console.log("sortByVote", sortByVote);
+    // console.log("moviesUnderDuration", moviesUnderDuration);
+    // console.log("sorting by vote");
     moviesUnderDuration.sort(compare);
-    console.log("sorted Movies: ", moviesUnderDuration);
+    // console.log("sorted Movies: ", moviesUnderDuration);
     const result = moviesUnderDuration.map((item) => Number(item.id));
-    console.log("result in function", result);
+    // console.log("result in function", result);
     return result;
   }
   return moviesUnderDuration.map((item) => Number(item.id));
@@ -33,10 +32,10 @@ async function filterMoviesByData(duration, sortByVote) {
 async function getMovieIDsforGenres(genres) {
   const url = `https://${DATA_BUCKET}.s3.amazonaws.com/genres.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
-  console.log(url);
+  // console.log(url);
   const response = await fetch(url);
   const genresObject = await response.json();
-  console.log("genres json response", genresObject);
+  // console.log("genres json response", genresObject);
   let result = [];
   for (let i = 0; i < genres.length; i++) {
     if (Object.keys(genresObject).includes(genres[i])) {
@@ -77,11 +76,11 @@ export default function ResultsPage({
     sortByVote,
   } = searchDetails;
   // console.log(selectedProviders);
-  console.log("certificationMovies", certificationMovies);
+  // console.log("certificationMovies", certificationMovies);
 
   function getProviders(id) {
-    console.log("id", id);
-    console.log("selectedProviders", selectedProviders);
+    // console.log("id", id);
+    // console.log("selectedProviders", selectedProviders);
     return Object.keys(selectedProviders).filter((item) =>
       selectedProviders[item].includes(id)
     );
@@ -123,7 +122,7 @@ export default function ResultsPage({
         acc.push({ id: curr, providers: providers });
         return acc;
       }, []);
-      console.log("result", result);
+      // console.log("result", result);
       setMovies(result);
       setActiveMovies(result.slice(0, 3));
       if (result.length === 0) {
@@ -181,7 +180,16 @@ export default function ResultsPage({
       display: "flex",
       flexDirection: "column",
     }),
+    prevButton: css({
+      marginRight: 10,
+    }),
+    nextButton: css({
+      marginLeft: 10,
+    }),
   };
+  console.log("Movies Length", movies.length);
+  console.log("Movies", movies);
+  console.log("movieNumber", movieNumber);
 
   return (
     <div>
@@ -205,22 +213,28 @@ export default function ResultsPage({
                 ></MovieCard>
               ))}
             </div>
-            <div css={styles.buttons}>
-              {movieNumber !== 0 && (
-                <NavButton
-                  handleSubmit={prevMovies}
-                  buttonText={"Previous"}
-                  width={90}
-                />
-              )}
-              {movieNumber <= movies.length - 3 && (
-                <NavButton
-                  handleSubmit={nextMovies}
-                  buttonText={"Next"}
-                  width={90}
-                />
-              )}
-            </div>
+            {movies.length > 3 && (
+              <div css={styles.buttons}>
+                {movieNumber > 3 && (
+                  <div css={styles.prevButton}>
+                    <NavButton
+                      handleSubmit={prevMovies}
+                      buttonText={"Previous"}
+                      width={90}
+                    />
+                  </div>
+                )}
+                {movieNumber < movies.length && (
+                  <div css={styles.nextButton}>
+                    <NavButton
+                      handleSubmit={nextMovies}
+                      buttonText={"Next"}
+                      width={90}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )
       ) : (

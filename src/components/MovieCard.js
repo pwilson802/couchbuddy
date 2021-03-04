@@ -12,7 +12,7 @@ async function getMovieDetails(id) {
   let url = `/api/movie/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  console.log(movieDetails);
+  // console.log(movieDetails);
   return movieDetails;
 }
 
@@ -58,7 +58,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       const providerLogos = providers.map(
         (item) => allProviderData[item]["logo"]
       );
-      console.log("providerLogos", providerLogos);
+      // console.log("providerLogos", providerLogos);
       setProviderImages(providerLogos);
       setLoaded(true);
     }
