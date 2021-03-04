@@ -2,7 +2,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
-import Image from "next/image";
 
 function Flag({ country }) {
   const styles = {

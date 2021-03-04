@@ -7,7 +7,6 @@ import React, { useState, useRef, useEffect } from "react";
 
 function ModeSwitch({ mode, changeMode }) {
   const [isOpen, setIsOpen] = useState();
-  console.log("ModeSwitch", mode);
   const player = useRef();
   const activeSegments = mode == "dark" ? [240, 481] : [0, 240];
   const styles = {

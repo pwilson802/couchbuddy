@@ -53,17 +53,6 @@ const options = [
   { value: "CH", label: "Switzerland" },
 ];
 
-const countryMap = options.reduce((acc, curr) => {
-  const countryCode = curr["value"];
-  const country = curr["label"];
-  acc[countryCode] = country;
-  return acc;
-}, {});
-
-function makeSelectOption(value) {
-  return options.filter((item) => item.value === value)[0];
-}
-
 const colors = {
   light: {
     text: "black",
@@ -118,7 +107,6 @@ const colors = {
 };
 
 function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
-  const [width, setWidth] = useState("auto");
   const styles = {
     locationSelect: css({
       WebkitAppearance: "none",
@@ -132,7 +120,7 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
       fontWeight: "bold",
       border: "none",
       cursor: "pointer",
-      width: width,
+      textAlignLast: "center",
       "&:focus": {
         border: "none",
         outline: "none",
@@ -177,6 +165,7 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
       display: "flex",
       alignItems: "center",
       zIndex: 2,
+      pointerEvents: "none",
     }),
     hiddenLocation: css({
       fontSize: 22,
@@ -190,14 +179,6 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    // getting the width of the hidden element with the same width of the selected country
-    // This is so the select box wiht can be set and appear centered at the bottom of the page
-    const optionEle = document.getElementById("selectedOptionHidden");
-    const newWidth = optionEle.offsetWidth;
-    setWidth(newWidth);
-  }, [location]);
 
   return (
     <div>
@@ -226,14 +207,14 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
           })}
         </select>
       </div>
-      <div>
-        <span
-          css={[styles.hiddenLocation, styles.locationSelect]}
-          id="selectedOptionHidden"
-        >
+      {/* <div id="selectedOptionHidden">
+        <div css={styles.flag}>
+          <Flag country="AU" />
+        </div>
+        <span css={[styles.hiddenLocation, styles.locationSelect]}>
           {options.filter((item) => item.value === location)[0].label}
         </span>
-      </div>
+      </div> */}
     </div>
   );
 }

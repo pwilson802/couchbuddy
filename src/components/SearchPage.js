@@ -202,7 +202,6 @@ export default function SearchPage({
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  console.log("changeMode in SearchPage", changeMode);
 
   async function configureProviders(location) {
     const localProviderData = await getLocalProviders(location);

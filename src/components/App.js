@@ -11,7 +11,6 @@ function App({ mode, changeMode }) {
   const [width, setWidth] = useState(0);
   const [screenSize, setScreenSize] = useState("small");
   const [searchDetails, setSearchDetails] = useState({});
-  console.log("changeMode in App", changeMode);
 
   const handleSearchDetails = (item) => {
     setSearchDetails(item);
