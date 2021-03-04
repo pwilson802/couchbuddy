@@ -3,6 +3,8 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import ShareButtons from "./ShareButtons";
+import Image from "next/image";
+import SpinnerMovie from "./SpinnerMovie";
 
 async function getMovieDetails(id) {
   let TMB_KEY = process.env.TMB_KEY;
@@ -79,6 +81,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       paddingVertical: 2,
       width: "95%",
       alignSelf: "center",
+      minHeight: "185px",
       "@media(min-width: 768px)": {
         width: "90%",
       },
@@ -160,6 +163,9 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       alignItems: "center",
       justifyContent: "center",
     }),
+    spinnerWrap: css({
+      width: "100px",
+    }),
   };
 
   return (
@@ -169,11 +175,17 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
           {screenSize === "small" && <p css={styles.title}>{title}</p>}
           <div css={styles.bodyWrapper}>
             <div css={styles.imageBox}>
-              <img
+              <Image
+                src={image}
+                alt={`${title} poster`}
+                width={92.5}
+                height={139}
+              />
+              {/* <img
                 css={styles.mobileImage}
                 src={image}
                 alt={`${title} poster`}
-              />
+              />  */}
             </div>
             <div css={styles.infoBox}>
               {screenSize === "large" && <p css={styles.title}>{title}</p>}
