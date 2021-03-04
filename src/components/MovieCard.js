@@ -100,7 +100,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       width: "90%",
     }),
     title: css({
-      fontSize: 14,
+      fontSize: 16,
       fontWeight: "bold",
       color: colors[mode]["text"],
       margin: 0,
