@@ -103,7 +103,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       width: "90%",
     }),
     title: css({
-      fontSize: 16,
+      fontSize: 18,
       fontFamily: "Roboto Slab",
       fontWeight: "bold",
       color: colors[mode]["text"],
