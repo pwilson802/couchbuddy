@@ -134,6 +134,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
     providerWrapper: css({
       display: "flex",
       flexDirection: "row",
+      flexWrap: "wrap",
     }),
     providerSharingWrapper: css({
       display: "flex",
