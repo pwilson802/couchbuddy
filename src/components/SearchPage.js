@@ -15,6 +15,7 @@ import SpinnerMovie from "./SpinnerMovie";
 import Burger from "./Burger";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
+const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
 
 const genreObj = {
   Action: false,
@@ -99,7 +100,7 @@ async function getIPLocation() {
 
 async function getLocalProviders(country) {
   //couchbuddy-data.s3.amazonaws.com/certifications-AR.json
-  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/providers-${country}.json`;
+  const url = `${DATA_URL}/providers-${country}.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
   console.log(url);
   const response = await fetch(url);
@@ -127,7 +128,7 @@ function makeProvidersObj(data) {
 }
 
 async function getLocalCertifications(country) {
-  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/certifications-${country}.json`;
+  const url = `${DATA_URL}/certifications-${country}.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
   console.log(url);
   const response = await fetch(url);
@@ -143,7 +144,7 @@ function makeCertificationsObj(data) {
 }
 
 async function getAllProviderData() {
-  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/all-data-providers.json`;
+  const url = `${DATA_URL}/all-data-providers.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
   console.log(url);
   const response = await fetch(url);

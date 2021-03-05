@@ -5,9 +5,6 @@ import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import App from "../components/App";
-// import Amplify from "aws-amplify";
-// import config from "../aws-exports";
-// Amplify.configure(config);
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -36,6 +33,12 @@ export default function Home() {
       <Head>
         <title>Couch Buddy</title>
         <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="description"
+          content="Find movies to watch and filter them by streaming provider, genre, age
+        classification and country."
+        />
+
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:description"

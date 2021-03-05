@@ -78,9 +78,6 @@ function About() {
           <Logo logo={"main"} width={250} />
         </div>
         <p css={styles.text}>
-          Adding a test field to test out the dev pushing to vercel
-        </p>
-        <p css={styles.text}>
           CouchBuddy was created to help you choose a movie to watch when you
           don’t know what to watch. Filter by the streaming providers you have,
           what you’re interested in and how much time you’ve got then let

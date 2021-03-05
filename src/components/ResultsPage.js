@@ -9,9 +9,10 @@ import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
+const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
 
 async function filterMoviesByData(duration, sortByVote) {
-  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/movie-filter.json`;
+  const url = `${DATA_URL}/movie-filter.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
   const response = await fetch(url);
   const allMovies = await response.json();
@@ -30,7 +31,7 @@ async function filterMoviesByData(duration, sortByVote) {
 }
 
 async function getMovieIDsforGenres(genres) {
-  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/genres.json`;
+  const url = `${DATA_URL}/genres.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
   // console.log(url);
   const response = await fetch(url);
