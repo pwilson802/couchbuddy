@@ -178,10 +178,12 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
               <Image
                 src={image}
                 alt={`${title} poster`}
-                width={92.5}
-                height={139}
-                // width={111}
-                // height={166.7}
+                // width={92.5}
+                // height={139}
+                width={111}
+                height={166.7}
+                // width={185}
+                // height={278}
               />
               {/* <img
                 css={styles.mobileImage}
