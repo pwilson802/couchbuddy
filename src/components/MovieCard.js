@@ -104,6 +104,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
     }),
     title: css({
       fontSize: 16,
+      fontFamily: "Roboto Slab",
       fontWeight: "bold",
       color: colors[mode]["text"],
       margin: 0,
@@ -182,14 +183,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
                 // height={139}
                 width={111}
                 height={166.7}
-                // width={185}
-                // height={278}
               />
-              {/* <img
-                css={styles.mobileImage}
-                src={image}
-                alt={`${title} poster`}
-              />  */}
             </div>
             <div css={styles.infoBox}>
               {screenSize === "large" && <p css={styles.title}>{title}</p>}
