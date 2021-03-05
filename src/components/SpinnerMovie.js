@@ -2,19 +2,31 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React from "react";
-import Lottie from "react-lottie";
-import * as animationData from "../assets/spinnermovie-dark.json";
+import Lottie from "lottie-react";
+import animationData from "../assets/spinnermovie-dark.json";
 
 function SpinnerMovie() {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData.default,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
+  const styles = {
+    wrapper: css({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }),
   };
-  return <Lottie options={defaultOptions} height={400} width={400} />;
+  return (
+    <div css={styles.wrapper}>
+      <Lottie
+        animationData={animationData}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "350px",
+          flexDirection: "column",
+        }}
+      />
+    </div>
+  );
 }
 
 export default SpinnerMovie;

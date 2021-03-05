@@ -143,7 +143,7 @@ function Article({ blurbs, article }) {
                   id={p.fields.movieId}
                   body={p.fields.body}
                   key={p.fields.movieId}
-                  providers={p.fields.providers[location]}
+                  providers={p.fields.providers[location] || {}}
                   movieDetails={p.fields.movieDetails}
                   mode={mode}
                 />

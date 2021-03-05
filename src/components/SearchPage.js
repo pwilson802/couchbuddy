@@ -2,13 +2,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
-// import { API, graphqlOperation } from "aws-amplify";
-// import {
-//   getCouchmovie,
-//   getWatchOn,
-//   listProviders,
-//   getCertification,
-// } from "../graphql/queries";
 import Logo from "./Logo";
 import LocationSelect from "./LocationSelect";
 import Genres from "./Genres";
@@ -16,9 +9,12 @@ import Providers from "./Providers";
 import Duration from "./Duration";
 import DropDownGenres from "./DropDownGenres";
 import DropDownProviders from "./DropDownProviders";
-import TheMovieDatabase from "./TheMovieDatabase";
 import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
+import SpinnerMovie from "./SpinnerMovie";
+import Burger from "./Burger";
+// const DATA_BUCKET = process.env.DATA_BUCKET;
+const DATA_BUCKET = "couchbuddy-data";
 
 const genreObj = {
   Action: false,
@@ -32,6 +28,7 @@ const genreObj = {
   Fantasy: false,
   History: false,
   Horror: false,
+  Music: false,
   Mystery: false,
   Romance: false,
   "Science Fiction": false,
@@ -40,16 +37,86 @@ const genreObj = {
   Western: false,
 };
 
+async function getIPLocation() {
+  const validCodes = [
+    "AR",
+    "AT",
+    "AU",
+    "BE",
+    "BR",
+    "CA",
+    "CL",
+    "CO",
+    "CZ",
+    "DE",
+    "DK",
+    "EC",
+    "EE",
+    "ES",
+    "FI",
+    "FR",
+    "GB",
+    "GR",
+    "HU",
+    "ID",
+    "IE",
+    "IN",
+    "IT",
+    "JP",
+    "KR",
+    "LT",
+    "LV",
+    "MX",
+    "MY",
+    "NL",
+    "NO",
+    "NZ",
+    "PE",
+    "PH",
+    "PL",
+    "PT",
+    "RO",
+    "RU",
+    "SE",
+    "SG",
+    "TH",
+    "TR",
+    "US",
+    "VE",
+    "ZA",
+    "CH",
+  ];
+  const response = await fetch("https://ipapi.co/json/");
+  const json = await response.json();
+  console.log("country json response", json);
+  const countryCode = json["country_code"];
+  console.log(countryCode);
+  if (validCodes.includes(countryCode)) {
+    return countryCode;
+  }
+  return "US";
+}
+
 async function getLocalProviders(country) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
+  //couchbuddy-data.s3.amazonaws.com/certifications-AR.json
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/providers-${country}.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
   console.log(url);
   const response = await fetch(url);
   return await response.json();
-  // const locProviders = await API.graphql({
-  //   query: getWatchOn,
-  //   variables: { country: country },
-  // });
-  // return JSON.parse(locProviders.data.getWatchOn.data);
+}
+
+function sortProviders(json) {
+  const result = Object.keys(json).sort((a, b) => {
+    if (json[a].length > json[b].length) {
+      return -1;
+    }
+    if (json[a].length < json[b].length) {
+      return 1;
+    }
+    return 0;
+  });
+  return result;
 }
 
 function makeProvidersObj(data) {
@@ -60,16 +127,11 @@ function makeProvidersObj(data) {
 }
 
 async function getLocalCertifications(country) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/certifications-${country}.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
   console.log(url);
   const response = await fetch(url);
   return await response.json();
-  // const locProviders = await API.graphql({
-  //   query: getCertification,
-  //   variables: { country: country },
-  // });
-  // // console.log("certifications", locProviders);
-  // return JSON.parse(locProviders.data.getCertification.data);
 }
 
 function makeCertificationsObj(data) {
@@ -81,24 +143,11 @@ function makeCertificationsObj(data) {
 }
 
 async function getAllProviderData() {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/all-data-providers.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
   console.log(url);
   const response = await fetch(url);
   return await response.json();
-  // const allProviders = await API.graphql({
-  //   query: listProviders,
-  // });
-  // const providerList = allProviders.data.listProviders.items;
-  // const result = providerList.reduce((acc, curr) => {
-  //   let providerID = curr["providerID"];
-  //   let providerName = curr["providerName"];
-  //   let providerLogo = curr["providerLogo"];
-  //   acc[providerID] = {};
-  //   acc[providerID]["name"] = providerName;
-  //   acc[providerID]["logo"] = "http://image.tmdb.org/t/p/w185" + providerLogo;
-  //   return acc;
-  // }, {});
-  // return result;
 }
 
 function makeSelectedProviders(selectedProviders, localProviderMovies) {
@@ -111,13 +160,20 @@ function makeSelectedProviders(selectedProviders, localProviderMovies) {
   return selected;
 }
 
-function getSelectedProviders(location) {
+function getSelectedProviders(location, allProviders) {
+  // Getting providers from the local storage, filtering it with the providers from the json in case some of the selected providers are no longer active.
+  // Because if the providers were in the cache and no longer valid they would be undefined and cause an error on the result page
   const localItem = "selectedProviders" + location;
-  const selectedProviders = localStorage.getItem(localItem);
+  const selectedProvidersJson = localStorage.getItem(localItem);
+  const selectedProviders = JSON.parse(selectedProvidersJson);
   if (selectedProviders === null) {
     return [];
   }
-  return JSON.parse(selectedProviders);
+  const returedProviders = selectedProviders.filter((item) =>
+    allProviders.includes(item)
+  );
+  console.log(returedProviders);
+  return returedProviders;
 }
 
 function updateLocalSelectedProviders(location, providers) {
@@ -133,34 +189,38 @@ export default function SearchPage({
   setPage,
   width,
   mode,
+  changeMode,
 }) {
-  const [location, setLocation] = useState("AU");
+  const [location, setLocation] = useState(null);
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
   const [localProviderMovies, setLocalProviderMovies] = useState({});
   const [allProviderData, setAllProviderData] = useState();
+  const [sortedProviders, setSortedProviders] = useState();
   const [selectedCertifications, setSelectedCertifications] = useState({});
   const [localCertificationMovies, setLocalCertificationMovies] = useState({});
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  async function configureProviders() {
+  async function configureProviders(location) {
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
-    const cachedProviders = getSelectedProviders(location);
+    const cachedProviders = getSelectedProviders(
+      location,
+      Object.keys(providersObj)
+    );
     for (let provider of cachedProviders) {
       providersObj[provider] = true;
     }
-    // console.log("providersObj", providersObj);
     setLocalProviderMovies(localProviderData);
     setSelectedProviders(providersObj);
     setAllProviderData(allProviderData);
-    setLoaded(true);
+    setSortedProviders(sortProviders(localProviderData));
   }
 
-  async function configureCertifications() {
+  async function configureCertifications(location) {
     const localCertificationData = await getLocalCertifications(location);
     const certificationsObj = await makeCertificationsObj(
       localCertificationData
@@ -170,7 +230,9 @@ export default function SearchPage({
   }
 
   function handleLocation(loc) {
-    localStorage.setItem("country", loc.target.value);
+    console.log("handle location", loc);
+    // localStorage.setItem("country", loc.target.value);
+    // setLocation(loc.value);
     setLocation(loc.target.value);
   }
 
@@ -191,7 +253,6 @@ export default function SearchPage({
   };
 
   const handleProvider = (provider) => {
-    // console.log("handleProvider", provider);
     const newProviderObj = {
       ...selectedProviders,
     };
@@ -229,12 +290,13 @@ export default function SearchPage({
 
   useEffect(() => {
     setLoaded(false);
-    const currentLocation = localStorage.getItem("country") || "US";
-    setLocation(currentLocation);
-    setSelectedGenres(genreObj);
     async function pageLoad() {
-      await configureProviders(location);
-      await configureCertifications();
+      const currentLocation = location || (await getIPLocation());
+      setLocation(currentLocation);
+      setSelectedGenres(genreObj);
+      await configureProviders(currentLocation);
+      await configureCertifications(currentLocation);
+      setLoaded(true);
     }
     pageLoad();
   }, [location]);
@@ -314,23 +376,28 @@ export default function SearchPage({
       alignItems: "center",
       alignSelf: "center",
     }),
+    locationWrap: css({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: "50px",
+    }),
   };
   return (
     <div>
       <div css={styles.wrapper}>
         <div css={styles.nav}>
           <div css={styles.logoWrap}>
-            <Logo setPage={setPage} logo={"main"} />
+            <Logo setPage={setPage} logo={"main"} width={250} />
           </div>
-          <div css={styles.locationWrap}>
-            <LocationSelect
-              handleLocation={handleLocation}
-              location={location}
-              mode={mode}
-            />
-          </div>
+          <Burger
+            handleLocation={handleLocation}
+            location={location}
+            mode={mode}
+            changeMode={changeMode}
+          />
         </div>
-        {loaded && (
+        {loaded ? (
           <div>
             {width < 700 ? (
               <DropDownGenres
@@ -350,6 +417,7 @@ export default function SearchPage({
                 selectedProviders={selectedProviders}
                 handleProvider={handleProvider}
                 allProviderData={allProviderData}
+                sortedProviders={sortedProviders}
                 mode={mode}
               />
             ) : (
@@ -357,6 +425,7 @@ export default function SearchPage({
                 selectedProviders={selectedProviders}
                 handleProvider={handleProvider}
                 allProviderData={allProviderData}
+                sortedProviders={sortedProviders}
                 mode={mode}
               />
             )}
@@ -379,7 +448,16 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
+            <div css={styles.locationWrap}>
+              <LocationSelect
+                handleLocation={handleLocation}
+                location={location}
+                mode={mode === "dark" ? "darkFooter" : "light"}
+              />
+            </div>
           </div>
+        ) : (
+          <SpinnerMovie />
         )}
       </div>
     </div>

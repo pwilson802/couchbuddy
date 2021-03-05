@@ -48,6 +48,7 @@ function App({ mode, changeMode }) {
           width={width}
           screenSize={screenSize}
           mode={mode}
+          changeMode={changeMode}
         />
       )}
       {page === "ResultsPage" && (
@@ -59,7 +60,7 @@ function App({ mode, changeMode }) {
           mode={mode}
         />
       )}
-      <Footer setPage={setPage} mode={mode} />
+      {/* <Footer setPage={setPage} mode={mode} /> */}
     </div>
   );
 }

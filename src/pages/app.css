@@ -5,3 +5,11 @@
 body {
   margin: 0;
 }
+
+@font-face {
+  font-family: "Roboto+Slab";
+  src: url("/fonts/RobotoSlab-Bold.ttf");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}

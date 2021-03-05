@@ -2,74 +2,40 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
-// import { API, graphqlOperation } from "aws-amplify";
-// import { getGenre, listMovieDatas } from "../graphql/queries";
 import Logo from "./Logo";
 import MovieCard from "./MovieCard";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
+// const DATA_BUCKET = process.env.DATA_BUCKET;
+const DATA_BUCKET = "couchbuddy-data";
 
 async function filterMoviesByData(duration, sortByVote) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
-  console.log(url);
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/movie-filter.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
   const response = await fetch(url);
   const allMovies = await response.json();
-  // console.log("movie object:", movieObject);
-  // let firstQuery = await API.graphql({
-  //   query: listMovieDatas,
-  //   limit: 1000,
-  // });
-  // let allMovies = firstQuery.data.listMovieDatas.items;
-  // let nextToken = firstQuery.data.listMovieDatas.nextToken;
-  // while (nextToken != null) {
-  //   let nextPage = await API.graphql({
-  //     query: listMovieDatas,
-  //     variables: {
-  //       limit: 1000,
-  //       nextToken,
-  //     },
-  //   });
-  //   allMovies = [...allMovies, ...nextPage.data.listMovieDatas.items];
-  //   nextToken = nextPage.data.listMovieDatas.nextToken;
-  // }
-  // const moviesUnderDuration = allMovies.filter(
-  //   (item) => item.runtime < duration
-  // );
   const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
   if (sortByVote === true) {
-    console.log("sortByVote", sortByVote);
-    console.log("moviesUnderDuration", moviesUnderDuration);
-    console.log("sorting by vote");
+    // console.log("sortByVote", sortByVote);
+    // console.log("moviesUnderDuration", moviesUnderDuration);
+    // console.log("sorting by vote");
     moviesUnderDuration.sort(compare);
-    console.log("sorted Movies: ", moviesUnderDuration);
-    // const result = moviesUnderDuration.map((item) => Number(item.movieID));
+    // console.log("sorted Movies: ", moviesUnderDuration);
     const result = moviesUnderDuration.map((item) => Number(item.id));
-    console.log("result in function", result);
+    // console.log("result in function", result);
     return result;
   }
   return moviesUnderDuration.map((item) => Number(item.id));
-  // return moviesUnderDuration.map((item) => Number(item.movieID));
 }
 
-// async function getMoviesByGenre(genre) {
-//   const movies = await API.graphql({
-//     query: getGenre,
-//     variables: { genre: genre },
-//   });
-//   if (movies.data.getGenre == null) {
-//     return [];
-//   }
-//   const moviesList = JSON.parse(movies.data.getGenre.movieIDs);
-//   return moviesList;
-// }
-
 async function getMovieIDsforGenres(genres) {
-  const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
-  console.log(url);
+  const url = `https://${DATA_BUCKET}.s3.amazonaws.com/genres.json`;
+  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
+  // console.log(url);
   const response = await fetch(url);
   const genresObject = await response.json();
-  console.log("genres json response", genresObject);
+  // console.log("genres json response", genresObject);
   let result = [];
   for (let i = 0; i < genres.length; i++) {
     if (Object.keys(genresObject).includes(genres[i])) {
@@ -110,9 +76,11 @@ export default function ResultsPage({
     sortByVote,
   } = searchDetails;
   // console.log(selectedProviders);
-  console.log("certificationMovies", certificationMovies);
+  // console.log("certificationMovies", certificationMovies);
 
   function getProviders(id) {
+    // console.log("id", id);
+    // console.log("selectedProviders", selectedProviders);
     return Object.keys(selectedProviders).filter((item) =>
       selectedProviders[item].includes(id)
     );
@@ -128,7 +96,6 @@ export default function ResultsPage({
       (item) => selectedGenres[item]
     );
     async function updateMovies() {
-      // const moviesByLength = await getMoviesByLength(duration);
       const matchedMoviesByGenre = await getMovieIDsforGenres(genres);
       const matchedMoviesbyProvider = Object.values(selectedProviders).flat();
       const moviesInProvider = matchedMoviesByGenre.filter((movie) =>
@@ -143,6 +110,7 @@ export default function ResultsPage({
         moviesInProvider.includes(item)
       );
       const moviesInCertification =
+        // TODO - Check this is working to skip the filter for certifiation movies
         certificationMovies === true
           ? moviesInLength
           : filterCertification(moviesInLength);
@@ -154,7 +122,7 @@ export default function ResultsPage({
         acc.push({ id: curr, providers: providers });
         return acc;
       }, []);
-      console.log("result", result);
+      // console.log("result", result);
       setMovies(result);
       setActiveMovies(result.slice(0, 3));
       if (result.length === 0) {
@@ -203,19 +171,37 @@ export default function ResultsPage({
       justifyContent: "center",
       flexDirection: "row",
     }),
+    logoWrap: css({
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }),
+    cardsWrap: css({
+      display: "flex",
+      flexDirection: "column",
+    }),
+    prevButton: css({
+      marginRight: 10,
+    }),
+    nextButton: css({
+      marginLeft: 10,
+    }),
   };
+  console.log("Movies Length", movies.length);
+  console.log("Movies", movies);
+  console.log("movieNumber", movieNumber);
 
   return (
     <div>
       <div css={styles.logoWrap}>
-        <Logo setPage={setPage} logo={"main"} />
+        <Logo setPage={setPage} logo={"mainSetPage"} width={250} />
       </div>
       {loaded ? (
         nothingFound ? (
-          <NothingFound setPage={setPage} />
+          <NothingFound setPage={setPage} logo={"main"} />
         ) : (
           <div css={styles.resultsWrap}>
-            <div>
+            <div css={styles.cardsWrap}>
               {activeMovies.map((item) => (
                 <MovieCard
                   id={item.id}
@@ -227,22 +213,28 @@ export default function ResultsPage({
                 ></MovieCard>
               ))}
             </div>
-            <div css={styles.buttons}>
-              {movieNumber !== 0 && (
-                <NavButton
-                  handleSubmit={prevMovies}
-                  buttonText={"Previous"}
-                  width={90}
-                />
-              )}
-              {movieNumber <= movies.length - 3 && (
-                <NavButton
-                  handleSubmit={nextMovies}
-                  buttonText={"Next"}
-                  width={90}
-                />
-              )}
-            </div>
+            {movies.length > 3 && (
+              <div css={styles.buttons}>
+                {movieNumber > 3 && (
+                  <div css={styles.prevButton}>
+                    <NavButton
+                      handleSubmit={prevMovies}
+                      buttonText={"Previous"}
+                      width={90}
+                    />
+                  </div>
+                )}
+                {movieNumber < movies.length && (
+                  <div css={styles.nextButton}>
+                    <NavButton
+                      handleSubmit={nextMovies}
+                      buttonText={"Next"}
+                      width={90}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )
       ) : (
