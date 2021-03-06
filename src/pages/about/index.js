@@ -126,6 +126,7 @@ function About() {
             />
           </a>
         </div>
+        <br />
         <p css={styles.text}>
           Streaming provider data is sourced from JustWatch, check them out to
           find where to watch your favourite movies and shows
@@ -142,6 +143,7 @@ function About() {
             height={23}
           />
         </a>
+        <br />
         <p css={styles.text}>
           Some on the animations on tihs site are sources from Lottie, check
           them out for cool animations:
