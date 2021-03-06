@@ -41,7 +41,7 @@ function SelectAllButton({ selectedItems, setSelected, mode }) {
       player.current.play();
       setAllSelected(false);
     }
-  }, [selectedItems]);
+  }, [selectedItems, mode]);
 
   const handleClick = () => {
     player.current.setSpeed(1);
