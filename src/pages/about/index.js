@@ -152,6 +152,9 @@ function About() {
         >
           Animation by Mohammad Turk on LottieFiles
         </a>
+        <a href="https://lottiefiles.com/25321-plus-to-minus" target="_blank">
+          Animation by Naokure on LottieFiles
+        </a>
       </div>
     </div>
   );

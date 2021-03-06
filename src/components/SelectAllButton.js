@@ -2,8 +2,18 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Lottie from "lottie-react";
-import animation from "../assets/allgenres-darkmode.json";
+import animationDark from "../assets/allgenres-darkmode.json";
+import animationLight from "../assets/allgenres-lightmode.json";
 import React, { useState, useRef, useEffect } from "react";
+
+const colors = {
+  light: {
+    opacitiy: 1,
+  },
+  dark: {
+    opacity: 0.6,
+  },
+};
 
 function SelectAllButton({ selectedItems, setSelected, mode }) {
   console.log("selectedItems", selectedItems);
@@ -13,7 +23,7 @@ function SelectAllButton({ selectedItems, setSelected, mode }) {
     wrapper: css({
       height: 32,
       width: 32,
-      opacity: 0.6,
+      opacity: colors[mode]["opacity"],
       cursor: "pointer",
     }),
   };
@@ -55,7 +65,7 @@ function SelectAllButton({ selectedItems, setSelected, mode }) {
   return (
     <div css={styles.wrapper} onClick={handleClick}>
       <Lottie
-        animationData={animation}
+        animationData={mode === "dark" ? animationDark : animationLight}
         autoplay={false}
         loop={false}
         lottieRef={player}
