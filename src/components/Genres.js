@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 import GeneralButton from "./GeneralButton";
+import SelectAllButton from "./SelectAllButton";
 
 const colors = {
   light: {
@@ -33,7 +34,7 @@ const colors = {
   },
 };
 
-function Genres({ selectedGenres, handleGenre, mode }) {
+function Genres({ selectedGenres, handleGenre, mode, setSelected }) {
   const data = Object.keys(selectedGenres);
   const styles = {
     genreWrapper: css({
@@ -77,6 +78,11 @@ function Genres({ selectedGenres, handleGenre, mode }) {
   };
   return (
     <div css={styles.genreWrapper}>
+      <SelectAllButton
+        selectedItems={selectedGenres}
+        setSelected={setSelected}
+        mode={mode}
+      />
       {data.map((item) => (
         <GeneralButton
           handleClick={() => handleGenre(item)}

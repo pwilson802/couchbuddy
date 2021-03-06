@@ -405,12 +405,14 @@ export default function SearchPage({
                 selectedGenres={selectedGenres}
                 handleGenre={handleGenre}
                 mode={mode}
+                setSelected={setSelectedGenres}
               />
             ) : (
               <Genres
                 selectedGenres={selectedGenres}
                 handleGenre={handleGenre}
                 mode={mode}
+                setSelected={setSelectedGenres}
               />
             )}
             {width < 700 ? (
@@ -434,6 +436,7 @@ export default function SearchPage({
               selectedGenres={selectedCertifications}
               handleGenre={handleCertifications}
               mode={mode}
+              setSelected={setSelectedCertifications}
             />
             <Duration
               duration={duration}

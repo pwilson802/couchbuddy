@@ -15,7 +15,7 @@ const colors = {
   },
 };
 
-function DropDownGenres({ selectedGenres, handleGenre, mode }) {
+function DropDownGenres({ selectedGenres, handleGenre, mode, setSelected }) {
   const [show, setShow] = useState(false);
 
   const styles = {
@@ -42,6 +42,7 @@ function DropDownGenres({ selectedGenres, handleGenre, mode }) {
           selectedGenres={selectedGenres}
           handleGenre={handleGenre}
           mode={mode}
+          setSelected={setSelected}
         />
       )}
     </div>
