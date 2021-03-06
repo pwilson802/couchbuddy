@@ -35,7 +35,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content="Find a movie to watch when you don’t know what to watch. Filter by streaming providers, genre, age classification and duration then let us do the searching."
+          content="Find a movie to watch when you don’t know what to watch. Filter by streaming providers, genre, age classification and duration, then let us do the searching"
         />
 
         <meta name="twitter:card" content="summary_large_image" />

@@ -13,18 +13,12 @@ const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
 
 async function filterMoviesByData(duration, sortByVote) {
   const url = `${DATA_URL}/movie-filter.json`;
-  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/movie-filter.json`;
   const response = await fetch(url);
   const allMovies = await response.json();
   const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
   if (sortByVote === true) {
-    // console.log("sortByVote", sortByVote);
-    // console.log("moviesUnderDuration", moviesUnderDuration);
-    // console.log("sorting by vote");
     moviesUnderDuration.sort(compare);
-    // console.log("sorted Movies: ", moviesUnderDuration);
     const result = moviesUnderDuration.map((item) => Number(item.id));
-    // console.log("result in function", result);
     return result;
   }
   return moviesUnderDuration.map((item) => Number(item.id));
@@ -32,11 +26,8 @@ async function filterMoviesByData(duration, sortByVote) {
 
 async function getMovieIDsforGenres(genres) {
   const url = `${DATA_URL}/genres.json`;
-  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/genres.json`;
-  // console.log(url);
   const response = await fetch(url);
   const genresObject = await response.json();
-  // console.log("genres json response", genresObject);
   let result = [];
   for (let i = 0; i < genres.length; i++) {
     if (Object.keys(genresObject).includes(genres[i])) {
@@ -52,7 +43,7 @@ function reduceShuffleMovies(movies, sortByVote) {
     console.log("shuffling....");
     shuffle(movies);
   }
-  return movies.slice(0, 99);
+  return movies.slice(0, 209);
 }
 
 export default function ResultsPage({
@@ -76,12 +67,8 @@ export default function ResultsPage({
     certificationMovies,
     sortByVote,
   } = searchDetails;
-  // console.log(selectedProviders);
-  // console.log("certificationMovies", certificationMovies);
 
   function getProviders(id) {
-    // console.log("id", id);
-    // console.log("selectedProviders", selectedProviders);
     return Object.keys(selectedProviders).filter((item) =>
       selectedProviders[item].includes(id)
     );
@@ -123,7 +110,6 @@ export default function ResultsPage({
         acc.push({ id: curr, providers: providers });
         return acc;
       }, []);
-      // console.log("result", result);
       setMovies(result);
       setActiveMovies(result.slice(0, 3));
       if (result.length === 0) {

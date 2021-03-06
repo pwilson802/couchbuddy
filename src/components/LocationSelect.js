@@ -120,7 +120,8 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
       fontWeight: "bold",
       border: "none",
       cursor: "pointer",
-      textAlignLast: "center",
+      // textAlignLast: "center",
+      textIndent: "0px",
       "&:focus": {
         border: "none",
         outline: "none",

@@ -80,19 +80,20 @@ function About() {
         <p css={styles.text}>
           CouchBuddy was created to help you choose a movie to watch when you
           don’t know what to watch. Filter by the streaming providers you have,
-          what you’re interested in and how much time you’ve got then let
-          CouchBuddy do the searching..
+          what you’re interested in and how much time you’ve got, then let
+          CouchBuddy do the searching.
         </p>
         <div css={styles.logoWrap}>
           <Logo logo={"blog"} width={250} />
         </div>
         <p css={styles.text}>
-          CouchBuddy blog was created to help you choose a movie if your feeling
-          in a particular mode, or for some light reading on a cool winters day.
+          CouchBuddy blog exists to help you choose a movie based on a
+          particular mood or hankering (and as an excuse for us to write silly
+          things about movies we watch).
         </p>
         <p css={styles.text}>
           CouchBuddy does not contain an exhaustive list of every movie on all
-          streaming providers, just the good ones so you can jump off the
+          streaming providers, just the good ones, so you can jump off the
           endless scroll and watch a damn movie.
           <br />
           <br />

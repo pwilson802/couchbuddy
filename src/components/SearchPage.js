@@ -299,9 +299,30 @@ export default function SearchPage({
       (item) => item === false
     );
     if (genreAllFalse) {
-      window.alert("Make sure you select a Genre");
+      window.alert("Make sure you select a genre");
       return true;
     }
+    // checking not all providers are empty
+    const providerAllFalse = Object.values(selectedProviders).every(
+      (item) => item === false
+    );
+    if (providerAllFalse) {
+      window.alert("Make sure you select a steraming provider");
+      return true;
+    }
+    // checking not all cartifications are empty
+    // If a certification is empty this is check is not performed.
+    if (Object.values(selectedCertifications).length === 0) {
+      return false;
+    }
+    const certificationAllFalse = Object.values(selectedCertifications).every(
+      (item) => item === false
+    );
+    if (certificationAllFalse) {
+      window.alert("Make sure you select an age classification rating");
+      return true;
+    }
+    return false;
   };
 
   useEffect(() => {
