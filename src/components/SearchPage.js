@@ -267,6 +267,10 @@ export default function SearchPage({
   };
 
   const handleSubmit = () => {
+    const dataMissing = CheckMissingData();
+    if (dataMissing) {
+      return;
+    }
     const providerMovies = makeSelectedProviders(
       selectedProviders,
       localProviderMovies
@@ -287,6 +291,17 @@ export default function SearchPage({
     };
     handleSearchDetails(searchData);
     setPage("ResultsPage");
+  };
+
+  const CheckMissingData = () => {
+    // checking not all Genres are empty
+    const genreAllFalse = Object.values(selectedGenres).every(
+      (item) => item === false
+    );
+    if (genreAllFalse) {
+      window.alert("Make sure you select a Genre");
+      return true;
+    }
   };
 
   useEffect(() => {
