@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import ShareButtons from "./ShareButtons";
 import Image from "next/image";
 import SpinnerMovie from "./SpinnerMovie";
+import MovieCardLoading from "./MovieCardLoading";
 
 async function getMovieDetails(id) {
   let TMB_KEY = process.env.TMB_KEY;
@@ -172,7 +173,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
 
   return (
     <div css={styles.cardWrapper}>
-      {loaded && (
+      {loaded ? (
         <div>
           {screenSize === "small" && <p css={styles.title}>{title}</p>}
           <div css={styles.bodyWrapper}>
@@ -180,8 +181,6 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
               <Image
                 src={image}
                 alt={`${title} poster`}
-                // width={92.5}
-                // height={139}
                 width={111}
                 height={166.7}
               />
@@ -216,6 +215,8 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
             </div>
           </div>
         </div>
+      ) : (
+        <MovieCardLoading mode={mode} />
       )}
     </div>
   );

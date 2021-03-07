@@ -6,7 +6,7 @@ import SearchPage from "./SearchPage";
 import ResultsPage from "./ResultsPage";
 import Footer from "./Footer";
 
-function App({ mode, changeMode }) {
+function App({ mode, changeMode, location, handleLocation }) {
   const [page, setPage] = useState("SearchPage");
   const [width, setWidth] = useState(0);
   const [screenSize, setScreenSize] = useState("small");
@@ -49,6 +49,8 @@ function App({ mode, changeMode }) {
           screenSize={screenSize}
           mode={mode}
           changeMode={changeMode}
+          location={location}
+          handleLocation={handleLocation}
         />
       )}
       {page === "ResultsPage" && (

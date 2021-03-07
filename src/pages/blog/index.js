@@ -32,8 +32,8 @@ const client = require("contentful").createClient({
   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
 });
 
-function HomePage() {
-  const [location, setLocation] = useState("AU");
+function HomePage({ location, handleLocation }) {
+  // const [location, setLocation] = useState("AU");
   const [previews, setPreviews] = useState([]);
   const [mode, setMode] = useState("dark");
 
@@ -43,10 +43,10 @@ function HomePage() {
     setMode(mode);
   };
 
-  function handleLocation(loc) {
-    localStorage.setItem("country", loc.target.value);
-    setLocation(loc.target.value);
-  }
+  // function handleLocation(loc) {
+  //   localStorage.setItem("country", loc.target.value);
+  //   setLocation(loc.target.value);
+  // }
 
   async function fetchEntries() {
     const entries = await client.getEntries({
@@ -59,8 +59,8 @@ function HomePage() {
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
-    const currentLocation = localStorage.getItem("country") || "US";
-    setLocation(currentLocation);
+    // const currentLocation = localStorage.getItem("country") || "US";
+    // setLocation(currentLocation);
   }, []);
 
   useEffect(() => {

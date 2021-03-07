@@ -89,9 +89,9 @@ async function getIPLocation() {
   ];
   const response = await fetch("https://ipapi.co/json/");
   const json = await response.json();
-  console.log("country json response", json);
+  // console.log("country json response", json);
   const countryCode = json["country_code"];
-  console.log(countryCode);
+  // console.log(countryCode);
   if (validCodes.includes(countryCode)) {
     return countryCode;
   }
@@ -102,7 +102,7 @@ async function getLocalProviders(country) {
   //couchbuddy-data.s3.amazonaws.com/certifications-AR.json
   const url = `${DATA_URL}/providers-${country}.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
-  console.log(url);
+  // console.log(url);
   const response = await fetch(url);
   return await response.json();
 }
@@ -130,7 +130,7 @@ function makeProvidersObj(data) {
 async function getLocalCertifications(country) {
   const url = `${DATA_URL}/certifications-${country}.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
-  console.log(url);
+  // console.log(url);
   const response = await fetch(url);
   return await response.json();
 }
@@ -146,7 +146,7 @@ function makeCertificationsObj(data) {
 async function getAllProviderData() {
   const url = `${DATA_URL}/all-data-providers.json`;
   // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
-  console.log(url);
+  // console.log(url);
   const response = await fetch(url);
   return await response.json();
 }
@@ -173,7 +173,7 @@ function getSelectedProviders(location, allProviders) {
   const returedProviders = selectedProviders.filter((item) =>
     allProviders.includes(item)
   );
-  console.log(returedProviders);
+  // console.log(returedProviders);
   return returedProviders;
 }
 
@@ -184,15 +184,17 @@ function updateLocalSelectedProviders(location, providers) {
   );
   localStorage.setItem(localItem, JSON.stringify(enabledProviders));
 }
-
+//////////////////////////////////////////////////////////// CHANGES ////////////////////////////////////////////////////
 export default function SearchPage({
   handleSearchDetails,
   setPage,
   width,
   mode,
   changeMode,
+  location,
+  handleLocation,
 }) {
-  const [location, setLocation] = useState(null);
+  // const [location, setLocation] = useState(null);
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
   const [localProviderMovies, setLocalProviderMovies] = useState({});
@@ -204,6 +206,8 @@ export default function SearchPage({
   const [sortByVote, setSortByVote] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  console.log("location in search page", location);
+  console.log("handleLocation in search page", handleLocation);
   async function configureProviders(location) {
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
@@ -230,12 +234,10 @@ export default function SearchPage({
     setSelectedCertifications(certificationsObj);
   }
 
-  function handleLocation(loc) {
-    console.log("handle location", loc);
-    // localStorage.setItem("country", loc.target.value);
-    // setLocation(loc.value);
-    setLocation(loc.target.value);
-  }
+  // function handleLocation(loc) {
+  //   console.log("handle location", loc);
+  //   setLocation(loc.target.value);
+  // }
 
   const handleGenre = (genre) => {
     const newGenreObj = {
@@ -328,11 +330,11 @@ export default function SearchPage({
   useEffect(() => {
     setLoaded(false);
     async function pageLoad() {
-      const currentLocation = location || (await getIPLocation());
-      setLocation(currentLocation);
+      // const currentLocation = location || (await getIPLocation());
+      // setLocation(currentLocation);
       setSelectedGenres(genreObj);
-      await configureProviders(currentLocation);
-      await configureCertifications(currentLocation);
+      await configureProviders(location);
+      await configureCertifications(location);
       setLoaded(true);
     }
     pageLoad();
@@ -412,6 +414,7 @@ export default function SearchPage({
       justifyContent: "center",
       alignItems: "center",
       alignSelf: "center",
+      marginTop: 10,
     }),
     locationWrap: css({
       display: "flex",

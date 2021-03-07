@@ -78,11 +78,13 @@ function Genres({ selectedGenres, handleGenre, mode, setSelected }) {
   };
   return (
     <div css={styles.genreWrapper}>
-      <SelectAllButton
-        selectedItems={selectedGenres}
-        setSelected={setSelected}
-        mode={mode}
-      />
+      {Object.values(selectedGenres).length !== 0 && (
+        <SelectAllButton
+          selectedItems={selectedGenres}
+          setSelected={setSelected}
+          mode={mode}
+        />
+      )}
       {data.map((item) => (
         <GeneralButton
           handleClick={() => handleGenre(item)}

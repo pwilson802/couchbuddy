@@ -14,7 +14,7 @@ function changeBackground(mode) {
   }
 }
 
-export default function Home() {
+export default function Home({ location, handleLocation }) {
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -61,7 +61,12 @@ export default function Home() {
       </Head>
 
       <main>
-        <App mode={mode} changeMode={changeMode} />
+        <App
+          mode={mode}
+          changeMode={changeMode}
+          location={location}
+          handleLocation={handleLocation}
+        />
       </main>
     </div>
   );
