@@ -7,7 +7,7 @@ import OutsideClickHandler from "react-outside-click-handler";
 
 import BurgerMenu from "./BurgerMenu";
 
-function Burger({ handleLocation, location, mode, changeMode }) {
+function Burger({ handleLocation, location, mode, changeMode, inNav }) {
   const [isOpen, setOpen] = useState(false);
   const toggle = () => {
     setOpen(!isOpen);
@@ -21,6 +21,13 @@ function Burger({ handleLocation, location, mode, changeMode }) {
       position: "fixed",
       top: "0x",
       right: "3px",
+    }),
+    burgerNav: css({
+      color: "black",
+      cursor: "pointer",
+      zIndex: 300,
+      transition: "all 250mx ease-in-out",
+      position: "fixed",
     }),
   };
   return (

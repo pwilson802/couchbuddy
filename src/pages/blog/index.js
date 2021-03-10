@@ -9,6 +9,7 @@ import Head from "next/head";
 import PostPreview from "../../components/PostPreview";
 import NavBlog from "../../components/NavBlog";
 import BlogSideBar from "../../components/BlogSideBar";
+import Burger from "../../components/Burger";
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -73,7 +74,7 @@ function HomePage({ location, handleLocation }) {
 
   const styles = {
     previewsWrapper: css({
-      margin: "0 3%",
+      margin: "70px 3%",
     }),
     topPreview: css({
       marginTop: "1rem",

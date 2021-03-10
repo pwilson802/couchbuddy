@@ -60,13 +60,14 @@ function NavBlog({ handleLocation, location, mode }) {
       },
     }),
     navWrapper: css({
-      position: "-webkit-sticky",
-      position: "sticky",
+      // position: "-webkit-sticky",
+      position: "fixed",
       top: "0",
       margin: "0",
       padding: "0",
       display: "flex",
       alignItems: "center",
+      width: "100%",
       justifyContent: "space-between",
       backgroundColor: colors[mode]["navBackground"],
     }),
@@ -85,19 +86,8 @@ function NavBlog({ handleLocation, location, mode }) {
           handleLocation={handleLocation}
           location={location}
           mode={mode}
+          inNav={true}
         />
-        {/* <div css={styles.buttonWrapper}>
-          <Link href={"/about"}>
-            <button css={styles.about}>About</button>
-          </Link>
-        </div>
-        <div>
-          <LocationSelect
-            handleLocation={handleLocation}
-            location={location}
-            mode={mode === "dark" ? "darkNav" : "lightNav"}
-          />
-        </div> */}
       </nav>
     </div>
   );

@@ -10,6 +10,7 @@ import Head from "next/head";
 import MovieBlurb from "../../components/MovieBlurb";
 import { useRouter } from "next/router";
 import NavBlog from "../../components/NavBlog";
+import Burger from "../../components/Burger";
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -79,7 +80,7 @@ function Article({ blurbs, article }) {
       textAlign: "center",
     }),
     pageWrapper: css({
-      margin: "1rem 3%",
+      margin: "70px 3%",
     }),
     heading: css({
       textAlign: "center",
