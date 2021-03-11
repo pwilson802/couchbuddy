@@ -28,16 +28,21 @@ function CouchBuddyAdd({ mode }) {
     text: css({
       color: colors[mode]["text"],
     }),
+    link: css({
+      textDecoration: "none",
+    }),
   };
   return (
     <Link href={"/"}>
-      <div css={styles.wrapper}>
-        <div css={styles.textWrapper}>
-          <p css={styles.text}>What are you watching tonight?</p>
-          <p css={styles.text}>Find out on CouchBuddy</p>
+      <a href={"/"} css={styles.link}>
+        <div css={styles.wrapper}>
+          <div css={styles.textWrapper}>
+            <p css={styles.text}>What are you watching tonight?</p>
+            <p css={styles.text}>Find out on CouchBuddy</p>
+          </div>
+          <img src="./tv-65.png" alt="CouchBuddy Television" />
         </div>
-        <img src="./tv-65.png" alt="CouchBuddy Television" />
-      </div>
+      </a>
     </Link>
   );
 }

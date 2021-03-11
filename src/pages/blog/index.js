@@ -9,7 +9,6 @@ import Head from "next/head";
 import PostPreview from "../../components/PostPreview";
 import NavBlog from "../../components/NavBlog";
 import BlogSideBar from "../../components/BlogSideBar";
-import Burger from "../../components/Burger";
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -34,7 +33,6 @@ const client = require("contentful").createClient({
 });
 
 function HomePage({ location, handleLocation }) {
-  // const [location, setLocation] = useState("AU");
   const [previews, setPreviews] = useState([]);
   const [mode, setMode] = useState("dark");
 
@@ -44,15 +42,11 @@ function HomePage({ location, handleLocation }) {
     setMode(mode);
   };
 
-  // function handleLocation(loc) {
-  //   localStorage.setItem("country", loc.target.value);
-  //   setLocation(loc.target.value);
-  // }
-
   async function fetchEntries() {
     const entries = await client.getEntries({
       content_type: "articleTitle",
     });
+    console.log(entries);
     if (entries.items) return entries.items;
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
@@ -60,14 +54,24 @@ function HomePage({ location, handleLocation }) {
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
-    // const currentLocation = localStorage.getItem("country") || "US";
-    // setLocation(currentLocation);
   }, []);
 
   useEffect(() => {
     async function getPreviews() {
       const allPreviews = await fetchEntries();
-      setPreviews([...allPreviews]);
+      console.log("allPreviews", allPreviews);
+      const sortedPreviews = allPreviews.sort((a, b) => {
+        const firstDate = Date(a.dateAdded);
+        const secondDate = new Date(b.dateAdded);
+        if (firstDate - secondDate < 0) {
+          return 1;
+        } else if (firstDate - secondDate > 0) {
+          return -1;
+        }
+        return 0;
+      });
+      console.log("sortedPreviews", sortedPreviews);
+      setPreviews([...sortedPreviews]);
     }
     getPreviews();
   }, []);

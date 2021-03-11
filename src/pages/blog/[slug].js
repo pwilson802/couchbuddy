@@ -11,6 +11,7 @@ import MovieBlurb from "../../components/MovieBlurb";
 import { useRouter } from "next/router";
 import NavBlog from "../../components/NavBlog";
 import Burger from "../../components/Burger";
+import Image from "next/image";
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -48,6 +49,8 @@ function Article({ blurbs, article }) {
     introduction,
     author,
   } = article[0].fields;
+
+  const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
   const changeMode = (mode) => {
     localStorage.setItem("mode", mode);
@@ -92,7 +95,12 @@ function Article({ blurbs, article }) {
     }),
     author: css({
       color: colors[mode]["author"],
-      marginTop: "0.5rem",
+      marginRight: "1rem",
+    }),
+    authorWrap: css({
+      marginTop: "1rem",
+      display: "flex",
+      alignItems: "center",
     }),
     articlesWrapper: css({
       "@media(min-width: 1024px)": {
@@ -136,7 +144,15 @@ function Article({ blurbs, article }) {
         </div>
         <div css={styles.articlesWrapper}>
           <h1 css={styles.heading}>{articleType + " " + heading}</h1>
-          <p css={styles.author}>by {author}</p>
+          <div css={styles.authorWrap}>
+            <p css={styles.author}>by {author}</p>
+            <Image
+              src={authorImage}
+              alt="Picture of author"
+              width={50}
+              height={50}
+            />
+          </div>
           <p css={styles.introduction}>{introduction}</p>
           {blurbs.length > 0
             ? blurbs.map((p) => (
