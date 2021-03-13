@@ -491,13 +491,13 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
-            <div css={styles.locationWrap}>
+            {/* <div css={styles.locationWrap}>
               <LocationSelect
                 handleLocation={handleLocation}
                 location={location}
                 mode={mode === "dark" ? "darkFooter" : "light"}
               />
-            </div>
+            </div> */}
           </div>
         ) : (
           <SpinnerMovie />

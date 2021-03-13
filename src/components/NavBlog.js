@@ -21,7 +21,7 @@ const colors = {
   },
 };
 
-function NavBlog({ handleLocation, location, mode }) {
+function NavBlog({ handleLocation, location, mode, changeMode }) {
   const styles = {
     navLinks: css({
       display: "flex",
@@ -60,7 +60,6 @@ function NavBlog({ handleLocation, location, mode }) {
       },
     }),
     navWrapper: css({
-      // position: "-webkit-sticky",
       position: "fixed",
       top: "0",
       margin: "0",
@@ -86,7 +85,8 @@ function NavBlog({ handleLocation, location, mode }) {
           handleLocation={handleLocation}
           location={location}
           mode={mode}
-          inNav={true}
+          changeMode={changeMode}
+          inBlog={true}
         />
       </nav>
     </div>

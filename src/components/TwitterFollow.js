@@ -34,7 +34,7 @@ function TwitterFollow({ mode }) {
     }),
   };
   return (
-    <a css={styles.link} href="https://twitter.com/couch_buddy">
+    <a css={styles.link} href="https://twitter.com/couch_buddy" target="_blank">
       <div css={styles.wrapper}>
         <p css={styles.text}>
           Follow us for new articles and cool movie suggestions

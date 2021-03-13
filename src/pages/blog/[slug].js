@@ -1,10 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-// import Amplify from "aws-amplify";
-// import { API, graphqlOperation } from "aws-amplify";
-// import config from "../../aws-exports";
-// Amplify.configure(config);
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import MovieBlurb from "../../components/MovieBlurb";
@@ -137,21 +133,36 @@ function Article({ blurbs, article }) {
         handleLocation={handleLocation}
         location={location}
         mode={mode}
+        changeMode={changeMode}
       />
       <div css={styles.pageWrapper}>
         <div css={styles.imageWrapper}>
           <img css={styles.image} src={sharingImage} alt={heading} />
+          {/* <Image
+            css={styles.image}
+            src={sharingImage}
+            alt={heading}
+            width={840}
+            height={441}
+            layout="responsive"
+          /> */}
         </div>
         <div css={styles.articlesWrapper}>
           <h1 css={styles.heading}>{articleType + " " + heading}</h1>
           <div css={styles.authorWrap}>
             <p css={styles.author}>by {author}</p>
-            <Image
+            <img
               src={authorImage}
               alt="Picture of author"
               width={50}
               height={50}
             />
+            {/* <Image
+              src={authorImage}
+              alt="Picture of author"
+              width={50}
+              height={50}
+            /> */}
           </div>
           <p css={styles.introduction}>{introduction}</p>
           {blurbs.length > 0

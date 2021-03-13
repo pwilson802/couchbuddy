@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import LocationSelect from "./LocationSelect";
 import ModeSwitch from "./ModeSwitch";
+import Image from "next/image";
 
 const MenuContainer = styled(motion.div)`
   display: flex;
@@ -20,25 +21,25 @@ const MenuContainer = styled(motion.div)`
   padding-right: 30px;
   height: 100%;
   margin: -10;
-  width: 60%;
+  width: 70%;
   box-shadow: -2px 0 2px rgba(15, 15, 15, 0.3);
   z-index: 90;
   transform: translateX(4em);
   user-select: none;
-  @media (min-width: 500px) {
-    width: 40%;
+  @media (min-width: 600px) {
+    width: 50%;
     padding-left: 30px;
   }
   @media (min-width: 768px) {
-    width: 33%;
+    width: 40%;
     padding-left: 30px;
   }
   @media (min-width: 1024px) {
-    width: 25%;
+    width: 30%;
     padding-left: 30px;
   }
   @media (min-width: 1396px) {
-    width: 20%;
+    width: 21%;
     padding-left: 30px;
   }
 `;
@@ -52,6 +53,11 @@ const MenuContainerItem = styled(motion.div)`
   @media (min-width: 768px) {
     font-size: 22px;
   }
+`;
+
+const BlogTextContainer = styled.div`
+  font-size: 28px;
+  font-family: "Pacifico";
 `;
 
 const menuVariants = {
@@ -99,6 +105,7 @@ function BurgerMenu({
   isOpen,
   changeMode,
   setOpen,
+  inBlog,
 }) {
   return (
     <div>
@@ -141,9 +148,21 @@ function BurgerMenu({
             },
           }}
         >
-          <Link href={"/about"}>
-            <div>About</div>
-          </Link>
+          {inBlog === true ? (
+            <Link href={"/"}>
+              <Image
+                src="/logo-text.png"
+                alt="Couch Buddy"
+                height={35}
+                width={210}
+                // layout="responsive"
+              />
+            </Link>
+          ) : (
+            <Link href={"/blog"}>
+              <BlogTextContainer>Blog</BlogTextContainer>
+            </Link>
+          )}
         </MenuContainerItem>
         <MenuContainerItem
           initial={false}
@@ -159,8 +178,8 @@ function BurgerMenu({
             },
           }}
         >
-          <Link href={"/blog"}>
-            <div>Blog</div>
+          <Link href={"/about"}>
+            <div>About</div>
           </Link>
         </MenuContainerItem>
         <MenuContainerItem

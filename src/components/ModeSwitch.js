@@ -11,7 +11,8 @@ function ModeSwitch({ mode, changeMode }) {
   const activeSegments = mode == "dark" ? [240, 481] : [0, 240];
   const styles = {
     wrapper: css({
-      width: "45%",
+      // width: "45%",
+      width: "100px",
     }),
     "@media(min-width: 500px)": {
       width: "40%",

@@ -1,14 +1,12 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-// import Amplify from "aws-amplify";
-// import config from "../../aws-exports";
-// Amplify.configure(config);
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import PostPreview from "../../components/PostPreview";
 import NavBlog from "../../components/NavBlog";
 import BlogSideBar from "../../components/BlogSideBar";
+import BlogPreviewScroll from "../../components/BlogPreviewScroll";
 
 function changeBackground(mode) {
   if (mode === "dark") {
@@ -90,16 +88,17 @@ function HomePage({ location, handleLocation }) {
       display: "flex",
       flexBasis: "100%",
       flexWrap: "wrap",
-      justifyContent: "space-between",
+      margin: "0 -1%",
     }),
     otherPreviewWrapper: css({
       marginTop: "2rem",
       width: "100%",
-      "@media(min-width: 600px)": {
-        width: "49%",
-      },
+      margin: "1rem 1%",
       "@media(min-width: 768px)": {
-        width: "32%",
+        width: "48%",
+      },
+      "@media(min-width: 1024px)": {
+        width: "31%",
       },
     }),
     topSection: css({
@@ -147,6 +146,7 @@ function HomePage({ location, handleLocation }) {
         handleLocation={handleLocation}
         location={location}
         mode={mode}
+        changeMode={changeMode}
       />
       <div css={styles.previewsWrapper}>
         <div css={styles.topSection}>
@@ -172,24 +172,9 @@ function HomePage({ location, handleLocation }) {
             <BlogSideBar mode={mode} />
           </div>
         </div>
-        <div css={styles.otherPreviews}>
-          {previews.length > 0
-            ? previews.slice(1).map((p) => (
-                <div css={styles.otherPreviewWrapper}>
-                  <PostPreview
-                    key={p.fields.slug}
-                    articleType={p.fields.articleType}
-                    heading={p.fields.heading}
-                    introduction={p.fields.introduction}
-                    sharingImage={p.fields.sharingImage}
-                    slug={p.fields.slug}
-                    topPost={false}
-                    mode={mode}
-                  />
-                </div>
-              ))
-            : null}
-        </div>
+        {previews.length > 0 ? (
+          <BlogPreviewScroll mode={mode} previews={previews.slice(1)} />
+        ) : null}
       </div>
     </>
   );
