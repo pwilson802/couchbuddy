@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import CouchBuddyAd from "./CouchBuddyAd";
 import TwitterFollow from "./TwitterFollow";
+import FakeAd from "./FakeAd";
 
 const colors = {
   light: {
@@ -16,17 +17,17 @@ const colors = {
 function BlogSideBar({ mode }) {
   const styles = {
     wrapper: css({
-      //   borderStyle: "solid",
-      //   borderWidth: 1,
-      //   padding: "1rem",
-      //   backgroundColor: "#FEF4E1",
-      //   borderColor: "#FEF4E1",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-around",
+      height: "100%",
     }),
   };
   return (
     <div css={styles.wrapper}>
       <CouchBuddyAd mode={mode} />
       <TwitterFollow mode={mode} />
+      <FakeAd num={1} />
     </div>
   );
 }

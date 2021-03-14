@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import PostPreview from "./PostPreview";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MovieCardLoading from "./MovieCardLoading";
+import FakeAd from "./FakeAd";
 
 function BlogPreviewScroll({ previews, mode }) {
   const [items, setItems] = useState([]);
@@ -32,14 +33,13 @@ function BlogPreviewScroll({ previews, mode }) {
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      alignSelft: "center",
+      width: "100%",
     }),
   };
 
   const fetchMoreData = () => {
     const newItems = previews.slice(items.length, items.length + 6);
     if (items.length + 6 >= previews.length) {
-      console.log("runnign this one");
       setHasMore(false);
     }
     setItems([...items, ...newItems]);
@@ -52,6 +52,7 @@ function BlogPreviewScroll({ previews, mode }) {
     }
     setItems(startingItems);
   }, []);
+  console.log(items);
 
   return (
     <InfiniteScroll
@@ -65,20 +66,22 @@ function BlogPreviewScroll({ previews, mode }) {
         </div>
       }
     >
-      {items.map((p) => (
-        <div css={styles.otherPreviewWrapper}>
-          <PostPreview
-            key={p.fields.slug}
-            articleType={p.fields.articleType}
-            heading={p.fields.heading}
-            introduction={p.fields.introduction}
-            sharingImage={p.fields.sharingImage}
-            slug={p.fields.slug}
-            topPost={false}
-            mode={mode}
-          />
-        </div>
-      ))}
+      {items.map((p, index) => {
+        return (
+          <div css={styles.otherPreviewWrapper}>
+            <PostPreview
+              key={p.fields.slug}
+              articleType={p.fields.articleType}
+              heading={p.fields.heading}
+              introduction={p.fields.introduction}
+              sharingImage={p.fields.sharingImage}
+              slug={p.fields.slug}
+              topPost={false}
+              mode={mode}
+            />
+          </div>
+        );
+      })}
     </InfiniteScroll>
   );
 }

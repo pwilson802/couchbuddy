@@ -18,8 +18,9 @@ function CouchBuddyAdd({ mode }) {
     wrapper: css({
       display: "flex",
       borderTopStyle: "solid",
+      borderBottomStyle: "solid",
       borderWidth: 1,
-      padding: "0.5rem",
+      padding: "1rem",
       borderColor: "#F1888F",
       justifyContent: "space-around",
       alignItems: "center",

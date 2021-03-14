@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 import BlogProviders from "./BlogProviders";
+import FakeAd from "./FakeAd";
 
 const colors = {
   light: {
@@ -37,6 +38,9 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
     title: css({
       color: colors[mode]["text"],
     }),
+    adWrap: css({
+      marginTop: "1rem",
+    }),
   };
 
   return (
@@ -47,6 +51,9 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
         {body}
       </div>
       <BlogProviders providers={providers} mode={mode} />
+      <div css={styles.adWrap}>
+        <FakeAd num={1} />
+      </div>
     </div>
   );
 }

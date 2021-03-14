@@ -13,6 +13,7 @@ import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
 import Burger from "./Burger";
+import FakeAd from "./FakeAd";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
@@ -422,6 +423,9 @@ export default function SearchPage({
       alignItems: "center",
       marginTop: "50px",
     }),
+    adWrap: css({
+      marginTop: 10,
+    }),
   };
   return (
     <div>
@@ -491,6 +495,9 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
+            <div css={styles.adWrap}>
+              <FakeAd num={1} />
+            </div>
             {/* <div css={styles.locationWrap}>
               <LocationSelect
                 handleLocation={handleLocation}

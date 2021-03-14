@@ -7,6 +7,7 @@ import MovieCard from "./MovieCard";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
+import FakeAd from "./FakeAd";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
@@ -57,7 +58,9 @@ export default function ResultsPage({
   const [nothingFound, setNothingFound] = useState(false);
   const [movies, setMovies] = useState([]);
   const [activeMovies, setActiveMovies] = useState([]);
-  const [movieNumber, setMovieNumber] = useState(3);
+  //changing number from 3 to 6
+  // const [movieNumber, setMovieNumber] = useState(3);
+  const [movieNumber, setMovieNumber] = useState(6);
   const [pagDirection, setPagDirection] = useState("next");
   const {
     allProviderData,
@@ -111,7 +114,9 @@ export default function ResultsPage({
         return acc;
       }, []);
       setMovies(result);
-      setActiveMovies(result.slice(0, 3));
+      // changing number from 3 to 6
+      // setActiveMovies(result.slice(0, 3));
+      setActiveMovies(result.slice(0, 6));
       if (result.length === 0) {
         setNothingFound(true);
       }
@@ -125,13 +130,17 @@ export default function ResultsPage({
       // show an end page screen
       return;
     }
-    const pagNumber = pagDirection === "next" ? 3 : 6;
-    const startNumber = pagDirection === "next" ? 0 : 3;
+    // changing number from 3 to 6
+    // const pagNumber = pagDirection === "next" ? 3 : 6;
+    // const startNumber = pagDirection === "next" ? 0 : 3;
+    const pagNumber = pagDirection === "next" ? 6 : 12;
+    const startNumber = pagDirection === "next" ? 0 : 6;
     setActiveMovies(
       movies.slice(movieNumber + startNumber, movieNumber + pagNumber)
     );
     setMovieNumber(movieNumber + pagNumber);
     setPagDirection("next");
+    window.scrollTo(0, 0);
   }
 
   function prevMovies() {
@@ -139,13 +148,17 @@ export default function ResultsPage({
       // show an end page screen
       return;
     }
-    const pagNumber = pagDirection === "prev" ? 3 : 6;
-    const startNumber = pagDirection === "prev" ? 0 : 3;
+    // changing number from 3 to 6
+    const pagNumber = pagDirection === "prev" ? 6 : 12;
+    const startNumber = pagDirection === "prev" ? 0 : 6;
+    // const pagNumber = pagDirection === "prev" ? 3 : 6;
+    // const startNumber = pagDirection === "prev" ? 0 : 3;
     setActiveMovies(
       movies.slice(movieNumber - pagNumber, movieNumber - startNumber)
     );
     setMovieNumber(movieNumber - pagNumber);
     setPagDirection("prev");
+    window.scrollTo(0, 0);
   }
 
   const styles = {
@@ -172,6 +185,9 @@ export default function ResultsPage({
     }),
     nextButton: css({
       marginLeft: 10,
+    }),
+    adWrap: css({
+      marginTop: "1rem",
     }),
   };
   console.log("Movies Length", movies.length);
@@ -200,9 +216,18 @@ export default function ResultsPage({
                 ></MovieCard>
               ))}
             </div>
-            {movies.length > 3 && (
+            {movieNumber % 12 === 0 && (
+              <div css={styles.adWrap}>
+                <FakeAd num={1} />
+              </div>
+            )}
+            {/* changing number from 3 to 6 */}
+            {/* {movies.length > 3 && ( */}
+            {movies.length > 6 && (
               <div css={styles.buttons}>
-                {movieNumber > 3 && (
+                {/* changing number from 3 to 6 */}
+                {/* {movieNumber > 3 && ( */}
+                {movieNumber > 6 && (
                   <div css={styles.prevButton}>
                     <NavButton
                       handleSubmit={prevMovies}
