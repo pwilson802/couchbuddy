@@ -25,13 +25,13 @@ const colors = {
   },
 };
 
-const client = require("contentful").createClient({
-  space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-  accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
-});
+// const client = require("contentful").createClient({
+//   space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+//   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
+// });
 
-function HomePage({ location, handleLocation }) {
-  const [previews, setPreviews] = useState([]);
+function HomePage({ location, handleLocation, previews }) {
+  // const [previews, setPreviews] = useState([]);
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -40,39 +40,39 @@ function HomePage({ location, handleLocation }) {
     setMode(mode);
   };
 
-  async function fetchEntries() {
-    const entries = await client.getEntries({
-      content_type: "articleTitle",
-    });
-    console.log(entries);
-    if (entries.items) return entries.items;
-    console.log(`Error getting Entries for ${contentType.name}.`);
-  }
+  // async function fetchEntries() {
+  //   const entries = await client.getEntries({
+  //     content_type: "articleTitle",
+  //   });
+  //   console.log(entries);
+  //   if (entries.items) return entries.items;
+  //   console.log(`Error getting Entries for ${contentType.name}.`);
+  // }
 
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
   }, []);
 
-  useEffect(() => {
-    async function getPreviews() {
-      const allPreviews = await fetchEntries();
-      console.log("allPreviews", allPreviews);
-      const sortedPreviews = allPreviews.sort((a, b) => {
-        const firstDate = Date(a.dateAdded);
-        const secondDate = new Date(b.dateAdded);
-        if (firstDate - secondDate < 0) {
-          return 1;
-        } else if (firstDate - secondDate > 0) {
-          return -1;
-        }
-        return 0;
-      });
-      console.log("sortedPreviews", sortedPreviews);
-      setPreviews([...sortedPreviews]);
-    }
-    getPreviews();
-  }, []);
+  // useEffect(() => {
+  //   async function getPreviews() {
+  //     const allPreviews = await fetchEntries();
+  //     console.log("allPreviews", allPreviews);
+  //     const sortedPreviews = allPreviews.sort((a, b) => {
+  //       const firstDate = Date(a.dateAdded);
+  //       const secondDate = new Date(b.dateAdded);
+  //       if (firstDate - secondDate < 0) {
+  //         return 1;
+  //       } else if (firstDate - secondDate > 0) {
+  //         return -1;
+  //       }
+  //       return 0;
+  //     });
+  //     console.log("sortedPreviews", sortedPreviews);
+  //     setPreviews([...sortedPreviews]);
+  //   }
+  //   getPreviews();
+  // }, []);
 
   const styles = {
     previewsWrapper: css({
@@ -178,6 +178,45 @@ function HomePage({ location, handleLocation }) {
       </div>
     </>
   );
+}
+
+export async function getStaticProps() {
+  const client = require("contentful").createClient({
+    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
+  });
+
+  async function fetchEntries() {
+    const entries = await client.getEntries({
+      content_type: "articleTitle",
+    });
+    console.log(entries);
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
+  async function getPreviews() {
+    const allPreviews = await fetchEntries();
+    console.log("allPreviews", allPreviews);
+    const sortedPreviews = allPreviews.sort((a, b) => {
+      const firstDate = Date(a.dateAdded);
+      const secondDate = new Date(b.dateAdded);
+      if (firstDate - secondDate < 0) {
+        return 1;
+      } else if (firstDate - secondDate > 0) {
+        return -1;
+      }
+      return 0;
+    });
+    return [...sortedPreviews];
+  }
+  const previews = await getPreviews();
+
+  return {
+    props: {
+      previews,
+    },
+  };
 }
 
 export default HomePage;
