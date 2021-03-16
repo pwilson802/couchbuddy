@@ -30,8 +30,8 @@ const colors = {
   },
 };
 
-function Article({ blurbs, article }) {
-  const [location, setLocation] = useState("AU");
+function Article({ location, handleLocation, blurbs, article }) {
+  // const [location, setLocation] = useState("AU");
   const [mode, setMode] = useState("dark");
   const [loaded, setLoaded] = useState(false);
   const router = useRouter();
@@ -54,10 +54,10 @@ function Article({ blurbs, article }) {
     setMode(mode);
   };
 
-  function handleLocation(loc) {
-    localStorage.setItem("country", loc.target.value);
-    setLocation(loc.target.value);
-  }
+  // function handleLocation(loc) {
+  //   localStorage.setItem("country", loc.target.value);
+  //   setLocation(loc.target.value);
+  // }
 
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
