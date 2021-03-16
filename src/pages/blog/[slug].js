@@ -62,8 +62,8 @@ function Article({ location, handleLocation, blurbs, article }) {
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
-    const currentLocation = localStorage.getItem("country") || "US";
-    setLocation(currentLocation);
+    // const currentLocation = localStorage.getItem("country") || "US";
+    // setLocation(currentLocation);
   }, []);
 
   const styles = {
