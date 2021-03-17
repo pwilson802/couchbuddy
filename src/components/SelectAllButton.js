@@ -16,7 +16,7 @@ const colors = {
 };
 
 function SelectAllButton({ selectedItems, setSelected, mode }) {
-  console.log("selectedItems", selectedItems);
+  //console.log()("selectedItems", selectedItems);
   const [allSelected, setAllSelected] = useState(false);
   const player = useRef();
   const styles = {

@@ -52,7 +52,7 @@ function BlogPreviewScroll({ previews, mode }) {
     }
     setItems(startingItems);
   }, []);
-  console.log(items);
+  //console.log()(items);
 
   return (
     <InfiniteScroll
@@ -66,9 +66,9 @@ function BlogPreviewScroll({ previews, mode }) {
         </div>
       }
     >
-      {items.map((p, index) => {
+      {items.map((p) => {
         return (
-          <div css={styles.otherPreviewWrapper}>
+          <div css={styles.otherPreviewWrapper} key={p.fields.slug}>
             <PostPreview
               key={p.fields.slug}
               articleType={p.fields.articleType}

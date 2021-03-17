@@ -195,6 +195,7 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
           {options.map((country) => {
             return (
               <option
+                key={country.value}
                 css={
                   country.value === location
                     ? styles.optionSelected

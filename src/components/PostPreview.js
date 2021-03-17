@@ -2,7 +2,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Link from "next/link";
-import Image from "next/image";
 
 const colors = {
   light: {

@@ -41,7 +41,7 @@ async function getMovieIDsforGenres(genres) {
 
 function reduceShuffleMovies(movies, sortByVote) {
   if (!sortByVote) {
-    console.log("shuffling....");
+    //console.log()("shuffling....");
     shuffle(movies);
   }
   return movies.slice(0, 209);
@@ -190,9 +190,9 @@ export default function ResultsPage({
       marginTop: "1rem",
     }),
   };
-  console.log("Movies Length", movies.length);
-  console.log("Movies", movies);
-  console.log("movieNumber", movieNumber);
+  //console.log()("Movies Length", movies.length);
+  //console.log()("Movies", movies);
+  //console.log()("movieNumber", movieNumber);
 
   return (
     <div>

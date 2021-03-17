@@ -1,8 +1,16 @@
 import "./app.css";
 import { useState, useEffect } from "react";
+import SpinnerMovie from "../components/SpinnerMovie";
 
 function MyApp({ Component, pageProps }) {
   const [location, setLocation] = useState(null);
+  const [mode, setMode] = useState("dark");
+
+  const changeMode = (mode) => {
+    localStorage.setItem("mode", mode);
+    changeBackground(mode);
+    setMode(mode);
+  };
 
   useEffect(() => {
     async function pageLoad() {
@@ -15,13 +23,14 @@ function MyApp({ Component, pageProps }) {
   function handleLocation(loc) {
     setLocation(loc.target.value);
   }
-  console.log("APP-Location", location);
 
   return (
     <Component
       {...pageProps}
       location={location}
       handleLocation={handleLocation}
+      mode={mode}
+      changeMode={changeMode}
     />
   );
 }
@@ -84,4 +93,12 @@ async function getIPLocation() {
     return countryCode;
   }
   return "US";
+}
+
+function changeBackground(mode) {
+  if (mode === "dark") {
+    document.body.style = "background: #15202A";
+  } else {
+    document.body.style = "background: white";
+  }
 }

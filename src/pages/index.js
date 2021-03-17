@@ -6,22 +6,22 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import App from "../components/App";
 
-function changeBackground(mode) {
-  if (mode === "dark") {
-    document.body.style = "background: #15202A";
-  } else {
-    document.body.style = "background: white";
-  }
-}
+// function changeBackground(mode) {
+//   if (mode === "dark") {
+//     document.body.style = "background: #15202A";
+//   } else {
+//     document.body.style = "background: white";
+//   }
+// }
 
-export default function Home({ location, handleLocation }) {
-  const [mode, setMode] = useState("dark");
+export default function Home({ location, handleLocation, mode, changeMode }) {
+  // const [mode, setMode] = useState("dark");
 
-  const changeMode = (mode) => {
-    localStorage.setItem("mode", mode);
-    changeBackground(mode);
-    setMode(mode);
-  };
+  // const changeMode = (mode) => {
+  //   localStorage.setItem("mode", mode);
+  //   changeBackground(mode);
+  //   setMode(mode);
+  // };
 
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";

@@ -8,71 +8,28 @@ import NavBlog from "../../components/NavBlog";
 import BlogSideBar from "../../components/BlogSideBar";
 import BlogPreviewScroll from "../../components/BlogPreviewScroll";
 
-function changeBackground(mode) {
-  if (mode === "dark") {
-    document.body.style = "background: #15202A";
-  } else {
-    document.body.style = "background: white";
-  }
-}
+// function changeBackground(mode) {
+//   if (mode === "dark") {
+//     document.body.style = "background: #15202A";
+//   } else {
+//     document.body.style = "background: white";
+//   }
+// }
 
-const colors = {
-  light: {
-    text: "black",
-  },
-  dark: {
-    text: "white",
-  },
-};
+function HomePage({ location, handleLocation, mode, changeMode, previews }) {
+  // console.log("preview", previews);
+  // const [mode, setMode] = useState("dark");
 
-// const client = require("contentful").createClient({
-//   space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-//   accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
-// });
-
-function HomePage({ location, handleLocation, previews }) {
-  // const [previews, setPreviews] = useState([]);
-  const [mode, setMode] = useState("dark");
-
-  const changeMode = (mode) => {
-    localStorage.setItem("mode", mode);
-    changeBackground(mode);
-    setMode(mode);
-  };
-
-  // async function fetchEntries() {
-  //   const entries = await client.getEntries({
-  //     content_type: "articleTitle",
-  //   });
-  //   console.log(entries);
-  //   if (entries.items) return entries.items;
-  //   console.log(`Error getting Entries for ${contentType.name}.`);
-  // }
+  // const changeMode = (mode) => {
+  //   localStorage.setItem("mode", mode);
+  //   changeBackground(mode);
+  //   setMode(mode);
+  // };
 
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
   }, []);
-
-  // useEffect(() => {
-  //   async function getPreviews() {
-  //     const allPreviews = await fetchEntries();
-  //     console.log("allPreviews", allPreviews);
-  //     const sortedPreviews = allPreviews.sort((a, b) => {
-  //       const firstDate = Date(a.dateAdded);
-  //       const secondDate = new Date(b.dateAdded);
-  //       if (firstDate - secondDate < 0) {
-  //         return 1;
-  //       } else if (firstDate - secondDate > 0) {
-  //         return -1;
-  //       }
-  //       return 0;
-  //     });
-  //     console.log("sortedPreviews", sortedPreviews);
-  //     setPreviews([...sortedPreviews]);
-  //   }
-  //   getPreviews();
-  // }, []);
 
   const styles = {
     previewsWrapper: css({
@@ -190,25 +147,25 @@ export async function getStaticProps() {
     const entries = await client.getEntries({
       content_type: "articleTitle",
     });
-    console.log(entries);
     if (entries.items) return entries.items;
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
 
   async function getPreviews() {
     const allPreviews = await fetchEntries();
-    console.log("allPreviews", allPreviews);
     const sortedPreviews = allPreviews.sort((a, b) => {
-      const firstDate = Date(a.dateAdded);
-      const secondDate = new Date(b.dateAdded);
+      const firstDate = new Date(a.fields.dateAdded);
+      const secondDate = new Date(b.fields.dateAdded);
       if (firstDate - secondDate < 0) {
+        console.log("--- sort returned 1");
         return 1;
       } else if (firstDate - secondDate > 0) {
+        console.log("--- sort returned 2");
         return -1;
       }
       return 0;
     });
-    return [...sortedPreviews];
+    return sortedPreviews;
   }
   const previews = await getPreviews();
 

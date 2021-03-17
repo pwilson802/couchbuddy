@@ -3,10 +3,9 @@
 import { jsx, css } from "@emotion/react";
 import Lottie from "lottie-react";
 import darkMode from "../assets/darkmode.json";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 
 function ModeSwitch({ mode, changeMode }) {
-  const [isOpen, setIsOpen] = useState();
   const player = useRef();
   const activeSegments = mode == "dark" ? [240, 481] : [0, 240];
   const styles = {

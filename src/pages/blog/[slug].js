@@ -9,13 +9,13 @@ import NavBlog from "../../components/NavBlog";
 import Burger from "../../components/Burger";
 import Image from "next/image";
 
-function changeBackground(mode) {
-  if (mode === "dark") {
-    document.body.style = "background: #15202A";
-  } else {
-    document.body.style = "background: white";
-  }
-}
+// function changeBackground(mode) {
+//   if (mode === "dark") {
+//     document.body.style = "background: #15202A";
+//   } else {
+//     document.body.style = "background: white";
+//   }
+// }
 
 const colors = {
   light: {
@@ -30,12 +30,19 @@ const colors = {
   },
 };
 
-function Article({ location, handleLocation, blurbs, article }) {
+function Article({
+  location,
+  handleLocation,
+  mode,
+  changeMode,
+  blurbs,
+  article,
+}) {
   // const [location, setLocation] = useState("AU");
-  const [mode, setMode] = useState("dark");
-  const [loaded, setLoaded] = useState(false);
+  // const [mode, setMode] = useState("dark");
+  // const [loaded, setLoaded] = useState(false);
   const router = useRouter();
-  const { slug } = router.query;
+  // const { slug } = router.query;
   const {
     heading,
     sharingDescription,
@@ -48,11 +55,11 @@ function Article({ location, handleLocation, blurbs, article }) {
 
   const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
-  const changeMode = (mode) => {
-    localStorage.setItem("mode", mode);
-    changeBackground(mode);
-    setMode(mode);
-  };
+  // const changeMode = (mode) => {
+  //   localStorage.setItem("mode", mode);
+  //   changeBackground(mode);
+  //   setMode(mode);
+  // };
 
   // function handleLocation(loc) {
   //   localStorage.setItem("country", loc.target.value);
