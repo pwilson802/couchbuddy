@@ -87,16 +87,16 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
         <meta name="twitter:site" content="@couch_buddy" />
         <meta
           name="twitter:image"
-          content="https://couchbuddy.s3-ap-southeast-2.amazonaws.com/twitterCard.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-blog.png"
         />
-        <meta property="og:title" content="CouchBuddy" />
+        <meta property="og:title" content="CouchBuddy Blog" />
         <meta
           property="og:description"
           content="Not sure what to watch? CouchBuddy's got you sorted"
         />
         <meta
           property="og:image"
-          content="https://couchbuddy.s3-ap-southeast-2.amazonaws.com/twitterCard.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-blog.png"
         />
       </Head>
       <NavBlog
