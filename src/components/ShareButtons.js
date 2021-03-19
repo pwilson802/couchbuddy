@@ -21,12 +21,13 @@ function ShareButtons({ movie, tagline }) {
     }),
   };
   const shareMessage = `I'm watching ${movie}.\r\n\r\n${tagline}`;
+  const twitterShareMessage = `I'm watching ${movie}.  @couch_buddy \r\n\r\n${tagline}`;
   return (
     <div css={styles.shareButtons}>
       <div css={styles.shareButton}>
         <TwitterShareButton
           url={"https://couchbuddy.info"}
-          title={shareMessage}
+          title={twitterShareMessage}
         >
           <TwitterIcon size={32} round={true} />
         </TwitterShareButton>
