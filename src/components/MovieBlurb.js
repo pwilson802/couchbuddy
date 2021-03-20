@@ -24,7 +24,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
     image: css({
       // width: "30%",
       float: "left",
-      marginRight: "0.5rem",
+      marginRight: "1rem",
       marginBottom: "0.5rem",
     }),
     wrapper: css({
@@ -37,6 +37,10 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
     }),
     title: css({
       color: colors[mode]["text"],
+      fontFamily: "Roboto Slab",
+      fontSize: 32,
+      textAlign: "left",
+      marginBottom: 1,
     }),
     adWrap: css({
       marginTop: "1rem",
@@ -44,7 +48,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
   };
 
   return (
-    <div>
+    <article>
       <h2 css={styles.title}>{title}</h2>
       <div css={styles.wrapper}>
         <img css={styles.image} src={image} alt="" />
@@ -54,7 +58,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
       <div css={styles.adWrap}>
         <FakeAd num={1} />
       </div>
-    </div>
+    </article>
   );
 }
 

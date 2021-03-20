@@ -87,6 +87,12 @@ function Article({
     }),
     pageWrapper: css({
       margin: "70px 3%",
+      "@media(min-width: 1024px)": {
+        margin: "70px  40%",
+      },
+      "@media(min-width: 768px)": {
+        margin: "70px  10%",
+      },
     }),
     heading: css({
       textAlign: "center",
@@ -107,7 +113,7 @@ function Article({
     }),
     articlesWrapper: css({
       "@media(min-width: 1024px)": {
-        margin: "0 20%",
+        margin: "0 40%",
       },
       "@media(min-width: 768px)": {
         margin: "0 10%",
@@ -145,14 +151,6 @@ function Article({
       <div css={styles.pageWrapper}>
         <div css={styles.imageWrapper}>
           <img css={styles.image} src={sharingImage} alt={heading} />
-          {/* <Image
-            css={styles.image}
-            src={sharingImage}
-            alt={heading}
-            width={840}
-            height={441}
-            layout="responsive"
-          /> */}
         </div>
         <div css={styles.articlesWrapper}>
           <h1 css={styles.heading}>{articleType + " " + heading}</h1>
@@ -164,12 +162,6 @@ function Article({
               width={50}
               height={50}
             />
-            {/* <Image
-              src={authorImage}
-              alt="Picture of author"
-              width={50}
-              height={50}
-            /> */}
           </div>
           <p css={styles.introduction}>{introduction}</p>
           {blurbs.length > 0

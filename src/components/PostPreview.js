@@ -58,9 +58,7 @@ function PostPreview({
           layout="responsive"
         /> */}
         <h1 css={styles.heading}>{articleType + " " + heading}</h1>
-        {topPost && (
-          <p css={styles.introduction}>{introduction.slice(1, 150)}</p>
-        )}
+        {topPost && <p css={styles.introduction}>{introduction}</p>}
       </div>
     </Link>
   );
