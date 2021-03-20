@@ -37,7 +37,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode }) {
     }),
     title: css({
       color: colors[mode]["text"],
-      fontFamily: "Roboto Slab",
+      // fontFamily: "Roboto Slab",
       fontSize: 32,
       textAlign: "left",
       marginBottom: 1,
