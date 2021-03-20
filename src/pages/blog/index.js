@@ -34,6 +34,12 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
   const styles = {
     previewsWrapper: css({
       margin: "70px 3%",
+      "@media(min-width: 1024px)": {
+        margin: "70px  40%",
+      },
+      "@media(min-width: 768px)": {
+        margin: "70px  10%",
+      },
     }),
     topPreview: css({
       marginTop: "1rem",

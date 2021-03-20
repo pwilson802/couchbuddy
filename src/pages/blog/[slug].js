@@ -165,7 +165,7 @@ function Article({
           </div>
           <p css={styles.introduction}>{introduction}</p>
           {blurbs.length > 0
-            ? blurbs.map((p) => (
+            ? blurbs.map((p, index) => (
                 <MovieBlurb
                   id={p.fields.movieId}
                   body={p.fields.body}
@@ -173,6 +173,7 @@ function Article({
                   providers={p.fields.providers[location] || {}}
                   movieDetails={p.fields.movieDetails}
                   mode={mode}
+                  itemIndex={index}
                 />
               ))
             : null}
@@ -203,7 +204,6 @@ export async function getStaticProps(context) {
     const movieDetails = await response.json();
     return movieDetails;
   }
-  // getMovieDetails("127585").then((data) => console.log(data));
 
   async function fetchEntries() {
     const entries = await client.getEntries({
