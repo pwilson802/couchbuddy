@@ -26,8 +26,8 @@ function BlogSideBar({ mode }) {
   return (
     <div css={styles.wrapper}>
       <CouchBuddyAd mode={mode} />
-      <TwitterFollow mode={mode} />
       <FakeAd num={1} />
+      <TwitterFollow mode={mode} />
     </div>
   );
 }
