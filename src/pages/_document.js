@@ -16,6 +16,11 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
           <script
+            data-ad-client="ca-pub-9245347946008848"
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          ></script>
+          <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-JEN15TQ9KZ"
           />
