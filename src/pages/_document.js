@@ -35,6 +35,20 @@ class MyDocument extends Document {
           `,
             }}
           />
+          <script
+            type="text/javascript"
+            dangerouslySetInnerHTML={{
+              __html: `
+              window._mNHandle = window._mNHandle || {};
+              window._mNHandle.queue = window._mNHandle.queue || [];
+              medianet_versionId = "3121199";
+              `,
+            }}
+          />
+          <script
+            src="https://contextual.media.net/dmedianet.js?cid=8CU336DND"
+            async="async"
+          ></script>
         </Head>
         <body>
           <Main />

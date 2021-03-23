@@ -224,7 +224,6 @@ export async function getStaticProps(context) {
   }
   const blurbs = await fetchEntries();
   const article = await fetchArticle();
-  console.log();
   for (let i = 0; i < blurbs.length; i++) {
     let id = blurbs[i].fields.movieId;
     let providers = await getMovieProviders(id);
