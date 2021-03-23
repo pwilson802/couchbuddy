@@ -20,7 +20,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
   const tagline = movieDetails.tagline;
   const runtime = movieDetails.runtime;
   const year = movieDetails.release_date.split("-")[0];
-  const image = "http://image.tmdb.org/t/p/w185" + movieDetails.poster_path;
+  const image = "https://image.tmdb.org/t/p/w185" + movieDetails.poster_path;
 
   const styles = {
     image: css({
@@ -60,7 +60,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       {/* Only showing ad add after every 3 articles. */}
       {(itemIndex + 1) % 3 === 0 && (
         <div css={styles.adWrap}>
-          <MediaNetAd divId="687467543" size="728x90" />
+          <MediaNetAd divId="276487318" size="728x90" />
         </div>
       )}
     </article>
