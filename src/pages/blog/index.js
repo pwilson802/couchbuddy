@@ -43,7 +43,7 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
     }),
     topPreview: css({
       marginTop: "1rem",
-      "@media(min-width: 768px)": {
+      "@media(min-width: 1024px)": {
         width: "70%",
       },
     }),
@@ -65,12 +65,12 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
       },
     }),
     topSection: css({
-      "@media(min-width: 768px)": {
+      "@media(min-width: 1024px)": {
         display: "flex",
       },
     }),
     sideBar: css({
-      "@media(min-width: 768px)": {
+      "@media(min-width: 1024px)": {
         marginTop: "1rem",
         marginLeft: "1rem",
         display: "flex",

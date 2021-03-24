@@ -4,7 +4,6 @@ import { jsx, css } from "@emotion/react";
 import React from "react";
 import BlogProviders from "./BlogProviders";
 import FakeAd from "./FakeAd";
-import MediaNetAd from "./MediaNetAd";
 
 const colors = {
   light: {
@@ -60,7 +59,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       {/* Only showing ad add after every 3 articles. */}
       {(itemIndex + 1) % 3 === 0 && (
         <div css={styles.adWrap}>
-          <MediaNetAd divId="276487318" size="728x90" />
+          <FakeAd />
         </div>
       )}
     </article>

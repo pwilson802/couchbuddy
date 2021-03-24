@@ -10,15 +10,23 @@ function FakeAd({ num }) {
       alignItems: "center",
       justifyContent: "center",
     }),
+    image: css({
+      maxWidth: 350,
+      "@media(min-width: 1024px)": {
+        maxWidth: 300,
+      },
+      "@media(min-width: 1600px)": {
+        maxWidth: 400,
+      },
+    }),
   };
   return (
     <div css={styles.wrapper}>
       <a href="https://thegeneralquiz.com" target="_blanks">
         <img
+          css={styles.image}
           src={`/ad${num}.png`}
           alt="An ad for The General Quiz"
-          width={300}
-          height={100}
         />
       </a>
     </div>

@@ -38,24 +38,25 @@ function CouchBuddyAdd({ mode }) {
       justifyContent: "center",
       padding: "1rem",
     }),
+    image: css({
+      maxWidth: 350,
+      "@media(min-width: 1024px)": {
+        maxWidth: 300,
+      },
+      "@media(min-width: 1600px)": {
+        maxWidth: 400,
+      },
+    }),
   };
   return (
     <Link href={"/"}>
       <div css={styles.adwrapper}>
         <a href={"/"} css={styles.link}>
           <img
+            css={styles.image}
             src={`/couchbyddyad1.png`}
             alt="An ad for Couch Buddy"
-            width={300}
-            height={150}
           />
-          {/* <div css={styles.wrapper}>
-          <div css={styles.textWrapper}>
-            <p css={styles.text}>What are you watching tonight?</p>
-            <p css={styles.text}>Find out on CouchBuddy</p>
-          </div>
-          <img src="./tv-65.png" alt="CouchBuddy Television" />
-        </div> */}
         </a>
       </div>
     </Link>

@@ -1,7 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import { TwitterIcon } from "react-share";
 
 const colors = {
   light: {
@@ -36,6 +35,15 @@ function TwitterFollow({ mode }) {
     link: css({
       textDecoration: "none",
     }),
+    image: css({
+      maxWidth: 40,
+      "@media(min-width: 1024px)": {
+        maxWidth: 40,
+      },
+      "@media(min-width: 1600px)": {
+        maxWidth: 50,
+      },
+    }),
   };
   return (
     <a css={styles.link} href="https://twitter.com/couch_buddy" target="_blank">
@@ -44,7 +52,7 @@ function TwitterFollow({ mode }) {
           Follow us for new articles and cool movie suggestions
         </p>
         <div>
-          <TwitterIcon size={28} />
+          <img css={styles.image} src={`/twitter.png`} alt="Twitter Icon" />
         </div>
       </div>
     </a>
