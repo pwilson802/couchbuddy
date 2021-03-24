@@ -59,7 +59,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       {/* Only showing ad add after every 3 articles. */}
       {(itemIndex + 1) % 3 === 0 && (
         <div css={styles.adWrap}>
-          <FakeAd />
+          <FakeAd num={1} />
         </div>
       )}
     </article>
