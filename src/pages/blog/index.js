@@ -7,25 +7,9 @@ import PostPreview from "../../components/PostPreview";
 import NavBlog from "../../components/NavBlog";
 import BlogSideBar from "../../components/BlogSideBar";
 import BlogPreviewScroll from "../../components/BlogPreviewScroll";
-
-// function changeBackground(mode) {
-//   if (mode === "dark") {
-//     document.body.style = "background: #15202A";
-//   } else {
-//     document.body.style = "background: white";
-//   }
-// }
+import Footer from "../../components/Footer";
 
 function HomePage({ location, handleLocation, mode, changeMode, previews }) {
-  // console.log("preview", previews);
-  // const [mode, setMode] = useState("dark");
-
-  // const changeMode = (mode) => {
-  //   localStorage.setItem("mode", mode);
-  //   changeBackground(mode);
-  //   setMode(mode);
-  // };
-
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
@@ -84,6 +68,11 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
     <>
       <Head>
         <title>CouchBuddy Blog</title>
+        <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="description"
+          content="CouchBuddy blog exists to help you choose a movie based on your mood or hankering (and as an excuse for us to write silly things about movies we watch)."
+        />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:description"
@@ -111,7 +100,7 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
         mode={mode}
         changeMode={changeMode}
       />
-      <div css={styles.previewsWrapper}>
+      <main css={styles.previewsWrapper}>
         <div css={styles.topSection}>
           <div css={styles.topPreview}>
             {previews.length > 0
@@ -138,7 +127,10 @@ function HomePage({ location, handleLocation, mode, changeMode, previews }) {
         {previews.length > 0 ? (
           <BlogPreviewScroll mode={mode} previews={previews.slice(1)} />
         ) : null}
-      </div>
+      </main>
+      <footer>
+        <Footer activePage="blog" mode={mode} />
+      </footer>
     </>
   );
 }

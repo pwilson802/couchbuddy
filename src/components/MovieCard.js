@@ -4,7 +4,6 @@ import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import ShareButtons from "./ShareButtons";
 import Image from "next/image";
-import SpinnerMovie from "./SpinnerMovie";
 import MovieCardLoading from "./MovieCardLoading";
 
 async function getMovieDetails(id) {

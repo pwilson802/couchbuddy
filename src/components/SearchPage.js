@@ -3,7 +3,6 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
-import LocationSelect from "./LocationSelect";
 import Genres from "./Genres";
 import Providers from "./Providers";
 import Duration from "./Duration";
@@ -13,7 +12,6 @@ import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
 import Burger from "./Burger";
-import FakeAd from "./FakeAd";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
@@ -195,7 +193,6 @@ export default function SearchPage({
   location,
   handleLocation,
 }) {
-  // const [location, setLocation] = useState(null);
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
   const [localProviderMovies, setLocalProviderMovies] = useState({});
@@ -210,6 +207,9 @@ export default function SearchPage({
   //console.log()("location in search page", location);
   //console.log()("handleLocation in search page", handleLocation);
   async function configureProviders(location) {
+    // if (location === null) {
+    //   return;
+    // }
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
@@ -227,6 +227,9 @@ export default function SearchPage({
   }
 
   async function configureCertifications(location) {
+    // if (location === null) {
+    //   return;
+    // }
     const localCertificationData = await getLocalCertifications(location);
     const certificationsObj = await makeCertificationsObj(
       localCertificationData
@@ -495,16 +498,6 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
-            {/* <div css={styles.adWrap}>
-              <FakeAd num={1} />
-            </div> */}
-            {/* <div css={styles.locationWrap}>
-              <LocationSelect
-                handleLocation={handleLocation}
-                location={location}
-                mode={mode === "dark" ? "darkFooter" : "light"}
-              />
-            </div> */}
           </div>
         ) : (
           <SpinnerMovie />

@@ -7,13 +7,15 @@ import Link from "next/link";
 const colors = {
   light: {
     text: "black",
+    selected: "#E12C86",
   },
   dark: {
-    text: "white",
+    text: "rgba(255,255,255, 0.8)",
+    selected: "#E12C86",
   },
 };
 
-function Footer({ setPage, mode }) {
+function Footer({ activePage, mode }) {
   const styles = {
     footerWrap: css({
       display: "flex",
@@ -33,14 +35,69 @@ function Footer({ setPage, mode }) {
       cursor: "pointer",
       marginLeft: "30px",
     }),
+    text: css({
+      textDecoration: "none",
+      cursor: "pointer",
+      display: "inline",
+      margin: "0 15px 15px 20px",
+      fontSize: "0.8rem",
+      color: colors[mode]["text"],
+    }),
+    textSelected: css({
+      textDecoration: "none",
+      cursor: "pointer",
+      display: "inline",
+      margin: "0 15px 15px 20px",
+      fontSize: "0.8rem",
+    }),
+    link: css({
+      textDecoration: "none",
+      margin: 0,
+      padding: 0,
+      display: "block",
+      color: colors[mode]["text"],
+    }),
+    linkSelected: css({
+      textDecoration: "none",
+      margin: 0,
+      padding: 0,
+      display: "block",
+      color: colors[mode]["selected"],
+    }),
   };
   return (
     <div css={styles.footerWrap}>
-      <Link href={"/about"}>
-        <div css={styles.about}>About & Settings</div>
+      <Link href={"/"}>
+        <div css={styles.text}>
+          <a
+            href={"/"}
+            css={activePage === "app" ? styles.linkSelected : styles.link}
+          >
+            APP
+          </a>
+        </div>
       </Link>
+      <p css={styles.text}>|</p>
       <Link href={"/blog"}>
-        <div css={styles.blogLink}>Blog</div>
+        <div css={styles.text}>
+          <a
+            href={"/blog"}
+            css={activePage === "blog" ? styles.linkSelected : styles.link}
+          >
+            BLOG
+          </a>
+        </div>
+      </Link>
+      <p css={styles.text}>|</p>
+      <Link href={"/about"}>
+        <div css={styles.text}>
+          <a
+            href={"/about"}
+            css={activePage === "about" ? styles.linkSelected : styles.link}
+          >
+            ABOUT
+          </a>
+        </div>
       </Link>
     </div>
   );

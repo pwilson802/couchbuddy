@@ -4,18 +4,8 @@ import { jsx, css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import MovieBlurb from "../../components/MovieBlurb";
-import { useRouter } from "next/router";
 import NavBlog from "../../components/NavBlog";
-import Burger from "../../components/Burger";
-import Image from "next/image";
-
-// function changeBackground(mode) {
-//   if (mode === "dark") {
-//     document.body.style = "background: #15202A";
-//   } else {
-//     document.body.style = "background: white";
-//   }
-// }
+import Footer from "../../components/Footer";
 
 const colors = {
   light: {
@@ -38,11 +28,6 @@ function Article({
   blurbs,
   article,
 }) {
-  // const [location, setLocation] = useState("AU");
-  // const [mode, setMode] = useState("dark");
-  // const [loaded, setLoaded] = useState(false);
-  const router = useRouter();
-  // const { slug } = router.query;
   const {
     heading,
     sharingDescription,
@@ -51,26 +36,14 @@ function Article({
     articleType,
     introduction,
     author,
+    metaDescription,
   } = article[0].fields;
 
   const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
-  // const changeMode = (mode) => {
-  //   localStorage.setItem("mode", mode);
-  //   changeBackground(mode);
-  //   setMode(mode);
-  // };
-
-  // function handleLocation(loc) {
-  //   localStorage.setItem("country", loc.target.value);
-  //   setLocation(loc.target.value);
-  // }
-
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
-    // const currentLocation = localStorage.getItem("country") || "US";
-    // setLocation(currentLocation);
   }, []);
 
   const styles = {
@@ -124,22 +97,25 @@ function Article({
   return (
     <>
       <Head>
-        <title>{article.length > 0 ? article[0].fields.heading : ""}</title>
+        <title>{article.length > 0 ? articleType + " " + heading : ""}</title>
+        <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="description"
+          content={article.length > 0 ? metaDescription : ""}
+        />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:description"
-          content={
-            article.length > 0 ? article[0].fields.sharingDescription : ""
-          }
+          content={article.length > 0 ? sharingDescription : ""}
         />
         <meta
           name="twitter:title"
-          content={article.length > 0 ? article[0].fields.sharingTitle : ""}
+          content={article.length > 0 ? sharingTitle : ""}
         />
         <meta name="twitter:site" content="@couch_buddy" />
         <meta
           name="twitter:image"
-          content={article.length > 0 ? article[0].fields.sharingImage : ""}
+          content={article.length > 0 ? sharingImage : ""}
         />
       </Head>
       <NavBlog
@@ -148,7 +124,7 @@ function Article({
         mode={mode}
         changeMode={changeMode}
       />
-      <div css={styles.pageWrapper}>
+      <main css={styles.pageWrapper}>
         <div css={styles.imageWrapper}>
           <img css={styles.image} src={sharingImage} alt={heading} />
         </div>
@@ -178,7 +154,10 @@ function Article({
               ))
             : null}
         </div>
-      </div>
+      </main>
+      <footer>
+        <Footer activePage="blog" mode={mode} />
+      </footer>
     </>
   );
 }

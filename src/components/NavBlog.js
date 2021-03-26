@@ -1,8 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import LocationSelect from "./LocationSelect";
-import Logo from "./Logo";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Burger from "./Burger";
@@ -72,7 +70,7 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
     }),
   };
   return (
-    <div css={styles.navWrapper}>
+    <nav css={styles.navWrapper}>
       <Link href={"/blog"}>
         <img
           css={styles.logo}
@@ -80,7 +78,7 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
           alt="CouchBuddy Logo"
         />
       </Link>
-      <nav css={styles.navLinks}>
+      <div css={styles.navLinks}>
         <Burger
           handleLocation={handleLocation}
           location={location}
@@ -88,8 +86,8 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
           changeMode={changeMode}
           inBlog={true}
         />
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }
 
