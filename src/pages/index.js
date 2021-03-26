@@ -32,7 +32,7 @@ export default function Home({ location, handleLocation, mode, changeMode }) {
   return (
     <div>
       <Head>
-        <title>Couch Buddy</title>
+        <title>Couch Buddy - Find Movies to Watch</title>
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
