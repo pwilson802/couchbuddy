@@ -44,21 +44,18 @@ function PostPreview({
     wrapper: css({
       cursor: "pointer",
     }),
+    link: css({
+      textDecoration: "none",
+    }),
   };
   return (
     <Link href={articleLink}>
       <div css={styles.wrapper}>
-        <img css={styles.image} src={sharingImage} alt={articleTitle} />
-        {/* <Image
-          css={styles.image}
-          src={sharingImage}
-          alt={articleTitle}
-          width={840}
-          height={441}
-          layout="responsive"
-        /> */}
-        <h1 css={styles.heading}>{articleType + " " + heading}</h1>
-        {topPost && <p css={styles.introduction}>{introduction}</p>}
+        <a href={articleLink} css={styles.link}>
+          <img css={styles.image} src={sharingImage} alt={articleTitle} />
+          <h1 css={styles.heading}>{articleType + " " + heading}</h1>
+          {topPost && <p css={styles.introduction}>{introduction}</p>}
+        </a>
       </div>
     </Link>
   );
