@@ -495,9 +495,9 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
-            <div css={styles.adWrap}>
+            {/* <div css={styles.adWrap}>
               <FakeAd num={1} />
-            </div>
+            </div> */}
             {/* <div css={styles.locationWrap}>
               <LocationSelect
                 handleLocation={handleLocation}
