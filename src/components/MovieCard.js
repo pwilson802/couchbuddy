@@ -41,14 +41,14 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
   useEffect(() => {
     async function setMovieCard() {
       const {
-        original_title,
+        title,
         overview,
         tagline,
         runtime,
         poster_path,
         vote_average,
       } = await getMovieDetails(id);
-      setTitle(original_title);
+      setTitle(title);
       setOverview(overview);
       setTagline(tagline);
       setRuntime(runtime);

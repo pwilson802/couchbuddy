@@ -15,12 +15,12 @@ const colors = {
 };
 
 function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
-  const title = movieDetails.original_title;
+  const title = movieDetails.title;
   const tagline = movieDetails.tagline;
   const runtime = movieDetails.runtime;
   const year = movieDetails.release_date.split("-")[0];
   const image = "https://image.tmdb.org/t/p/w185" + movieDetails.poster_path;
-
+  console.log(movieDetails);
   const styles = {
     image: css({
       float: "left",

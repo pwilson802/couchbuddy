@@ -137,7 +137,7 @@ async function getLocalCertifications(country) {
 function makeCertificationsObj(data) {
   return Object.keys(data).reduce((acc, curr) => {
     if (curr === "") return acc;
-    acc[curr] = true;
+    acc[curr] = false;
     return acc;
   }, {});
 }
@@ -204,8 +204,6 @@ export default function SearchPage({
   const [sortByVote, setSortByVote] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  //console.log()("location in search page", location);
-  //console.log()("handleLocation in search page", handleLocation);
   async function configureProviders(location) {
     // if (location === null) {
     //   return;
@@ -237,11 +235,6 @@ export default function SearchPage({
     setLocalCertificationMovies(localCertificationData);
     setSelectedCertifications(certificationsObj);
   }
-
-  // function handleLocation(loc) {
-  //   //console.log()("handle location", loc);
-  //   setLocation(loc.target.value);
-  // }
 
   const handleGenre = (genre) => {
     const newGenreObj = {
