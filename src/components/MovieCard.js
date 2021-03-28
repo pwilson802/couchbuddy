@@ -38,6 +38,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
   const [image, setImage] = useState();
   const [voteAverage, setVoteAverage] = useState();
   const [providerImages, setProviderImages] = useState([]);
+  const [showAllOverview, setShowAllOverview] = useState(false);
   useEffect(() => {
     async function setMovieCard() {
       const {
@@ -58,12 +59,18 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       const providerLogos = providers.map(
         (item) => allProviderData[item]["logo"]
       );
-      // //console.log()("providerLogos", providerLogos);
+      setShowAllOverview(screenSize === "large");
       setProviderImages(providerLogos);
       setLoaded(true);
     }
     setMovieCard();
   }, [id]);
+
+  const onPress = () => {
+    if (screenSize === "small") {
+      setShowAllOverview(!showAllOverview);
+    }
+  };
 
   const styles = {
     wrapper: css({
@@ -176,7 +183,7 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
         <div>
           {screenSize === "small" && <p css={styles.title}>{title}</p>}
           <div css={styles.bodyWrapper}>
-            <div css={styles.imageBox}>
+            <div onClick={onPress} css={styles.imageBox}>
               <Image
                 src={image}
                 alt={`${title} poster`}
@@ -186,14 +193,12 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
             </div>
             <div css={styles.infoBox}>
               {screenSize === "large" && <p css={styles.title}>{title}</p>}
-              <div css={styles.dataWrap}>
+              <div onClick={onPress} css={styles.dataWrap}>
                 <p css={styles.runtime}>{runtime} minutes</p>
                 <p css={styles.voteAverage}>{voteAverage}</p>
               </div>
-              <p css={styles.overview}>
-                {screenSize === "large"
-                  ? overview
-                  : overview.slice(0, 120) + "..."}
+              <p onClick={onPress} css={styles.overview}>
+                {showAllOverview ? overview : overview.slice(0, 120) + "..."}
               </p>
               <div css={styles.providerSharingWrapper}>
                 <div css={styles.providerWrapper}>
