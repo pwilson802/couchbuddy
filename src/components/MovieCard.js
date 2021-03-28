@@ -198,7 +198,10 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
                 <p css={styles.voteAverage}>{voteAverage}</p>
               </div>
               <p onClick={onPress} css={styles.overview}>
-                {showAllOverview ? overview : overview.slice(0, 120) + "..."}
+                {showAllOverview
+                  ? overview
+                  : overview.slice(0, 120) +
+                    (overview.length > 120 ? "..." : "")}
               </p>
               <div css={styles.providerSharingWrapper}>
                 <div css={styles.providerWrapper}>
