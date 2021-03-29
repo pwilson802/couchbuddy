@@ -59,6 +59,10 @@ export default function Home({ location, handleLocation, mode, changeMode }) {
           property="og:image"
           content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main.png"
         />
+        <meta property="og:url" content="https://couchbuddy.info" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image:width" content="840" />
+        <meta property="og:image:height" content="440" />
       </Head>
 
       <main>

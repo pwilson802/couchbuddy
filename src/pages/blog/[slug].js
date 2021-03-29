@@ -138,6 +138,13 @@ function Article({
           property="og:image"
           content={article.length > 0 ? sharingImage : ""}
         />
+        <meta
+          property="og:url"
+          content={`https://couchbuddy.info/blog/${slug}`}
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:image:width" content="840" />
+        <meta property="og:image:height" content="440" />
       </Head>
       <NavBlog
         handleLocation={handleLocation}
