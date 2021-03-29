@@ -39,7 +39,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       color: colors[mode]["text"],
       fontSize: 32,
       textAlign: "left",
-      marginBottom: 1,
+      marginBottom: 10,
     }),
     adWrap: css({
       marginTop: "3rem",

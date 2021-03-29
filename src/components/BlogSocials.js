@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
+import { FacebookShareButton, FacebookIcon } from "react-share";
 import React from "react";
 
 function BlogSocials({ slug }) {
@@ -27,9 +28,14 @@ function BlogSocials({ slug }) {
       <a href={twitterUrl} target="_blank">
         <img css={styles.image} src="/share/twitter.png" alt="twitter logo" />
       </a>
-      <a css={styles.facebookImage} href={facebookUrl} target="_blank">
+      {/* <a css={styles.facebookImage} href={facebookUrl} target="_blank">
         <img css={styles.image} src="/share/facebook.png" alt="facebook logo" />
-      </a>
+      </a> */}
+      <div css={styles.facebookImage}>
+        <FacebookShareButton url={url}>
+          <FacebookIcon size={34} round={true} />
+        </FacebookShareButton>
+      </div>
     </div>
   );
 }
