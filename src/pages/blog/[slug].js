@@ -6,6 +6,7 @@ import Head from "next/head";
 import MovieBlurb from "../../components/MovieBlurb";
 import NavBlog from "../../components/NavBlog";
 import Footer from "../../components/Footer";
+import BlogSocials from "../../components/BlogSocials";
 
 const colors = {
   light: {
@@ -37,7 +38,9 @@ function Article({
     introduction,
     author,
     metaDescription,
+    slug,
   } = article[0].fields;
+  console.log("article", article);
 
   const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
@@ -92,6 +95,12 @@ function Article({
         margin: "0 10%",
       },
     }),
+    authorSocials: css({
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+      marginRight: "5px",
+    }),
   };
 
   return (
@@ -117,6 +126,18 @@ function Article({
           name="twitter:image"
           content={article.length > 0 ? sharingImage : ""}
         />
+        <meta
+          property="og:title"
+          content={article.length > 0 ? sharingTitle : ""}
+        />
+        <meta
+          property="og:description"
+          content={article.length > 0 ? sharingDescription : ""}
+        />
+        <meta
+          property="og:image"
+          content={article.length > 0 ? sharingImage : ""}
+        />
       </Head>
       <NavBlog
         handleLocation={handleLocation}
@@ -130,14 +151,19 @@ function Article({
         </div>
         <div css={styles.articlesWrapper}>
           <h1 css={styles.heading}>{articleType + " " + heading}</h1>
-          <div css={styles.authorWrap}>
-            <p css={styles.author}>by {author}</p>
-            <img
-              src={authorImage}
-              alt="Picture of author"
-              width={50}
-              height={50}
-            />
+          <div css={styles.authorSocials}>
+            <div css={styles.authorWrap}>
+              <p css={styles.author}>by {author}</p>
+              <img
+                src={authorImage}
+                alt="Picture of author"
+                width={50}
+                height={50}
+              />
+            </div>
+            <div css={styles.socials}>
+              <BlogSocials slug={slug} />
+            </div>
           </div>
           <p css={styles.introduction}>{introduction}</p>
           {blurbs.length > 0
