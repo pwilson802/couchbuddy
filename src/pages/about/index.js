@@ -134,7 +134,11 @@ function About() {
             info@couchbuddy.info
           </a>{" "}
           or via{" "}
-          <a css={styles.mailLink} href="https://twitter.com/couch_buddy">
+          <a
+            css={styles.mailLink}
+            href="https://twitter.com/couch_buddy"
+            target="_blank"
+          >
             twitter
           </a>
         </p>
@@ -176,7 +180,7 @@ function About() {
         </a>
         <br />
         <p css={styles.text}>
-          Some on the animations on tihs site are sources from Lottie, check
+          Some on the animations on tihs site are sourced from Lottie, check
           them out for cool animations:
         </p>
         <a
