@@ -21,6 +21,7 @@ function MyApp({ Component, pageProps }) {
   }, [location]);
 
   function handleLocation(loc) {
+    localStorage.setItem("backupLocation", loc.target.value);
     setLocation(loc.target.value);
   }
 
@@ -86,13 +87,18 @@ async function getIPLocation() {
     "ZA",
     "CH",
   ];
-  const response = await fetch("https://ipapi.co/json/");
-  const json = await response.json();
-  const countryCode = json["country_code"];
-  if (validCodes.includes(countryCode)) {
-    return countryCode;
+  try {
+    const response = await fetch("https://ipapi.co/json/");
+    const json = await response.json();
+    const countryCode = json["country_code"];
+    if (validCodes.includes(countryCode)) {
+      localStorage.setItem("backupLocation", countryCode);
+      return countryCode;
+    }
+    return "US";
+  } catch {
+    return localStorage.getItem("backupLocation") || "US";
   }
-  return "US";
 }
 
 function changeBackground(mode) {

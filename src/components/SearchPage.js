@@ -128,8 +128,6 @@ function makeProvidersObj(data) {
 
 async function getLocalCertifications(country) {
   const url = `${DATA_URL}/certifications-${country}.json`;
-  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/certifications-${country}.json`;
-  // //console.log()(url);
   const response = await fetch(url);
   return await response.json();
 }
@@ -144,8 +142,6 @@ function makeCertificationsObj(data) {
 
 async function getAllProviderData() {
   const url = `${DATA_URL}/all-data-providers.json`;
-  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/all-data-providers.json`;
-  // //console.log()(url);
   const response = await fetch(url);
   return await response.json();
 }
@@ -172,7 +168,6 @@ function getSelectedProviders(location, allProviders) {
   const returedProviders = selectedProviders.filter((item) =>
     allProviders.includes(item)
   );
-  // //console.log()(returedProviders);
   return returedProviders;
 }
 
@@ -183,7 +178,7 @@ function updateLocalSelectedProviders(location, providers) {
   );
   localStorage.setItem(localItem, JSON.stringify(enabledProviders));
 }
-//////////////////////////////////////////////////////////// CHANGES ////////////////////////////////////////////////////
+
 export default function SearchPage({
   handleSearchDetails,
   setPage,
@@ -334,7 +329,9 @@ export default function SearchPage({
       await configureCertifications(location);
       setLoaded(true);
     }
-    pageLoad();
+    if (location != null) {
+      pageLoad();
+    }
   }, [location]);
 
   const styles = {

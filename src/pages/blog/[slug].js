@@ -40,7 +40,6 @@ function Article({
     metaDescription,
     slug,
   } = article[0].fields;
-  console.log("article", article);
 
   const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 

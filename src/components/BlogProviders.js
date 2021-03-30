@@ -54,7 +54,7 @@ function BlogProviders({ providers, mode }) {
       <div css={styles.wrapper}>
         <div>Available on:</div>
         {uniqProviders.reverse().map((item) => {
-          const image = "http://image.tmdb.org/t/p/w185" + item.logo_path;
+          const image = "https://image.tmdb.org/t/p/w185" + item.logo_path;
           return (
             <img
               key={item.provider_id}
