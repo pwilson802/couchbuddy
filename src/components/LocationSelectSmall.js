@@ -2,7 +2,6 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
-import Flag from "./Flag";
 
 const options = [
   { value: "AR", label: "Argentina" },
@@ -56,57 +55,19 @@ const options = [
 const colors = {
   light: {
     text: "black",
-    selectedText: "black",
-    locationBackground: "transparent",
-    menuBackground: "white",
     selectBackground: "white",
     locationFocus: "rgba(225,44,134, 0.2)",
-    selected: "#96D0D3",
-    activeOption: "rgba(225,44,134, 0.5)",
+    locationBackground: "transparent",
   },
   dark: {
-    text: "black",
-    selectedText: "white",
-    locationBackground: "transparent",
-    menuBackground: "#15202A",
+    text: "rgba(255,255,255, 0.8)",
     selectBackground: "#15202Ab",
     locationFocus: "rgba(225,44,134, 0.2)",
-    selected: "#E12C86",
-    activeOption: "rgba(225,44,134, 0.5)",
-  },
-  darkFooter: {
-    text: "white",
-    selectedText: "white",
-    locationBackground: "#15202A",
-    menuBackground: "#15202A",
-    selectBackground: "#15202Ab",
-    locationFocus: "rgba(225,44,134, 0.2)",
-    selected: "#E12C86",
-    activeOption: "rgba(225,44,134, 0.5)",
-  },
-  darkNav: {
-    text: "white",
-    selectedText: "white",
     locationBackground: "transparent",
-    menuBackground: "#15202A",
-    selectBackground: "#15202A",
-    locationFocus: "rgba(225,44,134, 0.2)",
-    selected: "#E12C86",
-    activeOption: "rgba(225,44,134, 0.5)",
-  },
-  lightNav: {
-    text: "black",
-    selectedText: "white",
-    locationBackground: "transparent",
-    menuBackground: "white",
-    selectBackground: "white",
-    locationFocus: "rgba(225,44,134, 0.2)",
-    selected: "#E12C86",
-    activeOption: "rgba(225,44,134, 0.5)",
   },
 };
 
-function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
+function LocationSelectSmall({ mode, location, handleLocation }) {
   const styles = {
     locationSelect: css({
       WebkitAppearance: "none",
@@ -114,13 +75,9 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
       appearance: "none",
       backgroundColor: colors[mode]["locationBackground"],
       color: colors[mode]["text"],
-      paddingLeft: 54,
-      marginLeft: 10,
-      fontSize: 22,
-      fontWeight: "bold",
+      fontSize: "0.8rem",
       border: "none",
       cursor: "pointer",
-      // textAlignLast: "center",
       textIndent: "0px",
       "&:focus": {
         border: "none",
@@ -132,7 +89,7 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
     }),
     option: css({
       backgroundColor: colors[mode]["selectBackground"],
-      color: colors[mode]["text"],
+      color: "black",
       "&:focus": {
         backgroundColor: colors[mode]["locationFocus"],
       },
@@ -144,73 +101,30 @@ function LocationSelect({ handleLocation, location, mode, isOpen, setOpen }) {
         backgroundColor: colors[mode]["locationFocus"],
       },
     }),
-    dropArrow: css({
-      position: "relative",
-      right: 15,
-      top: 5,
-      pointerEvents: "none",
-      borderRight: `solid ${colors[mode]["text"]}`,
-      borderBottom: `solid ${colors[mode]["text"]}`,
-      height: "10px",
-      width: "10px",
-      transform: "rotate(45deg)",
-      webkitTransform: "rotate(45deg)",
-    }),
-    locationWrapper: css({
-      display: "flex",
-      flexWrap: "nowrap",
-      alignItems: "center",
-    }),
-    flag: css({
-      marginRight: -48,
-      display: "flex",
-      alignItems: "center",
-      zIndex: 2,
-      pointerEvents: "none",
-    }),
-    hiddenLocation: css({
-      fontSize: 22,
-      visibility: "hidden",
-    }),
-  };
-
-  const updateLocation = (loc) => {
-    handleLocation(loc);
-    if (isOpen) {
-      setOpen(false);
-    }
+    locationSlect: css({}),
   };
 
   return (
-    <div>
-      <div css={styles.locationWrapper}>
-        <div css={styles.flag}>
-          <Flag country={location} />
-        </div>
-        <select
-          css={styles.locationSelect}
-          value={location}
-          onChange={updateLocation}
-        >
-          {options.map((country) => {
-            return (
-              <option
-                key={country.value}
-                css={
-                  country.value === location
-                    ? styles.optionSelected
-                    : styles.option
-                }
-                value={country.value}
-              >
-                {country.label}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-    </div>
+    <select
+      css={styles.locationSelect}
+      value={location}
+      onChange={handleLocation}
+    >
+      {options.map((country) => {
+        return (
+          <option
+            key={country.value}
+            css={
+              country.value === location ? styles.optionSelected : styles.option
+            }
+            value={country.value}
+          >
+            {country.label}
+          </option>
+        );
+      })}
+    </select>
   );
 }
 
-export default LocationSelect;
+export default LocationSelectSmall;

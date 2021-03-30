@@ -7,23 +7,7 @@ import ReactDOM from "react-dom";
 import App from "../components/App";
 import Footer from "../components/Footer";
 
-// function changeBackground(mode) {
-//   if (mode === "dark") {
-//     document.body.style = "background: #15202A";
-//   } else {
-//     document.body.style = "background: white";
-//   }
-// }
-
 export default function Home({ location, handleLocation, mode, changeMode }) {
-  // const [mode, setMode] = useState("dark");
-
-  // const changeMode = (mode) => {
-  //   localStorage.setItem("mode", mode);
-  //   changeBackground(mode);
-  //   setMode(mode);
-  // };
-
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);

@@ -155,10 +155,8 @@ export async function getStaticProps() {
       const firstDate = new Date(a.fields.dateAdded);
       const secondDate = new Date(b.fields.dateAdded);
       if (firstDate - secondDate < 0) {
-        console.log("--- sort returned 1");
         return 1;
       } else if (firstDate - secondDate > 0) {
-        console.log("--- sort returned 2");
         return -1;
       }
       return 0;

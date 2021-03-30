@@ -66,39 +66,42 @@ function Footer({ activePage, mode }) {
     }),
   };
   return (
-    <div css={styles.footerWrap}>
-      <Link href={"/"}>
-        <div css={styles.text}>
-          <a
-            href={"/"}
-            css={activePage === "app" ? styles.linkSelected : styles.link}
-          >
-            APP
-          </a>
-        </div>
-      </Link>
-      <p css={styles.text}>|</p>
-      <Link href={"/blog"}>
-        <div css={styles.text}>
-          <a
-            href={"/blog"}
-            css={activePage === "blog" ? styles.linkSelected : styles.link}
-          >
-            BLOG
-          </a>
-        </div>
-      </Link>
-      <p css={styles.text}>|</p>
-      <Link href={"/about"}>
-        <div css={styles.text}>
-          <a
-            href={"/about"}
-            css={activePage === "about" ? styles.linkSelected : styles.link}
-          >
-            ABOUT
-          </a>
-        </div>
-      </Link>
+    <div>
+      <div css={styles.footerWrap}>
+        <Link href={"/"}>
+          <div css={styles.text}>
+            <a
+              href={"/"}
+              css={activePage === "app" ? styles.linkSelected : styles.link}
+            >
+              APP
+            </a>
+          </div>
+        </Link>
+        <p css={styles.text}>|</p>
+        <Link href={"/blog"}>
+          <div css={styles.text}>
+            <a
+              href={"/blog"}
+              css={activePage === "blog" ? styles.linkSelected : styles.link}
+            >
+              BLOG
+            </a>
+          </div>
+        </Link>
+        <p css={styles.text}>|</p>
+        <Link href={"/about"}>
+          <div css={styles.text}>
+            <a
+              href={"/about"}
+              css={activePage === "about" ? styles.linkSelected : styles.link}
+            >
+              ABOUT
+            </a>
+          </div>
+        </Link>
+      </div>
+      <div css={styles.locationWrapper}></div>
     </div>
   );
 }

@@ -95,9 +95,9 @@ async function getIPLocation() {
       localStorage.setItem("backupLocation", countryCode);
       return countryCode;
     }
-    return "US";
+    return "AU";
   } catch {
-    return localStorage.getItem("backupLocation") || "US";
+    return localStorage.getItem("backupLocation") || "AU";
   }
 }
 

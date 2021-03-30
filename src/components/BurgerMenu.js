@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import LocationSelect from "./LocationSelect";
 import ModeSwitch from "./ModeSwitch";
-import Image from "next/image";
 
 const MenuContainer = styled(motion.div)`
   display: flex;
@@ -150,12 +149,11 @@ function BurgerMenu({
         >
           {inBlog === true ? (
             <Link href={"/"}>
-              <Image
+              <img
                 src="/logo-text.png"
                 alt="Couch Buddy"
                 height={35}
                 width={210}
-                // layout="responsive"
               />
             </Link>
           ) : (
