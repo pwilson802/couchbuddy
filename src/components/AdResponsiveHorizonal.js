@@ -27,7 +27,7 @@ function AdResponsiveHorizontal() {
   return (
     <div>
       <ins
-        css={styles.ad}
+        styles={{ display: "block" }}
         className="adsbygoogle"
         data-ad-client="ca-pub-9245347946008848"
         data-ad-slot="5327454859"
