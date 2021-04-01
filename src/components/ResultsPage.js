@@ -218,13 +218,13 @@ export default function ResultsPage({
             </div>
             {movieNumber % 12 === 0 && (
               <div css={styles.adWrap}>
-                {/* <FakeAd num={1} /> */}
-                <Adsense
+                <FakeAd num={1} />
+                {/* <Adsense
                   client="ca-pub-9245347946008848"
                   slot="5327454859"
                   style={{ display: "block" }}
                   responsive={true}
-                />
+                /> */}
               </div>
             )}
             {/* changing number from 3 to 6 */}
