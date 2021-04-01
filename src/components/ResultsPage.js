@@ -8,6 +8,7 @@ import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
 import FakeAd from "./FakeAd";
+import { Adsense } from "@ctrl/react-adsense";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
@@ -188,11 +189,9 @@ export default function ResultsPage({
     }),
     adWrap: css({
       marginTop: "1rem",
+      maxHeight: "200px",
     }),
   };
-  //console.log()("Movies Length", movies.length);
-  //console.log()("Movies", movies);
-  //console.log()("movieNumber", movieNumber);
 
   return (
     <div>
@@ -218,7 +217,13 @@ export default function ResultsPage({
             </div>
             {movieNumber % 12 === 0 && (
               <div css={styles.adWrap}>
-                <FakeAd num={1} />
+                {/* <FakeAd num={1} /> */}
+                <Adsense
+                  client="ca-pub-9245347946008848"
+                  slot="5327454859"
+                  style={{ display: "block" }}
+                  responsive={true}
+                />
               </div>
             )}
             {/* changing number from 3 to 6 */}
