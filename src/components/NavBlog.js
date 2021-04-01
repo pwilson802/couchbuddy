@@ -58,6 +58,7 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
       },
     }),
     navWrapper: css({
+      zIndex: "100",
       position: "fixed",
       top: "0",
       margin: "0",
