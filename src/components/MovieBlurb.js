@@ -5,6 +5,7 @@ import React from "react";
 import BlogProviders from "./BlogProviders";
 import FakeAd from "./FakeAd";
 import AdResponsiveHorizontal from "./AdResponsiveHorizonal";
+import { Adsense } from "@ctrl/react-adsense";
 
 const colors = {
   light: {
@@ -60,7 +61,13 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       {(itemIndex + 1) % 3 === 0 && (
         <div css={styles.adWrap}>
           {/* <FakeAd num={1} /> */}
-          <AdResponsiveHorizontal />
+          {/* <AdResponsiveHorizontal /> */}
+          <Adsense
+            client="ca-pub-9245347946008848"
+            slot="5327454859"
+            style={{ display: "block" }}
+            responsive={true}
+          />
         </div>
       )}
     </article>
