@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/react";
 import React from "react";
 import BlogProviders from "./BlogProviders";
 import FakeAd from "./FakeAd";
+import AdResponsiveHorizontal from "./AdResponsiveHorizonal";
 
 const colors = {
   light: {
@@ -58,7 +59,8 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       {/* Only showing ad add after every 3 articles. */}
       {(itemIndex + 1) % 3 === 0 && (
         <div css={styles.adWrap}>
-          <FakeAd num={1} />
+          {/* <FakeAd num={1} /> */}
+          <AdResponsiveHorizontal />
         </div>
       )}
     </article>
