@@ -190,6 +190,7 @@ export default function ResultsPage({
     adWrap: css({
       marginTop: "1rem",
       maxHeight: "200px",
+      maxWidth: "600px",
     }),
   };
 
