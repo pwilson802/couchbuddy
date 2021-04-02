@@ -45,10 +45,13 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
     adWrap: css({
       marginTop: "3rem",
     }),
+    articleWrap: css({
+      paddingBottom: "50px",
+    }),
   };
 
   return (
-    <article>
+    <article css={styles.articleWrap}>
       <h2 css={styles.title}>
         {title} ({year})
       </h2>
