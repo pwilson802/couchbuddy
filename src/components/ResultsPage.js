@@ -189,6 +189,9 @@ export default function ResultsPage({
     }),
     adWrap: css({
       marginTop: "1rem",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
     }),
   };
 
