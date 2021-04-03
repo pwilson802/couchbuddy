@@ -18,6 +18,7 @@ function YouTubeVideo({ id, width }) {
 
   const opts = videoWidth;
   console.log(opts);
+  opts["playerVars"] = { origin: window.location.origin };
 
   const styles = {
     wrapper: css({

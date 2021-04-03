@@ -93,7 +93,7 @@ export default function ResultsPage({
       const moviesInProvider = matchedMoviesByGenre.filter((movie) =>
         matchedMoviesbyProvider.includes(movie)
       );
-      const filterMovieData = sortByVote || duration === 400;
+      const filterMovieData = sortByVote || duration != 400;
       const moviesByLength =
         filterMovieData === true
           ? await filterMoviesByData(duration, sortByVote)
