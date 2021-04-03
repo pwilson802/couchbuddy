@@ -5,14 +5,20 @@ import React, { useState, useEffect } from "react";
 import ShareButtons from "./ShareButtons";
 import Image from "next/image";
 import MovieCardLoading from "./MovieCardLoading";
+import YouTubeVideo from "./YouTubeVideo";
 
 async function getMovieDetails(id) {
   let TMB_KEY = process.env.TMB_KEY;
-  // let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
   let url = `/api/movie/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  // //console.log()(movieDetails);
+  return movieDetails;
+}
+
+async function getMovieTrailer(id) {
+  let url = `/api/trailer/${id}`;
+  const response = await fetch(url);
+  const movieDetails = await response.json();
   return movieDetails;
 }
 
@@ -39,6 +45,9 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
   const [voteAverage, setVoteAverage] = useState();
   const [providerImages, setProviderImages] = useState([]);
   const [showAllOverview, setShowAllOverview] = useState(false);
+  const [hasTrailer, setHasTrailer] = useState(false);
+  const [trailerID, setTrailerID] = useState("");
+  const [showTrailer, setShowTrailer] = useState(false);
   useEffect(() => {
     async function setMovieCard() {
       const {
@@ -61,6 +70,11 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       );
       setShowAllOverview(screenSize === "large");
       setProviderImages(providerLogos);
+      const trailer = await getMovieTrailer(id);
+      if (trailer.result === true) {
+        setHasTrailer(true);
+        setTrailerID(trailer.id);
+      }
       setLoaded(true);
     }
     setMovieCard();
@@ -175,6 +189,23 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
     spinnerWrap: css({
       width: "100px",
     }),
+    trailerButton: css({
+      padding: "5px 10px",
+      outline: "none",
+      cursor: "pointer",
+      backgroundColor: "#96D0D3",
+      border: "none",
+      borderRadius: "20px",
+      fontWeight: "bold",
+      marginBottom: "5px",
+      alignSelf: "center",
+      width: "5rem",
+      marginRight: "3rem",
+    }),
+    trailerShare: css({
+      display: "flex",
+      flexDirection: "row",
+    }),
   };
 
   return (
@@ -215,12 +246,19 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
                     </div>
                   ))}
                 </div>
-                <div>
+                <div css={styles.trailerShare}>
+                  <button
+                    css={styles.trailerButton}
+                    onClick={() => setShowTrailer(!showTrailer)}
+                  >
+                    {showTrailer ? "CLOSE" : "TRAILER"}
+                  </button>
                   <ShareButtons movie={title} tagline={tagline} />
                 </div>
               </div>
             </div>
           </div>
+          {showTrailer && <YouTubeVideo id={trailerID} />}
         </div>
       ) : (
         <MovieCardLoading mode={mode} />
