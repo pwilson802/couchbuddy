@@ -167,9 +167,9 @@ function MovieCard({
     providerSharingWrapper: css({
       display: "flex",
       flexDirection: "row",
-      justifyContent: "space-between",
+      justifyContent: "space-around",
       alignItems: "flex-end",
-      flexWrap: "wrap",
+      flexWrap: "wrap-reverse",
     }),
     voteAverage: css({
       margin: 0,
@@ -208,12 +208,12 @@ function MovieCard({
       marginBottom: "5px",
       alignSelf: "center",
       width: "5rem",
-      marginRight: "1rem",
-      marginLeft: "1rem",
     }),
     trailerShare: css({
       display: "flex",
       flexDirection: "row",
+      alignSelf: "flex-end",
+      justifySelf: "flex-end",
     }),
     trailerWrapperSmall: css({
       display: "flex",
