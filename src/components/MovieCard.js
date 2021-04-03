@@ -208,6 +208,7 @@ function MovieCard({
       marginBottom: "5px",
       alignSelf: "center",
       width: "5rem",
+      margin: "0 0.4rem",
     }),
     trailerShare: css({
       display: "flex",
