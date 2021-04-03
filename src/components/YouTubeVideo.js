@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
+import React, { useEffect } from "react";
 import YouTube from "react-youtube";
 
 function YouTubeVideo({ id, width }) {
@@ -17,8 +18,14 @@ function YouTubeVideo({ id, width }) {
   }
 
   const opts = videoWidth;
-  console.log(opts);
-  opts["playerVars"] = { origin: window.location.origin };
+  // console.log(opts);
+  // opts["playerVars"] = { origin: window.location.origin };
+
+  // useEffect(() => {
+  //   window.YTConfig = {
+  //     host: "https://www.youtube.com",
+  //   };
+  // });
 
   const styles = {
     wrapper: css({
