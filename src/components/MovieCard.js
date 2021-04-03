@@ -169,7 +169,7 @@ function MovieCard({
       flexDirection: "row",
       justifyContent: "space-around",
       alignItems: "flex-end",
-      flexWrap: "wrap-reverse",
+      flexWrap: "wrap",
     }),
     voteAverage: css({
       margin: 0,
