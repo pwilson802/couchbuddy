@@ -258,7 +258,9 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
               </div>
             </div>
           </div>
-          {showTrailer && <YouTubeVideo id={trailerID} />}
+          {showTrailer && (
+            <YouTubeVideo id={trailerID} screenSize={screenSize} />
+          )}
         </div>
       ) : (
         <MovieCardLoading mode={mode} />

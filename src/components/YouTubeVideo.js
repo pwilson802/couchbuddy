@@ -3,15 +3,13 @@
 import { jsx, css } from "@emotion/react";
 import YouTube from "react-youtube";
 
-function YouTubeVideo({ id }) {
-  const opts = {
-    height: "390",
-    width: "640",
-    playerVars: {
-      // https://developers.google.com/youtube/player_parameters
-      autoplay: 1,
-    },
-  };
+function YouTubeVideo({ id, screenSize }) {
+  const opts =
+    screenSize == "small"
+      ? {
+          width: "360",
+        }
+      : {};
 
   const styles = {
     wrapper: css({
@@ -24,7 +22,7 @@ function YouTubeVideo({ id }) {
 
   return (
     <div css={styles.wrapper}>
-      <YouTube videoId={id} options={opts} />
+      <YouTube videoId={id} opts={opts} css={styles.wrapper} />
     </div>
   );
 }
