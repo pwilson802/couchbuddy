@@ -35,7 +35,14 @@ const colors = {
   },
 };
 
-function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
+function MovieCard({
+  id,
+  allProviderData,
+  providers,
+  screenSize,
+  mode,
+  width,
+}) {
   const [loaded, setLoaded] = useState(false);
   const [title, setTitle] = useState();
   const [overview, setOverview] = useState();
@@ -206,6 +213,13 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
       display: "flex",
       flexDirection: "row",
     }),
+    trailerWrapperSmall: css({
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBotton: "5px",
+    }),
   };
 
   return (
@@ -247,20 +261,30 @@ function MovieCard({ id, allProviderData, providers, screenSize, mode }) {
                   ))}
                 </div>
                 <div css={styles.trailerShare}>
-                  <button
-                    css={styles.trailerButton}
-                    onClick={() => setShowTrailer(!showTrailer)}
-                  >
-                    {showTrailer ? "CLOSE" : "TRAILER"}
-                  </button>
+                  {screenSize === "large" && (
+                    <button
+                      css={styles.trailerButton}
+                      onClick={() => setShowTrailer(!showTrailer)}
+                    >
+                      {showTrailer ? "CLOSE" : "TRAILER"}
+                    </button>
+                  )}
                   <ShareButtons movie={title} tagline={tagline} />
                 </div>
               </div>
             </div>
           </div>
-          {showTrailer && (
-            <YouTubeVideo id={trailerID} screenSize={screenSize} />
+          {screenSize === "small" && (
+            <div css={styles.trailerWrapperSmall}>
+              <button
+                css={styles.trailerButton}
+                onClick={() => setShowTrailer(!showTrailer)}
+              >
+                {showTrailer ? "CLOSE" : "TRAILER"}
+              </button>
+            </div>
           )}
+          {showTrailer && <YouTubeVideo id={trailerID} width={width} />}
         </div>
       ) : (
         <MovieCardLoading mode={mode} />

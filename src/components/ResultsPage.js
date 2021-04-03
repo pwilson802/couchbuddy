@@ -214,6 +214,7 @@ export default function ResultsPage({
                   screenSize={screenSize}
                   mode={mode}
                   key={item.id}
+                  width={width}
                 ></MovieCard>
               ))}
             </div>

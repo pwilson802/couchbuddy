@@ -3,13 +3,21 @@
 import { jsx, css } from "@emotion/react";
 import YouTube from "react-youtube";
 
-function YouTubeVideo({ id, screenSize }) {
-  const opts =
-    screenSize == "small"
-      ? {
-          width: "360",
-        }
-      : {};
+function YouTubeVideo({ id, width }) {
+  let videoWidth = 360;
+
+  if (width < 600) {
+    videoWidth = { width: "340" };
+  } else if (width < 680) {
+    videoWidth = { width: "520" };
+  } else if (width < 720) {
+    videoWidth = { width: "600" };
+  } else {
+    videoWidth = {};
+  }
+
+  const opts = videoWidth;
+  console.log(opts);
 
   const styles = {
     wrapper: css({
