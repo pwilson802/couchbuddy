@@ -169,6 +169,7 @@ function MovieCard({
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "flex-end",
+      flexWrap: "wrap",
     }),
     voteAverage: css({
       margin: 0,
@@ -207,7 +208,8 @@ function MovieCard({
       marginBottom: "5px",
       alignSelf: "center",
       width: "5rem",
-      marginRight: "3rem",
+      marginRight: "1rem",
+      marginLeft: "1rem",
     }),
     trailerShare: css({
       display: "flex",
@@ -260,21 +262,27 @@ function MovieCard({
                     </div>
                   ))}
                 </div>
+                <button
+                  css={styles.trailerButton}
+                  onClick={() => setShowTrailer(!showTrailer)}
+                >
+                  {showTrailer ? "CLOSE" : "TRAILER"}
+                </button>
                 <div css={styles.trailerShare}>
-                  {screenSize === "large" && (
+                  {/* {screenSize === "large" && (
                     <button
                       css={styles.trailerButton}
                       onClick={() => setShowTrailer(!showTrailer)}
                     >
                       {showTrailer ? "CLOSE" : "TRAILER"}
                     </button>
-                  )}
+                  )} */}
                   <ShareButtons movie={title} tagline={tagline} />
                 </div>
               </div>
             </div>
           </div>
-          {screenSize === "small" && (
+          {/* {screenSize === "small" && (
             <div css={styles.trailerWrapperSmall}>
               <button
                 css={styles.trailerButton}
@@ -283,7 +291,7 @@ function MovieCard({
                 {showTrailer ? "CLOSE" : "TRAILER"}
               </button>
             </div>
-          )}
+          )} */}
           {showTrailer && <YouTubeVideo id={trailerID} width={width} />}
         </div>
       ) : (
