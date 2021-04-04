@@ -197,6 +197,13 @@ function About() {
         >
           Animation by Naokure on LottieFiles
         </a>
+        <a
+          css={styles.mailLink}
+          href="https://lottiefiles.com/21496-basic-dropdown"
+          target="_blank"
+        >
+          Animation by Heymarcoh on LottieFiles
+        </a>
       </main>
       <footer>
         <Footer activePage="about" mode={mode} />

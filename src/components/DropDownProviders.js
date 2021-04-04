@@ -55,11 +55,11 @@ function DropDownProviders({
     <div>
       <div css={styles.dropText} onClick={handleClick}>
         <div css={styles.dropDown}>
-          <DropDownButton show={show} />
+          <DropDownButton show={show} mode={mode} menu={"providers"} />
         </div>
         <div>PROVIDERS</div>
         <div css={styles.dropDown}>
-          <DropDownButton show={show} />
+          <DropDownButton show={show} mode={mode} menu={"providers"} />
         </div>
       </div>
       {show && (

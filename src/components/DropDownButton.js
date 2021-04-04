@@ -2,10 +2,12 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import Lottie from "lottie-react";
-import animation from "../assets/basic-dropdown.json";
+import animationLight from "../assets/basic-dropdown.json";
+import animationDarkGenres from "../assets/basic-dropdown-genres-dark.json";
+import animationDarkProviders from "../assets/basic-dropdown-providers-dark.json";
 import React, { useState, useRef, useEffect } from "react";
 
-function DropDownButton({ show }) {
+function DropDownButton({ show, menu, mode }) {
   const [prevShow, setPrevShow] = useState(show);
   const player = useRef();
   const activeSegments = prevShow ? [55, 115] : [0, 55];
@@ -31,7 +33,13 @@ function DropDownButton({ show }) {
   return (
     <div css={styles.wrapper}>
       <Lottie
-        animationData={animation}
+        animationData={
+          mode === "light"
+            ? animationLight
+            : menu === "genres"
+            ? animationDarkGenres
+            : animationDarkProviders
+        }
         autoplay={false}
         loop={false}
         initialSegment={activeSegments}

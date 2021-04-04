@@ -48,11 +48,11 @@ function DropDownGenres({ selectedGenres, handleGenre, mode, setSelected }) {
     <div>
       <div css={styles.dropText} onClick={handleDropClick}>
         <div css={styles.dropDown}>
-          <DropDownButton show={show} />
+          <DropDownButton show={show} mode={mode} menu={"genres"} />
         </div>
         GENRES
         <div css={styles.dropDown}>
-          <DropDownButton show={show} />
+          <DropDownButton show={show} mode={mode} menu={"genres"} />
         </div>
       </div>
       {show && (
