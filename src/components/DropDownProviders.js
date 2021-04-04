@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
 import Providers from "./Providers";
+import DropDownButton from "./DropDownButton";
 
 const colors = {
   light: {
@@ -26,9 +27,12 @@ function DropDownProviders({
 
   const styles = {
     dropText: css({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       paddingHorizontal: 10,
       paddingVertical: 5,
-      fontSize: 22,
+      fontSize: 26,
       backgroundColor: colors[mode]["backgroundColor"],
       marginTop: 10,
       color: colors[mode]["text"],
@@ -37,12 +41,26 @@ function DropDownProviders({
         cursor: "pointer",
       },
     }),
+    dropDown: css({
+      display: "flex",
+      marginTop: "8px",
+    }),
+  };
+
+  const handleClick = () => {
+    setShow(!show);
   };
 
   return (
     <div>
-      <div css={styles.dropText} onClick={() => setShow(!show)}>
-        PROVIDERS
+      <div css={styles.dropText} onClick={handleClick}>
+        <div css={styles.dropDown}>
+          <DropDownButton show={show} />
+        </div>
+        <div>PROVIDERS</div>
+        <div css={styles.dropDown}>
+          <DropDownButton show={show} />
+        </div>
       </div>
       {show && (
         <Providers

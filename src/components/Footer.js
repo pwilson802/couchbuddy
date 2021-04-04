@@ -74,7 +74,7 @@ function Footer({ activePage, mode }) {
               href={"/"}
               css={activePage === "app" ? styles.linkSelected : styles.link}
             >
-              APP
+              SEARCH
             </a>
           </div>
         </Link>

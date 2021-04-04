@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
 import Genres from "./Genres";
+import DropDownButton from "./DropDownButton";
 
 const colors = {
   light: {
@@ -20,9 +21,12 @@ function DropDownGenres({ selectedGenres, handleGenre, mode, setSelected }) {
 
   const styles = {
     dropText: css({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       paddingHorizontal: 10,
-      paddingVertical: 5,
-      fontSize: 22,
+      paddingVertical: 0,
+      fontSize: 26,
       backgroundColor: colors[mode]["backgroundColor"],
       textAlign: "center",
       color: colors[mode]["text"],
@@ -30,12 +34,26 @@ function DropDownGenres({ selectedGenres, handleGenre, mode, setSelected }) {
         cursor: "pointer",
       },
     }),
+    dropDown: css({
+      display: "flex",
+      marginTop: "8px",
+    }),
+  };
+
+  const handleDropClick = () => {
+    setShow(!show);
   };
 
   return (
     <div>
-      <div css={styles.dropText} onClick={() => setShow(!show)}>
+      <div css={styles.dropText} onClick={handleDropClick}>
+        <div css={styles.dropDown}>
+          <DropDownButton show={show} />
+        </div>
         GENRES
+        <div css={styles.dropDown}>
+          <DropDownButton show={show} />
+        </div>
       </div>
       {show && (
         <Genres
