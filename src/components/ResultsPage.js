@@ -218,7 +218,7 @@ export default function ResultsPage({
                 ></MovieCard>
               ))}
             </div>
-            {movieNumber % 12 === 0 && (
+            {movieNumber % 12 != 0 && (
               <div css={styles.adWrap}>
                 {screenSize === "small" ? (
                   <Adsense
@@ -237,12 +237,8 @@ export default function ResultsPage({
                 )}
               </div>
             )}
-            {/* changing number from 3 to 6 */}
-            {/* {movies.length > 3 && ( */}
             {movies.length > 6 && (
               <div css={styles.buttons}>
-                {/* changing number from 3 to 6 */}
-                {/* {movieNumber > 3 && ( */}
                 {movieNumber > 6 && (
                   <div css={styles.prevButton}>
                     <NavButton
