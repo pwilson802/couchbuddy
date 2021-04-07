@@ -15,7 +15,7 @@ const colors = {
   },
 };
 
-function Footer({ activePage, mode }) {
+function Footer({ activePage, mode, setPage }) {
   const styles = {
     footerWrap: css({
       display: "flex",
@@ -68,16 +68,27 @@ function Footer({ activePage, mode }) {
   return (
     <div>
       <div css={styles.footerWrap}>
-        <Link href={"/"}>
+        {activePage == "app" ? (
           <div css={styles.text}>
-            <a
-              href={"/"}
+            <span
+              onClick={() => setPage("SearchPage")}
               css={activePage === "app" ? styles.linkSelected : styles.link}
             >
               SEARCH
-            </a>
+            </span>
           </div>
-        </Link>
+        ) : (
+          <Link href={"/"}>
+            <div css={styles.text}>
+              <a
+                href={"/"}
+                css={activePage === "app" ? styles.linkSelected : styles.link}
+              >
+                SEARCH
+              </a>
+            </div>
+          </Link>
+        )}
         <p css={styles.text}>|</p>
         <Link href={"/blog"}>
           <div css={styles.text}>

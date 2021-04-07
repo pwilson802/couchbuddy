@@ -57,9 +57,9 @@ export default function Home({ location, handleLocation, mode, changeMode }) {
           handleLocation={handleLocation}
         />
       </main>
-      <footer>
+      {/* <footer>
         <Footer activePage="app" mode={mode} />
-      </footer>
+      </footer> */}
     </div>
   );
 }

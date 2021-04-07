@@ -45,7 +45,9 @@ function reduceShuffleMovies(movies, sortByVote) {
     //console.log()("shuffling....");
     shuffle(movies);
   }
-  return movies.slice(0, 209);
+  // return movies.slice(0, 209);
+  console.log(movies);
+  return movies;
 }
 
 export default function ResultsPage({
