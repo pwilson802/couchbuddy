@@ -9,6 +9,8 @@ import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
 import FakeAd from "./FakeAd";
 import { Adsense } from "@ctrl/react-adsense";
+import InfiniteScroll from "react-infinite-scroll-component";
+import MovieCardLoading from "./MovieCardLoading";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
@@ -48,6 +50,15 @@ function reduceShuffleMovies(movies, sortByVote) {
   return movies.slice(0, 209);
 }
 
+function makeItemGroup(items) {
+  console.log("items", items);
+  if (items.length > 7) {
+    items.splice(7, 0, "ad");
+    return items;
+  }
+  return items;
+}
+
 export default function ResultsPage({
   searchDetails,
   setPage,
@@ -58,11 +69,13 @@ export default function ResultsPage({
   const [loaded, setLoaded] = useState(false);
   const [nothingFound, setNothingFound] = useState(false);
   const [movies, setMovies] = useState([]);
-  const [activeMovies, setActiveMovies] = useState([]);
-  //changing number from 3 to 6
-  // const [movieNumber, setMovieNumber] = useState(3);
-  const [movieNumber, setMovieNumber] = useState(6);
-  const [pagDirection, setPagDirection] = useState("next");
+  const [items, setItems] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [moviesViewed, setMoviesViewed] = useState(0);
+  // const [activeMovies, setActiveMovies] = useState([]);
+
+  // const [movieNumber, setMovieNumber] = useState(6);
+  // const [pagDirection, setPagDirection] = useState("next");
   const {
     allProviderData,
     selectedGenres,
@@ -114,57 +127,43 @@ export default function ResultsPage({
         acc.push({ id: curr, providers: providers });
         return acc;
       }, []);
-      setMovies(result);
-      // changing number from 3 to 6
-      // setActiveMovies(result.slice(0, 3));
-      setActiveMovies(result.slice(0, 6));
-      if (result.length === 0) {
+      const uniqResult = Array.from(new Set(result));
+      setMovies(uniqResult);
+      // setActiveMovies(result.slice(0, 6));
+      if (uniqResult.length === 0) {
         setNothingFound(true);
       }
+      const startingItems = uniqResult.slice(0, 10);
+      console.log("startingItems", startingItems);
+      const startingItemsWithAds = makeItemGroup(startingItems);
+      console.log("startingItemsWithAds", startingItemsWithAds);
+      if (uniqResult.length <= 10) {
+        setHasMore(false);
+      }
+      setMoviesViewed(startingItems.length);
+      setItems(startingItemsWithAds);
       setLoaded(true);
     }
     updateMovies();
   }, []);
 
-  function nextMovies() {
-    if (movieNumber > movies.length) {
-      // show an end page screen
-      return;
+  const fetchMoreData = () => {
+    const newItems = movies.slice(moviesViewed, moviesViewed + 10);
+    if (moviesViewed + 10 >= movies.length) {
+      setHasMore(false);
     }
-    // changing number from 3 to 6
-    // const pagNumber = pagDirection === "next" ? 3 : 6;
-    // const startNumber = pagDirection === "next" ? 0 : 3;
-    const pagNumber = pagDirection === "next" ? 6 : 12;
-    const startNumber = pagDirection === "next" ? 0 : 6;
-    setActiveMovies(
-      movies.slice(movieNumber + startNumber, movieNumber + pagNumber)
-    );
-    setMovieNumber(movieNumber + pagNumber);
-    setPagDirection("next");
-    window.scrollTo(0, 0);
-  }
-
-  function prevMovies() {
-    if (movieNumber <= 0) {
-      // show an end page screen
-      return;
-    }
-    // changing number from 3 to 6
-    const pagNumber = pagDirection === "prev" ? 6 : 12;
-    const startNumber = pagDirection === "prev" ? 0 : 6;
-    // const pagNumber = pagDirection === "prev" ? 3 : 6;
-    // const startNumber = pagDirection === "prev" ? 0 : 3;
-    setActiveMovies(
-      movies.slice(movieNumber - pagNumber, movieNumber - startNumber)
-    );
-    setMovieNumber(movieNumber - pagNumber);
-    setPagDirection("prev");
-    window.scrollTo(0, 0);
-  }
+    setMoviesViewed(moviesViewed + 10);
+    const newItemsWithAds = makeItemGroup(newItems);
+    setItems([...items, ...newItemsWithAds]);
+  };
 
   const styles = {
     resultsWrap: css({
       margin: 10,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
     }),
     buttons: css({
       display: "flex",
@@ -188,10 +187,18 @@ export default function ResultsPage({
       marginLeft: 10,
     }),
     adWrap: css({
-      marginTop: "1rem",
+      paddingTop: "1rem",
+      paddingBottom: "1rem",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
+    }),
+    loader: css({
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
     }),
   };
 
@@ -205,8 +212,36 @@ export default function ResultsPage({
           <NothingFound setPage={setPage} logo={"main"} />
         ) : (
           <div css={styles.resultsWrap}>
-            <div css={styles.cardsWrap}>
-              {activeMovies.map((item) => (
+            <InfiniteScroll
+              css={styles.cardsWrap}
+              dataLength={items.length}
+              next={fetchMoreData}
+              hasMore={hasMore}
+            ></InfiniteScroll>
+            {items.map((item, index) => {
+              if (item == "ad") {
+                return (
+                  <div css={styles.adWrap}>
+                    <FakeAd key={`add-${index}`} num={"1"} />
+                    {/* {screenSize === "small" ? (
+                      <Adsense
+                        client="ca-pub-9245347946008848"
+                        slot="5327454859"
+                        style={{ width: 300, height: 100 }}
+                        format=""
+                      />
+                    ) : (
+                      <Adsense
+                        client="ca-pub-9245347946008848"
+                        slot="5327454859"
+                        style={{ width: 728, height: 90 }}
+                        format=""
+                      />
+                    )} */}
+                  </div>
+                );
+              }
+              return (
                 <MovieCard
                   id={item.id}
                   providers={item.providers}
@@ -216,53 +251,8 @@ export default function ResultsPage({
                   key={item.id}
                   width={width}
                 ></MovieCard>
-              ))}
-            </div>
-            {movieNumber % 12 === 0 && (
-              <div css={styles.adWrap}>
-                {screenSize === "small" ? (
-                  <Adsense
-                    client="ca-pub-9245347946008848"
-                    slot="5327454859"
-                    style={{ width: 300, height: 100 }}
-                    format=""
-                  />
-                ) : (
-                  <Adsense
-                    client="ca-pub-9245347946008848"
-                    slot="5327454859"
-                    style={{ width: 728, height: 90 }}
-                    format=""
-                  />
-                )}
-              </div>
-            )}
-            {/* changing number from 3 to 6 */}
-            {/* {movies.length > 3 && ( */}
-            {movies.length > 6 && (
-              <div css={styles.buttons}>
-                {/* changing number from 3 to 6 */}
-                {/* {movieNumber > 3 && ( */}
-                {movieNumber > 6 && (
-                  <div css={styles.prevButton}>
-                    <NavButton
-                      handleSubmit={prevMovies}
-                      buttonText={"Previous"}
-                      width={90}
-                    />
-                  </div>
-                )}
-                {movieNumber < movies.length && (
-                  <div css={styles.nextButton}>
-                    <NavButton
-                      handleSubmit={nextMovies}
-                      buttonText={"Next"}
-                      width={90}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
+              );
+            })}
           </div>
         )
       ) : (
