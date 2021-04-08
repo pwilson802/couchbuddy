@@ -8,10 +8,10 @@ import MovieCardLoading from "./MovieCardLoading";
 import YouTubeVideo from "./YouTubeVideo";
 
 async function getMovieDetails(id) {
-  let TMB_KEY = process.env.TMB_KEY;
   let url = `/api/movie/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
+  console.log(movieDetails);
   return movieDetails;
 }
 
@@ -49,6 +49,7 @@ function MovieCard({
   const [tagline, setTagline] = useState();
   const [runtime, setRuntime] = useState();
   const [image, setImage] = useState();
+  const [year, setYear] = useState();
   const [voteAverage, setVoteAverage] = useState();
   const [providerImages, setProviderImages] = useState([]);
   const [showAllOverview, setShowAllOverview] = useState(false);
@@ -64,7 +65,10 @@ function MovieCard({
         runtime,
         poster_path,
         vote_average,
+        release_date,
       } = await getMovieDetails(id);
+      const releaseYear = release_date.split("-")[0];
+      setYear(releaseYear);
       setTitle(title);
       setOverview(overview);
       setTagline(tagline);
@@ -135,7 +139,7 @@ function MovieCard({
       fontFamily: "Roboto Slab",
       fontWeight: "bold",
       color: colors[mode]["text"],
-      margin: 0,
+      margin: "2px 0 0 0",
       textAlign: "center",
       "@media(min-width: 768px)": {
         fontSize: 22,
@@ -146,6 +150,12 @@ function MovieCard({
       fontStyle: "italic",
       margin: 0,
       fontSize: 10,
+    }),
+    year: css({
+      color: colors[mode]["text"],
+      margin: 0,
+      fontSize: 16,
+      marginRight: "0.7rem",
     }),
     providerImage: css({
       width: 40,
@@ -242,6 +252,7 @@ function MovieCard({
             <div css={styles.infoBox}>
               {screenSize === "large" && <p css={styles.title}>{title}</p>}
               <div onClick={onPress} css={styles.dataWrap}>
+                <p css={styles.year}>{year}</p>
                 <p css={styles.runtime}>{runtime} minutes</p>
                 <p css={styles.voteAverage}>{voteAverage}</p>
               </div>
@@ -263,36 +274,20 @@ function MovieCard({
                     </div>
                   ))}
                 </div>
-                <button
-                  css={styles.trailerButton}
-                  onClick={() => setShowTrailer(!showTrailer)}
-                >
-                  {showTrailer ? "CLOSE" : "TRAILER"}
-                </button>
+                {hasTrailer && (
+                  <button
+                    css={styles.trailerButton}
+                    onClick={() => setShowTrailer(!showTrailer)}
+                  >
+                    {showTrailer ? "CLOSE" : "TRAILER"}
+                  </button>
+                )}
                 <div css={styles.trailerShare}>
-                  {/* {screenSize === "large" && (
-                    <button
-                      css={styles.trailerButton}
-                      onClick={() => setShowTrailer(!showTrailer)}
-                    >
-                      {showTrailer ? "CLOSE" : "TRAILER"}
-                    </button>
-                  )} */}
                   <ShareButtons movie={title} tagline={tagline} />
                 </div>
               </div>
             </div>
           </div>
-          {/* {screenSize === "small" && (
-            <div css={styles.trailerWrapperSmall}>
-              <button
-                css={styles.trailerButton}
-                onClick={() => setShowTrailer(!showTrailer)}
-              >
-                {showTrailer ? "CLOSE" : "TRAILER"}
-              </button>
-            </div>
-          )} */}
           {showTrailer && <YouTubeVideo id={trailerID} width={width} />}
         </div>
       ) : (

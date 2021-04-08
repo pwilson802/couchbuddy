@@ -62,7 +62,7 @@ function App({ mode, changeMode, location, handleLocation }) {
           mode={mode}
         />
       )}
-      {/* <Footer setPage={setPage} mode={mode} /> */}
+      <Footer activePage="app" setPage={setPage} mode={mode} />
     </div>
   );
 }
