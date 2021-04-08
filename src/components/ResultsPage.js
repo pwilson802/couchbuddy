@@ -10,6 +10,7 @@ import NothingFound from "./NothingFound";
 import FakeAd from "./FakeAd";
 import { Adsense } from "@ctrl/react-adsense";
 import InfiniteScroll from "react-infinite-scroll-component";
+import NavResults from "./NavResults";
 import MovieCardLoading from "./MovieCardLoading";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
@@ -67,6 +68,9 @@ export default function ResultsPage({
   width,
   screenSize,
   mode,
+  location,
+  handleLocation,
+  changeMode,
 }) {
   const [loaded, setLoaded] = useState(false);
   const [nothingFound, setNothingFound] = useState(false);
@@ -181,6 +185,7 @@ export default function ResultsPage({
     cardsWrap: css({
       display: "flex",
       flexDirection: "column",
+      marginTop: "20px",
     }),
     prevButton: css({
       marginRight: 10,
@@ -207,7 +212,14 @@ export default function ResultsPage({
   return (
     <div>
       <div css={styles.logoWrap}>
-        <Logo setPage={setPage} logo={"mainSetPage"} width={250} />
+        {/* <Logo setPage={setPage} logo={"mainSetPage"} width={250} /> */}
+        <NavResults
+          handleLocation={handleLocation}
+          location={location}
+          mode={mode}
+          changeMode={changeMode}
+          setPage={setPage}
+        />
       </div>
       {loaded ? (
         nothingFound ? (

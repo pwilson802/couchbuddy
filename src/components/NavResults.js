@@ -8,17 +8,19 @@ import Burger from "./Burger";
 const colors = {
   light: {
     text: "white",
-    navBackground: "rgba(150,208,211, 0.95)",
+    // navBackground: "rgba(150,208,211, 0.95)",
+    navBackground: "white",
     buttonBorder: "white",
   },
   dark: {
     text: "white",
-    navBackground: "rgba(150,208,211, 0.5)",
+    // navBackground: "rgba(150,208,211, 0.5)",
+    navBackground: "#15202A",
     buttonBorder: "white",
   },
 };
 
-function NavBlog({ handleLocation, location, mode, changeMode }) {
+function NavResults({ handleLocation, location, mode, changeMode, setPage }) {
   const styles = {
     navLinks: css({
       display: "flex",
@@ -40,7 +42,6 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
       backgroundColor: "transparent",
       padding: "1px 10px",
       fontSize: 14,
-      // borderRadius: 10,
       borderWidth: 1,
       borderColor: colors[mode]["buttonBorder"],
       borderStyle: "solid",
@@ -69,13 +70,11 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
   };
   return (
     <nav css={styles.navWrapper}>
-      <Link href={"/blog"}>
-        <img
-          css={styles.logo}
-          src="/CouchBuddyBlogLogo3.png"
-          alt="CouchBuddy Logo"
-        />
-      </Link>
+      <div>
+        <div css={styles.logo} onClick={() => setPage("SearchPage")}>
+          <img src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" width={250} />
+        </div>
+      </div>
       <div css={styles.navLinks}>
         <Burger
           handleLocation={handleLocation}
@@ -89,4 +88,4 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
   );
 }
 
-export default NavBlog;
+export default NavResults;

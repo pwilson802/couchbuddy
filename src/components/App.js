@@ -60,6 +60,9 @@ function App({ mode, changeMode, location, handleLocation }) {
           width={width}
           screenSize={screenSize}
           mode={mode}
+          changeMode={changeMode}
+          location={location}
+          handleLocation={handleLocation}
         />
       )}
       <Footer activePage="app" setPage={setPage} mode={mode} />
