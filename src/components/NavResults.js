@@ -108,6 +108,7 @@ function NavResults({
           mode={mode}
           changeMode={changeMode}
           inBlog={false}
+          showCountry={false}
         />
       </div>
     </nav>

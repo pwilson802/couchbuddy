@@ -105,6 +105,7 @@ function BurgerMenu({
   changeMode,
   setOpen,
   inBlog,
+  showCountry,
 }) {
   return (
     <div>
@@ -180,28 +181,30 @@ function BurgerMenu({
             <div>About</div>
           </Link>
         </MenuContainerItem>
-        <MenuContainerItem
-          initial={false}
-          animate={isOpen ? "show" : "hide"}
-          variants={{
-            show: {
-              ...itemVariants.show,
-              transition: { delay: 0.6, duration: 0.2 },
-            },
-            hide: {
-              ...itemVariants.hide,
-              transition: { delay: 0.2, duration: 0.05 },
-            },
-          }}
-        >
-          <LocationSelect
-            handleLocation={handleLocation}
-            location={location}
-            mode={mode}
-            isOpen={isOpen}
-            setOpen={setOpen}
-          />
-        </MenuContainerItem>
+        {showCountry && (
+          <MenuContainerItem
+            initial={false}
+            animate={isOpen ? "show" : "hide"}
+            variants={{
+              show: {
+                ...itemVariants.show,
+                transition: { delay: 0.6, duration: 0.2 },
+              },
+              hide: {
+                ...itemVariants.hide,
+                transition: { delay: 0.2, duration: 0.05 },
+              },
+            }}
+          >
+            <LocationSelect
+              handleLocation={handleLocation}
+              location={location}
+              mode={mode}
+              isOpen={isOpen}
+              setOpen={setOpen}
+            />
+          </MenuContainerItem>
+        )}
       </MenuContainer>
     </div>
   );

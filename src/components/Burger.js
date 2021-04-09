@@ -7,7 +7,14 @@ import OutsideClickHandler from "react-outside-click-handler";
 
 import BurgerMenu from "./BurgerMenu";
 
-function Burger({ handleLocation, location, mode, changeMode, inBlog }) {
+function Burger({
+  handleLocation,
+  location,
+  mode,
+  changeMode,
+  inBlog,
+  showCountry = true,
+}) {
   const [isOpen, setOpen] = useState(false);
   const toggle = () => {
     setOpen(!isOpen);
@@ -49,6 +56,7 @@ function Burger({ handleLocation, location, mode, changeMode, inBlog }) {
             changeMode={changeMode}
             setOpen={setOpen}
             inBlog={inBlog}
+            showCountry={showCountry}
           />
         )}
       </OutsideClickHandler>
