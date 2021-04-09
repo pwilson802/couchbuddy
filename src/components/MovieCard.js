@@ -11,7 +11,6 @@ async function getMovieDetails(id) {
   let url = `/api/movie/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  console.log(movieDetails);
   return movieDetails;
 }
 
@@ -27,11 +26,13 @@ const colors = {
     text: "black",
     cardBorder: "rgba(150,208,211,1)",
     voteBorder: "rgba(150,208,211,1)",
+    cardBackground: "rgba(150,208,211,0.4)",
   },
   dark: {
     text: "white",
     cardBorder: "rgba(150,208,211,0.3)",
     voteBorder: "rgba(150,208,211,0.6)",
+    cardBackground: "rgba(150,208,211,0.1)",
   },
 };
 
@@ -106,9 +107,10 @@ function MovieCard({
     }),
     cardWrapper: css({
       borderColor: colors[mode]["cardBorder"],
+      backgroundColor: colors[mode]["cardBackground"],
       borderStyle: "solid",
       marginTop: 8,
-      borderWidth: 1,
+      borderWidth: 2,
       paddingHorizontal: 5,
       paddingVertical: 2,
       width: "95%",

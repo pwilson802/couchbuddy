@@ -88,9 +88,7 @@ async function getIPLocation() {
   ];
   const response = await fetch("https://ipapi.co/json/");
   const json = await response.json();
-  // //console.log()("country json response", json);
   const countryCode = json["country_code"];
-  // //console.log()(countryCode);
   if (validCodes.includes(countryCode)) {
     return countryCode;
   }
@@ -98,10 +96,7 @@ async function getIPLocation() {
 }
 
 async function getLocalProviders(country) {
-  //couchbuddy-data.s3.amazonaws.com/certifications-AR.json
   const url = `${DATA_URL}/providers-${country}.json`;
-  // const url = `https://couchbuddy.s3-ap-southeast-2.amazonaws.com/data/providers-${country}.json`;
-  // //console.log()(url);
   const response = await fetch(url);
   return await response.json();
 }
@@ -187,6 +182,8 @@ export default function SearchPage({
   changeMode,
   location,
   handleLocation,
+  refine,
+  refineData,
 }) {
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
@@ -200,9 +197,6 @@ export default function SearchPage({
   const [loaded, setLoaded] = useState(false);
 
   async function configureProviders(location) {
-    // if (location === null) {
-    //   return;
-    // }
     const localProviderData = await getLocalProviders(location);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
@@ -220,9 +214,6 @@ export default function SearchPage({
   }
 
   async function configureCertifications(location) {
-    // if (location === null) {
-    //   return;
-    // }
     const localCertificationData = await getLocalCertifications(location);
     const certificationsObj = await makeCertificationsObj(
       localCertificationData
@@ -282,6 +273,7 @@ export default function SearchPage({
       duration: duration,
       certificationMovies: certificationMovies,
       sortByVote: sortByVote,
+      selectedCertifications: selectedCertifications,
     };
     handleSearchDetails(searchData);
     setPage("ResultsPage");
@@ -322,11 +314,18 @@ export default function SearchPage({
   useEffect(() => {
     setLoaded(false);
     async function pageLoad() {
-      // const currentLocation = location || (await getIPLocation());
-      // setLocation(currentLocation);
-      setSelectedGenres(genreObj);
-      await configureProviders(location);
-      await configureCertifications(location);
+      if (refine == true) {
+        await configureProviders(location);
+        await configureCertifications(location);
+        setSelectedCertifications(refineData.selectedCertifications);
+        setSelectedGenres(refineData.selectedGenres);
+        setDuration(refineData.duration);
+        setSortByVote(refineData.sortByVote);
+      } else {
+        setSelectedGenres(genreObj);
+        await configureProviders(location);
+        await configureCertifications(location);
+      }
       setLoaded(true);
     }
     if (location != null) {

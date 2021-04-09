@@ -28,8 +28,6 @@ function DropDownButton({ show, menu, mode }) {
     }
   }, [show]);
 
-  console.log(activeSegments);
-
   return (
     <div css={styles.wrapper}>
       <Lottie

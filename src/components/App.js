@@ -11,6 +11,8 @@ function App({ mode, changeMode, location, handleLocation }) {
   const [width, setWidth] = useState(0);
   const [screenSize, setScreenSize] = useState("small");
   const [searchDetails, setSearchDetails] = useState({});
+  const [refine, setRefine] = useState(false);
+  const [refineData, setRefineData] = useState({});
 
   const handleSearchDetails = (item) => {
     setSearchDetails(item);
@@ -51,6 +53,8 @@ function App({ mode, changeMode, location, handleLocation }) {
           changeMode={changeMode}
           location={location}
           handleLocation={handleLocation}
+          refine={refine}
+          refineData={refineData}
         />
       )}
       {page === "ResultsPage" && (
@@ -63,6 +67,8 @@ function App({ mode, changeMode, location, handleLocation }) {
           changeMode={changeMode}
           location={location}
           handleLocation={handleLocation}
+          setRefine={setRefine}
+          setRefineData={setRefineData}
         />
       )}
       <Footer activePage="app" setPage={setPage} mode={mode} />

@@ -45,16 +45,12 @@ async function getMovieIDsforGenres(genres) {
 
 function reduceShuffleMovies(movies, sortByVote) {
   if (!sortByVote) {
-    //console.log()("shuffling....");
     shuffle(movies);
   }
-  // return movies.slice(0, 209);
-  console.log(movies);
   return movies;
 }
 
 function makeItemGroup(items) {
-  console.log("items", items);
   if (items.length > 7) {
     items.splice(7, 0, "ad");
     return items;
@@ -71,6 +67,8 @@ export default function ResultsPage({
   location,
   handleLocation,
   changeMode,
+  setRefine,
+  setRefineData,
 }) {
   const [loaded, setLoaded] = useState(false);
   const [nothingFound, setNothingFound] = useState(false);
@@ -78,10 +76,7 @@ export default function ResultsPage({
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [moviesViewed, setMoviesViewed] = useState(0);
-  // const [activeMovies, setActiveMovies] = useState([]);
 
-  // const [movieNumber, setMovieNumber] = useState(6);
-  // const [pagDirection, setPagDirection] = useState("next");
   const {
     allProviderData,
     selectedGenres,
@@ -89,6 +84,7 @@ export default function ResultsPage({
     duration,
     certificationMovies,
     sortByVote,
+    selectedCertifications,
   } = searchDetails;
 
   function getProviders(id) {
@@ -140,9 +136,7 @@ export default function ResultsPage({
         setNothingFound(true);
       }
       const startingItems = uniqResult.slice(0, 10);
-      console.log("startingItems", startingItems);
       const startingItemsWithAds = makeItemGroup(startingItems);
-      console.log("startingItemsWithAds", startingItemsWithAds);
       if (uniqResult.length <= 10) {
         setHasMore(false);
       }
@@ -163,6 +157,23 @@ export default function ResultsPage({
     setItems([...items, ...newItemsWithAds]);
   };
 
+  const handleRefine = () => {
+    setRefine(true);
+    setRefineData({
+      selectedGenres: selectedGenres,
+      duration: duration,
+      selectedCertifications: selectedCertifications,
+      sortByVote: sortByVote,
+    });
+    setPage("SearchPage");
+  };
+
+  const handleSearch = () => {
+    setRefine(false);
+    setRefineData({});
+    setPage("SearchPage");
+  };
+
   const styles = {
     resultsWrap: css({
       margin: 10,
@@ -170,6 +181,7 @@ export default function ResultsPage({
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
+      marginTop: "40px",
     }),
     buttons: css({
       display: "flex",
@@ -219,6 +231,8 @@ export default function ResultsPage({
           mode={mode}
           changeMode={changeMode}
           setPage={setPage}
+          handleRefine={handleRefine}
+          handleSearch={handleSearch}
         />
       </div>
       {loaded ? (

@@ -4,6 +4,8 @@ import { jsx, css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Burger from "./Burger";
+import ResultsNavButton from "./ResultsNavButton";
+import SearchPage from "./SearchPage";
 
 const colors = {
   light: {
@@ -20,7 +22,15 @@ const colors = {
   },
 };
 
-function NavResults({ handleLocation, location, mode, changeMode, setPage }) {
+function NavResults({
+  handleLocation,
+  location,
+  mode,
+  changeMode,
+  setPage,
+  handleRefine,
+  handleSearch,
+}) {
   const styles = {
     navLinks: css({
       display: "flex",
@@ -47,12 +57,13 @@ function NavResults({ handleLocation, location, mode, changeMode, setPage }) {
       borderStyle: "solid",
     }),
     logo: css({
-      width: "40%",
+      display: "none",
       "&:hover": {
         cursor: "pointer",
       },
       "@media(min-width: 700px)": {
         width: "250px",
+        display: "block",
       },
     }),
     navWrapper: css({
@@ -67,13 +78,28 @@ function NavResults({ handleLocation, location, mode, changeMode, setPage }) {
       justifyContent: "space-between",
       backgroundColor: colors[mode]["navBackground"],
     }),
+    leftNav: css({
+      display: "flex",
+      flexDirection: "row",
+    }),
   };
+
   return (
     <nav css={styles.navWrapper}>
-      <div>
-        <div css={styles.logo} onClick={() => setPage("SearchPage")}>
-          <img src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" width={250} />
-        </div>
+      <div css={styles.leftNav}>
+        <ResultsNavButton
+          mode={mode}
+          handleSubmit={handleSearch}
+          buttonText={"Search"}
+        />
+        <ResultsNavButton
+          mode={mode}
+          handleSubmit={handleRefine}
+          buttonText={"Refine"}
+        />
+      </div>
+      <div css={styles.logo} onClick={handleSearch}>
+        <img src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" width={250} />
       </div>
       <div css={styles.navLinks}>
         <Burger
@@ -81,7 +107,7 @@ function NavResults({ handleLocation, location, mode, changeMode, setPage }) {
           location={location}
           mode={mode}
           changeMode={changeMode}
-          inBlog={true}
+          inBlog={false}
         />
       </div>
     </nav>
