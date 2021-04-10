@@ -7,6 +7,7 @@ import MovieBlurb from "../../components/MovieBlurb";
 import NavBlog from "../../components/NavBlog";
 import Footer from "../../components/Footer";
 import BlogSocials from "../../components/BlogSocials";
+import BlogMovieList from "../../components/BlogMovieList";
 
 const colors = {
   light: {
@@ -21,14 +22,7 @@ const colors = {
   },
 };
 
-function Article({
-  location,
-  handleLocation,
-  mode,
-  changeMode,
-  blurbs,
-  article,
-}) {
+function Article({ location, handleLocation, mode, changeMode, pageDetails }) {
   const {
     heading,
     sharingDescription,
@@ -39,9 +33,9 @@ function Article({
     author,
     metaDescription,
     slug,
-  } = article[0].fields;
+  } = pageDetails.article[0].fields;
 
-  const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
+  // const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
@@ -105,37 +99,39 @@ function Article({
   return (
     <>
       <Head>
-        <title>{article.length > 0 ? articleType + " " + heading : ""}</title>
+        <title>
+          {pageDetails.article.length > 0 ? articleType + " " + heading : ""}
+        </title>
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content={article.length > 0 ? metaDescription : ""}
+          content={pageDetails.article.length > 0 ? metaDescription : ""}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:description"
-          content={article.length > 0 ? sharingDescription : ""}
+          content={pageDetails.article.length > 0 ? sharingDescription : ""}
         />
         <meta
           name="twitter:title"
-          content={article.length > 0 ? sharingTitle : ""}
+          content={pageDetails.article.length > 0 ? sharingTitle : ""}
         />
         <meta name="twitter:site" content="@couch_buddy" />
         <meta
           name="twitter:image"
-          content={article.length > 0 ? sharingImage : ""}
+          content={pageDetails.article.length > 0 ? sharingImage : ""}
         />
         <meta
           property="og:title"
-          content={article.length > 0 ? sharingTitle : ""}
+          content={pageDetails.article.length > 0 ? sharingTitle : ""}
         />
         <meta
           property="og:description"
-          content={article.length > 0 ? sharingDescription : ""}
+          content={pageDetails.article.length > 0 ? sharingDescription : ""}
         />
         <meta
           property="og:image"
-          content={article.length > 0 ? sharingImage : ""}
+          content={pageDetails.article.length > 0 ? sharingImage : ""}
         />
         <meta
           property="og:url"
@@ -156,35 +152,18 @@ function Article({
           <img css={styles.image} src={sharingImage} alt={heading} />
         </div>
         <div css={styles.articlesWrapper}>
-          <h1 css={styles.heading}>{articleType + " " + heading}</h1>
-          <div css={styles.authorSocials}>
-            <div css={styles.authorWrap}>
-              <p css={styles.author}>by {author}</p>
-              <img
-                src={authorImage}
-                alt="Picture of author"
-                width={50}
-                height={50}
-              />
-            </div>
-            <div css={styles.socials}>
-              <BlogSocials slug={slug} />
-            </div>
-          </div>
-          <p css={styles.introduction}>{introduction}</p>
-          {blurbs.length > 0
-            ? blurbs.map((p, index) => (
-                <MovieBlurb
-                  id={p.fields.movieId}
-                  body={p.fields.body}
-                  key={p.fields.movieId}
-                  providers={p.fields.providers[location] || {}}
-                  movieDetails={p.fields.movieDetails}
-                  mode={mode}
-                  itemIndex={index}
-                />
-              ))
-            : null}
+          {pageDetails.type === "What to watch" && (
+            <BlogMovieList
+              articleType={articleType}
+              author={author}
+              heading={heading}
+              slug={slug}
+              introduction={introduction}
+              pageDetails={pageDetails}
+              mode={mode}
+              location={location}
+            />
+          )}
         </div>
       </main>
       <footer>
@@ -216,7 +195,7 @@ export async function getStaticProps(context) {
     return movieDetails;
   }
 
-  async function fetchEntries() {
+  async function fetchWhattoWatchEntries() {
     const entries = await client.getEntries({
       "fields.slug": context.params.slug,
       content_type: "movieBlurb",
@@ -233,20 +212,44 @@ export async function getStaticProps(context) {
     if (entries.items) return entries.items;
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
-  const blurbs = await fetchEntries();
+
+  async function makeWhattoWatch(article) {
+    const response = {};
+    const blurbs = await fetchWhattoWatchEntries();
+    for (let i = 0; i < blurbs.length; i++) {
+      let id = blurbs[i].fields.movieId;
+      let providers = await getMovieProviders(id);
+      let movieDetails = await getMovieDetails(id);
+      blurbs[i].fields.providers = providers;
+      blurbs[i].fields.movieDetails = movieDetails;
+    }
+    response["type"] = "What to watch";
+    response["article"] = article;
+    response["blurbs"] = blurbs;
+    return response;
+  }
+
+  async function makeQuiz(article) {
+    const response = {};
+    return response;
+  }
+
   const article = await fetchArticle();
-  for (let i = 0; i < blurbs.length; i++) {
-    let id = blurbs[i].fields.movieId;
-    let providers = await getMovieProviders(id);
-    let movieDetails = await getMovieDetails(id);
-    blurbs[i].fields.providers = providers;
-    blurbs[i].fields.movieDetails = movieDetails;
+  const articleType = article[0].fields.articleType;
+
+  let pageDetails = {};
+
+  if (articleType === "What to watch") {
+    pageDetails = await makeWhattoWatch(article);
+  }
+
+  if (articleType === "Quiz") {
+    pageDetails = await makeQuiz(artciel);
   }
 
   return {
     props: {
-      blurbs,
-      article,
+      pageDetails,
     },
   };
 }

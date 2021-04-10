@@ -23,7 +23,7 @@ function PostPreview({
   topPost,
   mode,
 }) {
-  const articleTitle = "What to Watch " + heading;
+  const articleTitle = `${articleType} ${heading}`;
   const articleLink = "/blog/" + slug;
 
   const styles = {

@@ -63,8 +63,6 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       {/* Only showing ad add after every 3 articles. */}
       {(itemIndex + 1) % 3 === 0 && (
         <div css={styles.adWrap}>
-          {/* <FakeAd num={1} /> */}
-          {/* <AdResponsiveHorizontal /> */}
           <Adsense
             client="ca-pub-9245347946008848"
             slot="5327454859"
