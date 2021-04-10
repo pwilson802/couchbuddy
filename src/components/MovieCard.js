@@ -138,7 +138,7 @@ function MovieCard({
     }),
     title: css({
       fontSize: 18,
-      fontFamily: "Roboto Slab",
+      fontFamily: "Kanit",
       fontWeight: "bold",
       color: colors[mode]["text"],
       margin: "2px 0 0 0",
@@ -150,14 +150,14 @@ function MovieCard({
     runtime: css({
       color: colors[mode]["text"],
       fontStyle: "italic",
-      margin: 0,
-      fontSize: 10,
+      margin: "3px 10px 0 10px",
+      fontSize: 11,
     }),
     year: css({
       color: colors[mode]["text"],
       margin: 0,
       fontSize: 16,
-      marginRight: "0.7rem",
+      fontWeight: "bold",
     }),
     providerImage: css({
       width: 40,
@@ -185,7 +185,6 @@ function MovieCard({
     }),
     voteAverage: css({
       margin: 0,
-      marginLeft: 10,
       borderColor: colors[mode]["voteBorder"],
       borderStyle: "solid",
       borderWidth: 1,
