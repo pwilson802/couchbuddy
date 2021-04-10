@@ -249,8 +249,8 @@ export default function ResultsPage({
               if (item == "ad") {
                 return (
                   <div css={styles.adWrap}>
-                    <FakeAd key={`add-${index}`} num={"1"} />
-                    {/* {screenSize === "small" ? (
+                    {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
+                    {screenSize === "small" ? (
                       <Adsense
                         client="ca-pub-9245347946008848"
                         slot="5327454859"
@@ -264,7 +264,7 @@ export default function ResultsPage({
                         style={{ width: 728, height: 90 }}
                         format=""
                       />
-                    )} */}
+                    )}
                   </div>
                 );
               }
