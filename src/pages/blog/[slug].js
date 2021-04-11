@@ -8,6 +8,7 @@ import NavBlog from "../../components/NavBlog";
 import Footer from "../../components/Footer";
 import BlogSocials from "../../components/BlogSocials";
 import BlogMovieList from "../../components/BlogMovieList";
+import BlogQuiz from "../../components/BlogQuiz";
 
 const colors = {
   light: {
@@ -164,6 +165,16 @@ function Article({ location, handleLocation, mode, changeMode, pageDetails }) {
               location={location}
             />
           )}
+          {pageDetails.type === "quiz" && (
+            <BlogQuiz
+              heading={heading}
+              slug={slug}
+              introduction={introduction}
+              pageDetails={pageDetails}
+              mode={mode}
+              location={location}
+            />
+          )}
         </div>
       </main>
       <footer>
@@ -204,6 +215,15 @@ export async function getStaticProps(context) {
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
 
+  async function fetchQuizEntries() {
+    const entries = await client.getEntries({
+      "fields.slug": context.params.slug,
+      content_type: "quizQuestion",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
   async function fetchArticle() {
     const entries = await client.getEntries({
       "fields.slug": context.params.slug,
@@ -231,6 +251,12 @@ export async function getStaticProps(context) {
 
   async function makeQuiz(article) {
     const response = {};
+    const questions = await fetchQuizEntries();
+    const questionsList = questions.map((item) => item.fields);
+    console.log("questionsList", questionsList);
+    response["type"] = "quiz";
+    response["article"] = article;
+    response["questions"] = questionsList;
     return response;
   }
 
@@ -243,8 +269,8 @@ export async function getStaticProps(context) {
     pageDetails = await makeWhattoWatch(article);
   }
 
-  if (articleType === "Quiz") {
-    pageDetails = await makeQuiz(artciel);
+  if (articleType === "quiz") {
+    pageDetails = await makeQuiz(article);
   }
 
   return {

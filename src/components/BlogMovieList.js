@@ -57,11 +57,14 @@ function BlogMovieList({
       justifyContent: "space-between",
       marginRight: "5px",
     }),
+    quizWrapper: css({
+      marginTop: 40,
+    }),
   };
 
   return (
     <div css={styles.pageWrapper}>
-      <h1 css={styles.heading}>{articleType + " " + heading}</h1>
+      <h1 css={styles.heading}>{heading}</h1>
       <div css={styles.authorSocials}>
         <div css={styles.authorWrap}>
           <p css={styles.author}>by {author}</p>
@@ -77,19 +80,21 @@ function BlogMovieList({
         </div>
       </div>
       <p css={styles.introduction}>{introduction}</p>
-      {pageDetails.blurbs.length > 0
-        ? pageDetails.blurbs.map((p, index) => (
-            <MovieBlurb
-              id={p.fields.movieId}
-              body={p.fields.body}
-              key={p.fields.movieId}
-              providers={p.fields.providers[location] || {}}
-              movieDetails={p.fields.movieDetails}
-              mode={mode}
-              itemIndex={index}
-            />
-          ))
-        : null}
+      <div css={styles.quizWrapper}>
+        {pageDetails.blurbs.length > 0
+          ? pageDetails.blurbs.map((p, index) => (
+              <MovieBlurb
+                id={p.fields.movieId}
+                body={p.fields.body}
+                key={p.fields.movieId}
+                providers={p.fields.providers[location] || {}}
+                movieDetails={p.fields.movieDetails}
+                mode={mode}
+                itemIndex={index}
+              />
+            ))
+          : null}
+      </div>
     </div>
   );
 }
