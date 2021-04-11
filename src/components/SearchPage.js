@@ -11,6 +11,7 @@ import DropDownProviders from "./DropDownProviders";
 import NavButton from "./NavButton";
 import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
+import Footer from "./Footer";
 import Burger from "./Burger";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
@@ -500,6 +501,7 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
+            <Footer activePage="app" setPage={setPage} mode={mode} />
           </div>
         ) : (
           <SpinnerMovie />

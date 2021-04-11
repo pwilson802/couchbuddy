@@ -71,7 +71,6 @@ function App({ mode, changeMode, location, handleLocation }) {
           setRefineData={setRefineData}
         />
       )}
-      <Footer activePage="app" setPage={setPage} mode={mode} />
     </div>
   );
 }

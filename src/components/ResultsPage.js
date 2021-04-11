@@ -11,6 +11,7 @@ import FakeAd from "./FakeAd";
 import { Adsense } from "@ctrl/react-adsense";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NavResults from "./NavResults";
+import Footer from "./Footer";
 import MovieCardLoading from "./MovieCardLoading";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
@@ -280,6 +281,7 @@ export default function ResultsPage({
                 ></MovieCard>
               );
             })}
+            <Footer activePage="app" setPage={setPage} mode={mode} />
           </div>
         )
       ) : (
