@@ -371,6 +371,14 @@ export default function SearchPage({
       justifyContent: "center",
       alignItems: "center",
       alignSelf: "center",
+      "@media(min-width: 700px)": {
+        position: "absolute",
+        top: "25px",
+        left: "50%",
+        width: "250px",
+        transform: "translate(-50%, -50%)",
+        display: "block",
+      },
     }),
     voteButton: css({
       padding: 10,
@@ -418,6 +426,11 @@ export default function SearchPage({
     adWrap: css({
       marginTop: 10,
     }),
+    app: css({
+      "@media(min-width: 700px)": {
+        marginTop: "50px",
+      },
+    }),
   };
   return (
     <div>
@@ -434,7 +447,7 @@ export default function SearchPage({
           />
         </div>
         {loaded ? (
-          <div>
+          <div css={styles.app}>
             {width < 700 ? (
               <DropDownGenres
                 selectedGenres={selectedGenres}

@@ -36,7 +36,7 @@ function NavResults({
       display: "flex",
       flexDirection: "row",
       justifyContent: "flex-end",
-      height: "40px",
+      height: "42px",
       marginTop: "10px",
     }),
     buttonWrapper: css({
@@ -62,7 +62,11 @@ function NavResults({
         cursor: "pointer",
       },
       "@media(min-width: 700px)": {
+        position: "fixed",
+        top: "25px",
+        left: "50%",
         width: "250px",
+        transform: "translate(-50%, -50%)",
         display: "block",
       },
     }),
