@@ -67,6 +67,7 @@ function BlogQuizQuestion({
       padding: "5px 10px 0 10px",
       borderRadius: "0 5px 0px 0px",
       background: colors[mode]["background"],
+      cursor: "pointer",
     }),
     showAnswerWrapper: css({
       display: "flex",
@@ -75,7 +76,6 @@ function BlogQuizQuestion({
     }),
     showAnswer: css({
       display: "flex",
-      cursor: "pointer",
       alignItems: "center",
       color: colors[mode]["text"],
       marginTop: "-7px",
@@ -112,13 +112,13 @@ function BlogQuizQuestion({
   return (
     <div css={styles.wrapper}>
       <div css={styles.number}>{questionNumber + 1}</div>
-      <div css={styles.questionBlock}>
+      <div
+        css={styles.questionBlock}
+        onClick={() => setShowAnswer(!showAnswer)}
+      >
         <div>{question}</div>
         <div css={styles.showAnswerWrapper}>
-          <div
-            css={styles.showAnswer}
-            onClick={() => setShowAnswer(!showAnswer)}
-          >
+          <div css={styles.showAnswer}>
             <span>{showAnswer ? "Hide Answer" : "Show Answer"}</span>
             <DropDownButton show={showAnswer} mode={mode} menu={"genres"} />
           </div>
