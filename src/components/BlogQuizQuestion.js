@@ -3,25 +3,29 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
 import DropDownButton from "./DropDownButton";
+import BlogQuizCorrect from "./BlogQuizCorrect";
+import BlogQuizIncorrect from "./BlogQuizIncorrect";
 
 const colors = {
   light: {
     text: "black",
     border: "rgba(150,208,211,1)",
     background: "rgba(150,208,211,0.4)",
-    answerBackground: "rgba(150,208,211,0.5)",
     notAnswered: "rgba(150,208,211,0.4)",
-    correct: "green",
-    incorrect: "red",
+    answerBackground: "rgba(254,244,225, 0.4)",
+    answerBorder: "rgba(254,244,225, 1)",
+    correct: "#39B54A",
+    incorrect: "#A01701",
   },
   dark: {
     text: "white",
     border: "rgba(150,208,211,0.3)",
+    answerBorder: "rgba(150,208,211,0.3)",
     background: "rgba(150,208,211,0.1)",
     answerBackground: "rgba(150,208,211,0.2)",
     notAnswered: "rgba(150,208,211,0.1)",
-    correct: "green",
-    incorrect: "red",
+    correct: "#39B54A",
+    incorrect: "#A01701",
   },
 };
 
@@ -36,7 +40,6 @@ function BlogQuizQuestion({
   const [showAnswer, setShowAnswer] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState("notAnswered");
-  console.log("question", question);
   const styles = {
     wrapper: css({
       margin: "40px 0",
@@ -47,7 +50,7 @@ function BlogQuizQuestion({
     number: css({
       fontSize: "1rem",
       color: colors[mode]["text"],
-      borderColor: colors[mode]["border"],
+      borderColor: colors[mode][correct],
       borderStyle: "solid",
       borderWidth: 2,
       borderBottom: "none",
@@ -61,7 +64,7 @@ function BlogQuizQuestion({
       borderColor: colors[mode]["border"],
       borderStyle: "solid",
       borderWidth: 2,
-      padding: "10px 10px",
+      padding: "5px 10px 0 10px",
       borderRadius: "0 5px 0px 0px",
       background: colors[mode]["background"],
     }),
@@ -75,9 +78,11 @@ function BlogQuizQuestion({
       cursor: "pointer",
       alignItems: "center",
       color: colors[mode]["text"],
+      marginTop: "-7px",
+      marginBottom: "-5px",
     }),
     answerWrapper: css({
-      borderColor: colors[mode]["border"],
+      borderColor: colors[mode]["answerBorder"],
       borderStyle: "solid",
       borderWidth: 2,
       padding: "10px 10px",
@@ -123,8 +128,17 @@ function BlogQuizQuestion({
         <div css={styles.answerWrapper}>
           <div>{answer}</div>
           <div css={styles.scoreButtons}>
-            <button onClick={() => updateScore(true)}>Correct</button>
-            <button onClick={() => updateScore(false)}>Incorrect</button>
+            <BlogQuizCorrect
+              updateScore={() => updateScore(true)}
+              answered={answered}
+              correct={correct}
+            />
+            <BlogQuizIncorrect
+              updateScore={() => updateScore(false)}
+              answered={answered}
+              correct={correct}
+            />
+            {/* <button onClick={() => updateScore(false)}>Incorrect</button> */}
           </div>
         </div>
       )}

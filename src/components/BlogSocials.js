@@ -28,9 +28,6 @@ function BlogSocials({ slug }) {
       <a href={twitterUrl} target="_blank">
         <img css={styles.image} src="/share/twitter.png" alt="twitter logo" />
       </a>
-      {/* <a css={styles.facebookImage} href={facebookUrl} target="_blank">
-        <img css={styles.image} src="/share/facebook.png" alt="facebook logo" />
-      </a> */}
       <div css={styles.facebookImage}>
         <FacebookShareButton url={url}>
           <FacebookIcon size={34} round={true} />

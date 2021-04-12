@@ -27,7 +27,6 @@ function BlogQuiz({
   location,
 }) {
   const [score, setScore] = useState(0);
-  console.log(pageDetails);
   const styles = {
     heading: css({
       textAlign: "center",
@@ -43,6 +42,11 @@ function BlogQuiz({
     }),
     score: css({
       color: colors[mode]["text"],
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "22px",
+      flexDirection: "column",
     }),
   };
 
@@ -70,6 +74,7 @@ function BlogQuiz({
         <p>
           {score} / {pageDetails.questions.length}
         </p>
+        <p>Share Your results</p>
       </div>
     </div>
   );
