@@ -114,29 +114,31 @@ function BlogQuizQuestion({ details, questionNumber, score, setScore, mode }) {
   };
 
   return (
-    <div css={styles.wrapper}>
-      <div css={styles.number}>{questionNumber + 1}</div>
-      <div
-        css={styles.questionBlock}
-        onClick={() => setShowAnswer(!showAnswer)}
-      >
-        <div>{documentToReactComponents(details.question)}</div>
-        <div css={styles.showAnswerWrapper}>
-          <div css={styles.showAnswer}>
-            <span>{showAnswer ? "Hide Answer" : "Show Answer"}</span>
-            <DropDownButton show={showAnswer} mode={mode} menu={"genres"} />
+    <div>
+      <div css={styles.wrapper}>
+        <div css={styles.number}>{questionNumber + 1}</div>
+        <div
+          css={styles.questionBlock}
+          onClick={() => setShowAnswer(!showAnswer)}
+        >
+          <div>{documentToReactComponents(details.question)}</div>
+          <div css={styles.showAnswerWrapper}>
+            <div css={styles.showAnswer}>
+              <span>{showAnswer ? "Hide Answer" : "Show Answer"}</span>
+              <DropDownButton show={showAnswer} mode={mode} menu={"genres"} />
+            </div>
           </div>
         </div>
-      </div>
-      <div css={showAnswer ? styles.answerWrapper : styles.answerWrapperHide}>
-        <div>{details.answer}</div>
-        <div css={styles.scoreButtons}>
-          <BlogQuizCorrect updateScore={updateScore} correct={correct} />
-          <BlogQuizIncorrect
-            updateScore={updateScore}
-            answered={answered}
-            correct={correct}
-          />
+        <div css={showAnswer ? styles.answerWrapper : styles.answerWrapperHide}>
+          <div>{details.answer}</div>
+          <div css={styles.scoreButtons}>
+            <BlogQuizCorrect updateScore={updateScore} correct={correct} />
+            <BlogQuizIncorrect
+              updateScore={updateScore}
+              answered={answered}
+              correct={correct}
+            />
+          </div>
         </div>
       </div>
     </div>

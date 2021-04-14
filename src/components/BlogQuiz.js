@@ -6,6 +6,7 @@ import BlogSocials from "./BlogSocials";
 import BlogQuizQuestion from "./BlogQuizQuestion";
 import BlogQuizSocials from "./BlogQuizSocials";
 import { Adsense } from "@ctrl/react-adsense";
+import CouchBuddyAd from "./CouchBuddyAd";
 
 const colors = {
   light: {
@@ -130,6 +131,7 @@ function BlogQuiz({
           responsive={true}
         />
       </div>
+      <CouchBuddyAd mode={mode} />
     </div>
   );
 }
