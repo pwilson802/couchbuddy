@@ -4,6 +4,8 @@ import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
 import BlogSocials from "./BlogSocials";
 import BlogQuizQuestion from "./BlogQuizQuestion";
+import BlogQuizSocials from "./BlogQuizSocials";
+import { Adsense } from "@ctrl/react-adsense";
 
 const colors = {
   light: {
@@ -40,15 +42,34 @@ function BlogQuiz({
     introduction: css({
       color: colors[mode]["text"],
     }),
-    score: css({
+    results: css({
       color: colors[mode]["text"],
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontSize: "22px",
       flexDirection: "column",
     }),
+    score: css({
+      margin: 0,
+      padding: 0,
+      fontSize: "22px",
+    }),
+    rank: css({
+      margin: 0,
+      padding: 0,
+      fontSize: "22px",
+    }),
+    adWrap: css({
+      marginTop: "3rem",
+    }),
   };
+  const {
+    rankOne,
+    rankTwo,
+    rankThree,
+    rankFour,
+    rankFive,
+  } = pageDetails.ranks[0].fields;
 
   return (
     <div>
@@ -60,8 +81,7 @@ function BlogQuiz({
       {pageDetails.questions.length > 0
         ? pageDetails.questions.map((p, index) => (
             <BlogQuizQuestion
-              question={p.question}
-              answer={p.answer}
+              details={p}
               key={index}
               questionNumber={index}
               score={score}
@@ -70,11 +90,45 @@ function BlogQuiz({
             />
           ))
         : null}
-      <div css={styles.score}>
-        <p>
+      <div css={styles.results}>
+        <p css={styles.score}>
           {score} / {pageDetails.questions.length}
         </p>
+        <p css={styles.rank}>
+          {score < 4
+            ? rankFive
+            : score < 7
+            ? rankFour
+            : score < 10
+            ? rankThree
+            : score < 13
+            ? rankTwo
+            : rankOne}
+        </p>
         <p>Share Your results</p>
+        <BlogQuizSocials
+          slug={slug}
+          score={score}
+          rank={
+            score < 4
+              ? rankFive
+              : score < 7
+              ? rankFour
+              : score < 10
+              ? rankThree
+              : score < 13
+              ? rankTwo
+              : rankOne
+          }
+        />
+      </div>
+      <div css={styles.adWrap}>
+        <Adsense
+          client="ca-pub-9245347946008848"
+          slot="5327454859"
+          style={{ display: "block" }}
+          responsive={true}
+        />
       </div>
     </div>
   );

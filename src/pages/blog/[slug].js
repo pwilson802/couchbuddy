@@ -9,7 +9,6 @@ import Footer from "../../components/Footer";
 import BlogSocials from "../../components/BlogSocials";
 import BlogMovieList from "../../components/BlogMovieList";
 import BlogQuiz from "../../components/BlogQuiz";
-
 const colors = {
   light: {
     text: "black",
@@ -224,6 +223,15 @@ export async function getStaticProps(context) {
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
 
+  async function fetchQuizRanks() {
+    const entries = await client.getEntries({
+      "fields.slug": context.params.slug,
+      content_type: "quizRanking",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
   async function fetchArticle() {
     const entries = await client.getEntries({
       "fields.slug": context.params.slug,
@@ -252,11 +260,21 @@ export async function getStaticProps(context) {
   async function makeQuiz(article) {
     const response = {};
     const questions = await fetchQuizEntries();
-    const questionsList = questions.map((item) => item.fields);
-    console.log("questionsList", questionsList);
+    const ranks = await fetchQuizRanks();
+    const questionsList = questions.map((item) => {
+      const fields = item.fields;
+      return {
+        slug: fields.slug,
+        answer: fields.answer,
+        question: fields.question,
+        number: fields.number,
+      };
+    });
+    const sortedQuestions = questionsList.sort((a, b) => a.number - b.number);
     response["type"] = "quiz";
     response["article"] = article;
-    response["questions"] = questionsList;
+    response["questions"] = sortedQuestions;
+    response["ranks"] = ranks;
     return response;
   }
 

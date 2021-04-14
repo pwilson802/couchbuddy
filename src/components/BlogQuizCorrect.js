@@ -3,7 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import Lottie from "lottie-react";
 import animation from "../assets/quiz-correct.json";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const opacity = {
   notAnswered: "1",
@@ -11,10 +11,9 @@ const opacity = {
   incorrect: "0.3",
 };
 
-function BlogQuizCorrect({ updateScore, answered, correct }) {
+function BlogQuizCorrect({ updateScore, correct }) {
+  const [active, setActive] = useState(false);
   const player = useRef();
-  const activeSegments =
-    answered && correct == "correct" ? [121, 121] : [66, 121];
   const styles = {
     wrapper: css({
       width: "50px",
@@ -23,25 +22,22 @@ function BlogQuizCorrect({ updateScore, answered, correct }) {
     }),
   };
 
-  const handleClick = () => {
-    if (answered == true) {
-      return;
+  useEffect(() => {
+    if (correct === "correct") {
+      player.current.setSpeed(1);
+      player.current.setDirection(1);
+      player.current.play();
+      setTimeout(() => setActive(true), 1500);
     }
-    player.current.setSpeed(1);
-    player.current.setDirection(1);
-    player.current.play();
-    setTimeout(() => {
-      updateScore();
-    }, 1500);
-  };
+  }, [correct]);
 
   return (
-    <div css={styles.wrapper} onClick={handleClick}>
+    <div css={styles.wrapper} onClick={() => updateScore(true)}>
       <Lottie
         animationData={animation}
         autoplay={false}
         loop={false}
-        initialSegment={activeSegments}
+        initialSegment={active ? [121, 121] : [66, 121]}
         lottieRef={player}
       />
     </div>

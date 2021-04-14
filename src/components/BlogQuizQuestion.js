@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import DropDownButton from "./DropDownButton";
 import BlogQuizCorrect from "./BlogQuizCorrect";
 import BlogQuizIncorrect from "./BlogQuizIncorrect";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
 const colors = {
   light: {
@@ -29,14 +30,7 @@ const colors = {
   },
 };
 
-function BlogQuizQuestion({
-  question,
-  answer,
-  questionNumber,
-  score,
-  setScore,
-  mode,
-}) {
+function BlogQuizQuestion({ details, questionNumber, score, setScore, mode }) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState("notAnswered");
@@ -91,10 +85,21 @@ function BlogQuizQuestion({
       background: colors[mode]["answerBackground"],
       color: colors[mode]["text"],
     }),
+    answerWrapperHide: css({
+      display: "none",
+    }),
     scoreButtons: css({
       display: "flex",
       justifyContent: "center",
     }),
+  };
+
+  const updateCorrect = (correct) => {
+    if (correct == true) {
+      setCorrect("correct");
+    } else {
+      setCorrect("incorrect");
+    }
   };
 
   const updateScore = (correct) => {
@@ -103,12 +108,11 @@ function BlogQuizQuestion({
     }
     if (correct == true) {
       setScore(score + 1);
-      setCorrect("correct");
-    } else {
-      setCorrect("incorrect");
     }
+    updateCorrect(correct);
     setAnswered(true);
   };
+
   return (
     <div css={styles.wrapper}>
       <div css={styles.number}>{questionNumber + 1}</div>
@@ -116,7 +120,7 @@ function BlogQuizQuestion({
         css={styles.questionBlock}
         onClick={() => setShowAnswer(!showAnswer)}
       >
-        <div>{question}</div>
+        <div>{documentToReactComponents(details.question)}</div>
         <div css={styles.showAnswerWrapper}>
           <div css={styles.showAnswer}>
             <span>{showAnswer ? "Hide Answer" : "Show Answer"}</span>
@@ -124,24 +128,17 @@ function BlogQuizQuestion({
           </div>
         </div>
       </div>
-      {showAnswer && (
-        <div css={styles.answerWrapper}>
-          <div>{answer}</div>
-          <div css={styles.scoreButtons}>
-            <BlogQuizCorrect
-              updateScore={() => updateScore(true)}
-              answered={answered}
-              correct={correct}
-            />
-            <BlogQuizIncorrect
-              updateScore={() => updateScore(false)}
-              answered={answered}
-              correct={correct}
-            />
-            {/* <button onClick={() => updateScore(false)}>Incorrect</button> */}
-          </div>
+      <div css={showAnswer ? styles.answerWrapper : styles.answerWrapperHide}>
+        <div>{details.answer}</div>
+        <div css={styles.scoreButtons}>
+          <BlogQuizCorrect updateScore={updateScore} correct={correct} />
+          <BlogQuizIncorrect
+            updateScore={updateScore}
+            answered={answered}
+            correct={correct}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 }

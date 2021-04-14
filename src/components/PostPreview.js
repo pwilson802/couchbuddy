@@ -29,6 +29,13 @@ function PostPreview({
   const styles = {
     heading: css({
       color: colors[mode]["heading"],
+      fontSize: "1.3rem",
+      lineHeight: "1.8rem",
+      margin: "3px 0",
+      textAlign: "center",
+    }),
+    topHeading: css({
+      color: colors[mode]["heading"],
       fontSize: "1.7rem",
       lineHeight: "1.8rem",
       margin: "3px 0",
@@ -53,7 +60,7 @@ function PostPreview({
       <div css={styles.wrapper}>
         <a href={articleLink} css={styles.link}>
           <img css={styles.image} src={sharingImage} alt={articleTitle} />
-          <h1 css={styles.heading}>{heading}</h1>
+          <h1 css={topPost ? styles.topHeading : styles.heading}>{heading}</h1>
           {topPost && <p css={styles.introduction}>{introduction}</p>}
         </a>
       </div>
