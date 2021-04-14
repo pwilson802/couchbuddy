@@ -15,8 +15,8 @@ function BlogQuizSocials({ rank, score, slug }) {
       margin: "0 20px",
     }),
     image: css({
-      width: 32,
-      height: 32,
+      width: 40,
+      height: 40,
     }),
   };
   const pageUrl = `https://couchbuddy.info/blog/${slug}`;
@@ -34,7 +34,7 @@ function BlogQuizSocials({ rank, score, slug }) {
       </div>
       <div css={styles.shareButton}>
         <FacebookShareButton url={pageUrl} quote={shareMessage}>
-          <FacebookIcon size={32} round={true} />
+          <FacebookIcon size={40} round={true} />
         </FacebookShareButton>
       </div>
     </div>
