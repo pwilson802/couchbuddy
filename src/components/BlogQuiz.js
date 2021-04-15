@@ -62,6 +62,7 @@ function BlogQuiz({
     }),
     adWrap: css({
       marginTop: "3rem",
+      paddingBottom: "40px",
     }),
   };
   const {
