@@ -6,6 +6,7 @@ import DropDownButton from "./DropDownButton";
 import BlogQuizCorrect from "./BlogQuizCorrect";
 import BlogQuizIncorrect from "./BlogQuizIncorrect";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { Adsense } from "@ctrl/react-adsense";
 
 const colors = {
   light: {
@@ -92,6 +93,10 @@ function BlogQuizQuestion({ details, questionNumber, score, setScore, mode }) {
       display: "flex",
       justifyContent: "center",
     }),
+    adWrap: css({
+      marginTop: "3rem",
+      paddingBottom: "40px",
+    }),
   };
 
   const updateCorrect = (correct) => {
@@ -141,6 +146,16 @@ function BlogQuizQuestion({ details, questionNumber, score, setScore, mode }) {
           </div>
         </div>
       </div>
+      {questionNumber == 7 && (
+        <div css={styles.adWrap}>
+          <Adsense
+            client="ca-pub-9245347946008848"
+            slot="5327454859"
+            style={{ display: "block" }}
+            responsive={true}
+          />
+        </div>
+      )}
     </div>
   );
 }
