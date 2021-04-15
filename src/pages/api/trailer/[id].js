@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   const trailers = allMovieResponse.results.filter(
     (item) => item.type === "Trailer" && item.site === "YouTube"
   );
-  console.log("trailers", trailers);
   if (trailers.length === 0) {
     const httpResponse = { result: false, id: "" };
     res.status(200).json(JSON.stringify(httpResponse));

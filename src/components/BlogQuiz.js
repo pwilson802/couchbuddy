@@ -96,6 +96,7 @@ function BlogQuiz({
           {score} / {pageDetails.questions.length}
         </p>
         <p css={styles.rank}>
+          Your rank:{" "}
           {score < 4
             ? rankFive
             : score < 7

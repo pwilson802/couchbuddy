@@ -244,7 +244,6 @@ export async function getStaticProps(context) {
   async function makeWhattoWatch(article) {
     const response = {};
     const blurbs = await fetchWhattoWatchEntries();
-    console.log("blurbs", blurbs);
     for (let i = 0; i < blurbs.length; i++) {
       let id = blurbs[i].fields.movieId;
       let providers = await getMovieProviders(id);
@@ -253,7 +252,6 @@ export async function getStaticProps(context) {
       blurbs[i].fields.movieDetails = movieDetails;
     }
     const blurbsSorted = blurbs.sort((a, b) => a.fields.order - b.fields.order);
-    console.log(blurbsSorted);
     response["type"] = "What to watch";
     response["article"] = article;
     response["blurbs"] = blurbsSorted;
