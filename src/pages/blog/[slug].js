@@ -244,6 +244,7 @@ export async function getStaticProps(context) {
   async function makeWhattoWatch(article) {
     const response = {};
     const blurbs = await fetchWhattoWatchEntries();
+    console.log("blurbs", blurbs);
     for (let i = 0; i < blurbs.length; i++) {
       let id = blurbs[i].fields.movieId;
       let providers = await getMovieProviders(id);
@@ -251,9 +252,11 @@ export async function getStaticProps(context) {
       blurbs[i].fields.providers = providers;
       blurbs[i].fields.movieDetails = movieDetails;
     }
+    const blurbsSorted = blurbs.sort((a, b) => a.fields.order - b.fields.order);
+    console.log(blurbsSorted);
     response["type"] = "What to watch";
     response["article"] = article;
-    response["blurbs"] = blurbs;
+    response["blurbs"] = blurbsSorted;
     return response;
   }
 
@@ -267,10 +270,10 @@ export async function getStaticProps(context) {
         slug: fields.slug,
         answer: fields.answer,
         question: fields.question,
-        number: fields.number,
+        order: fields.order,
       };
     });
-    const sortedQuestions = questionsList.sort((a, b) => a.number - b.number);
+    const sortedQuestions = questionsList.sort((a, b) => a.order - b.order);
     response["type"] = "quiz";
     response["article"] = article;
     response["questions"] = sortedQuestions;
