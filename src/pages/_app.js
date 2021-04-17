@@ -1,10 +1,12 @@
 import "./app.css";
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import CookieBanner from "../components/CookieBanner";
 
 function MyApp({ Component, pageProps }) {
   const [location, setLocation] = useState(null);
   const [mode, setMode] = useState("dark");
+  const [consent, setConsent] = useState("no");
 
   const changeMode = (mode) => {
     localStorage.setItem("mode", mode);
@@ -12,8 +14,19 @@ function MyApp({ Component, pageProps }) {
     setMode(mode);
   };
 
+  const getConsent = () => {
+    return localStorage.getItem("consent") || "new";
+  };
+
+  const updateConsent = (con) => {
+    localStorage.setItem("consent", con);
+    setConsent(con);
+  };
+
   useEffect(() => {
     async function pageLoad() {
+      const consentStatus = getConsent();
+      setConsent(consentStatus);
       const currentLocation = location || (await getIPLocation());
       setLocation(currentLocation);
     }
@@ -60,7 +73,9 @@ function MyApp({ Component, pageProps }) {
         handleLocation={handleLocation}
         mode={mode}
         changeMode={changeMode}
+        consent={consent}
       />
+      {consent === "new" && <CookieBanner updateConsent={updateConsent} />}
     </>
   );
 }

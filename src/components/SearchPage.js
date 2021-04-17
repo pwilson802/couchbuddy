@@ -16,6 +16,7 @@ import Burger from "./Burger";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
+import CookieBanner from "../components/CookieBanner";
 
 const genreObj = {
   Action: false,
@@ -185,6 +186,7 @@ export default function SearchPage({
   handleLocation,
   refine,
   refineData,
+  consent,
 }) {
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});

@@ -7,7 +7,13 @@ import ReactDOM from "react-dom";
 import App from "../components/App";
 import Footer from "../components/Footer";
 
-export default function Home({ location, handleLocation, mode, changeMode }) {
+export default function Home({
+  location,
+  handleLocation,
+  mode,
+  changeMode,
+  consent,
+}) {
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
@@ -55,6 +61,7 @@ export default function Home({ location, handleLocation, mode, changeMode }) {
           changeMode={changeMode}
           location={location}
           handleLocation={handleLocation}
+          consent={consent}
         />
       </main>
     </div>
