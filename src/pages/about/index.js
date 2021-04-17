@@ -20,7 +20,7 @@ const colors = {
     text: "black",
   },
   dark: {
-    text: "white",
+    text: "rgba(255,255,255,0.8)",
   },
 };
 
@@ -70,6 +70,23 @@ function About() {
       alignItems: "center",
       justifyContent: "center",
       width: "100%",
+    }),
+    policies: css({
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color: colors[mode]["text"],
+      marginTop: "4rem",
+      width: "100%",
+    }),
+    policy: css({
+      margin: "0 50px",
+      fontSize: "0.8rem",
+      textDecoration: "none",
+    }),
+    policyLink: css({
+      textDecoration: "none",
+      color: colors[mode]["text"],
     }),
   };
   return (
@@ -180,7 +197,7 @@ function About() {
         </a>
         <br />
         <p css={styles.text}>
-          Some on the animations on tihs site are sourced from Lottie, check
+          Some on the animations on this site are sourced from Lottie, check
           them out for cool animations:
         </p>
         <a
@@ -204,6 +221,22 @@ function About() {
         >
           Animation by Heymarcoh on LottieFiles
         </a>
+        <div css={styles.policies}>
+          <a
+            css={styles.policyLink}
+            href="/about/privacy-policy"
+            target="_blank"
+          >
+            <div css={styles.policy}>PRIVACY POLICY</div>
+          </a>
+          <a
+            css={styles.policyLink}
+            href="/about/cookie-policy"
+            target="_blank"
+          >
+            <div css={styles.policy}>COOKIE POLICY</div>
+          </a>
+        </div>
       </main>
       <footer>
         <Footer activePage="about" mode={mode} />
