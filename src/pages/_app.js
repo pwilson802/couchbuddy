@@ -9,7 +9,9 @@ function MyApp({ Component, pageProps }) {
   const [consent, setConsent] = useState("no");
 
   const changeMode = (mode) => {
-    localStorage.setItem("mode", mode);
+    if (consent == "yes") {
+      localStorage.setItem("mode", mode);
+    }
     changeBackground(mode);
     setMode(mode);
   };
@@ -51,21 +53,25 @@ function MyApp({ Component, pageProps }) {
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
         ></script>
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-JEN15TQ9KZ"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+        {consent == "yes" && (
+          <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-JEN15TQ9KZ"
+          />
+        )}
+        {consent == "yes" && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
               gtag('config', 'G-HE4FSJS60K');
           `,
-          }}
-        />
+            }}
+          />
+        )}
       </Head>
       <Component
         {...pageProps}
@@ -74,6 +80,7 @@ function MyApp({ Component, pageProps }) {
         mode={mode}
         changeMode={changeMode}
         consent={consent}
+        setConsent={setConsent}
       />
       {consent === "new" && <CookieBanner updateConsent={updateConsent} />}
     </>

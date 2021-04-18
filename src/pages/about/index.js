@@ -24,7 +24,7 @@ const colors = {
   },
 };
 
-function About() {
+function About({ setConsent }) {
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -37,6 +37,11 @@ function About() {
     const currentMode = localStorage.getItem("mode") || "dark";
     changeMode(currentMode);
   }, []);
+
+  const resetConsent = () => {
+    setConsent("new");
+    localStorage.clear();
+  };
 
   const styles = {
     text: css({
@@ -87,6 +92,17 @@ function About() {
     policyLink: css({
       textDecoration: "none",
       color: colors[mode]["text"],
+    }),
+    clearButton: css({
+      background: "#E12C86",
+      border: "0",
+      color: "f5f6fa",
+      padding: "8px 24px",
+      fontSize: "14px",
+      borderRadius: "8px",
+      cursor: "pointer",
+      textAlign: "center",
+      outline: "none",
     }),
   };
   return (
@@ -221,6 +237,14 @@ function About() {
         >
           Animation by Heymarcoh on LottieFiles
         </a>
+        <p css={styles.text}>
+          To clear any saved preferences made on this website saved on your
+          device, click the below button. You will be prompted for consent again
+          after this.
+        </p>
+        <button css={styles.clearButton} onClick={resetConsent}>
+          Clear
+        </button>
         <div css={styles.policies}>
           <a
             css={styles.policyLink}

@@ -81,16 +81,17 @@ export default function ResultsPage({
   const {
     allProviderData,
     selectedGenres,
-    selectedProviders,
+    providerMovies,
     duration,
     certificationMovies,
     sortByVote,
     selectedCertifications,
+    selectedProviders,
   } = searchDetails;
 
   function getProviders(id) {
-    return Object.keys(selectedProviders).filter((item) =>
-      selectedProviders[item].includes(id)
+    return Object.keys(providerMovies).filter((item) =>
+      providerMovies[item].includes(id)
     );
   }
 
@@ -105,7 +106,7 @@ export default function ResultsPage({
     );
     async function updateMovies() {
       const matchedMoviesByGenre = await getMovieIDsforGenres(genres);
-      const matchedMoviesbyProvider = Object.values(selectedProviders).flat();
+      const matchedMoviesbyProvider = Object.values(providerMovies).flat();
       const moviesInProvider = matchedMoviesByGenre.filter((movie) =>
         matchedMoviesbyProvider.includes(movie)
       );
@@ -165,6 +166,7 @@ export default function ResultsPage({
       duration: duration,
       selectedCertifications: selectedCertifications,
       sortByVote: sortByVote,
+      selectedProviders: selectedProviders,
     });
     setPage("SearchPage");
   };

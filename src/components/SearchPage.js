@@ -168,12 +168,14 @@ function getSelectedProviders(location, allProviders) {
   return returedProviders;
 }
 
-function updateLocalSelectedProviders(location, providers) {
+function updateLocalSelectedProviders(location, providers, consent) {
   const localItem = "selectedProviders" + location;
   const enabledProviders = Object.keys(providers).filter(
     (item) => providers[item]
   );
-  localStorage.setItem(localItem, JSON.stringify(enabledProviders));
+  if (consent == "yes") {
+    localStorage.setItem(localItem, JSON.stringify(enabledProviders));
+  }
 }
 
 export default function SearchPage({
@@ -246,7 +248,7 @@ export default function SearchPage({
       ...selectedProviders,
     };
     newProviderObj[provider] = !selectedProviders[provider];
-    updateLocalSelectedProviders(location, newProviderObj);
+    updateLocalSelectedProviders(location, newProviderObj, consent);
     setSelectedProviders(newProviderObj);
   };
 
@@ -270,13 +272,14 @@ export default function SearchPage({
       ? makeSelectedProviders(selectedCertifications, localCertificationMovies)
       : true;
     const searchData = {
-      selectedProviders: providerMovies,
+      providerMovies: providerMovies,
       allProviderData: allProviderData,
       selectedGenres: selectedGenres,
       duration: duration,
       certificationMovies: certificationMovies,
       sortByVote: sortByVote,
       selectedCertifications: selectedCertifications,
+      selectedProviders: selectedProviders,
     };
     handleSearchDetails(searchData);
     setPage("ResultsPage");
@@ -321,6 +324,7 @@ export default function SearchPage({
         await configureProviders(location);
         await configureCertifications(location);
         setSelectedCertifications(refineData.selectedCertifications);
+        setSelectedProviders(refineData.selectedProviders);
         setSelectedGenres(refineData.selectedGenres);
         setDuration(refineData.duration);
         setSortByVote(refineData.sortByVote);

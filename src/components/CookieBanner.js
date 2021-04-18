@@ -19,7 +19,7 @@ function CookieBanner({ updateConsent }) {
       transition: "400ms",
     }),
     policyLink: css({
-      textDecoration: "none",
+      textDecoration: "underline",
       color: "#f5f6fa",
     }),
     cookieParapraph: css({
@@ -35,6 +35,7 @@ function CookieBanner({ updateConsent }) {
       margin: "0 16px 16px 16px",
       borderRadius: "8px",
       cursor: "pointer",
+      outline: "none",
     }),
     cookieButtonDeny: css({
       background: "#E12C86",
@@ -45,6 +46,7 @@ function CookieBanner({ updateConsent }) {
       margin: "0 16px 16px 16px",
       borderRadius: "8px",
       cursor: "pointer",
+      outline: "none",
     }),
     buttonWraper: css({
       display: "flex",
@@ -55,17 +57,17 @@ function CookieBanner({ updateConsent }) {
     <div css={styles.cookieContainer}>
       <p css={styles.cookieParapraph}>
         This website uses cookies or similar technologies. Some cookies are
-        necessary for the website to function properly and cannot be refused if
-        you want to visit this site. We use other cookies for creatig a better
-        experience by saving your prefrences and analysis purposes. You can
-        refuse this if you wish. For more read our{" "}
+        necessary to the function of the website and therefore cannot be
+        refused. We use other cookies for creating a better user experience by
+        saving your preferences and analysing how you use the site. You can deny
+        this if you wish. For more information read our{" "}
         <a css={styles.policyLink} href="/about/privacy-policy" target="_blank">
           {" "}
           privacy policy
         </a>{" "}
         and{" "}
         <a css={styles.policyLink} href="/about/cookie-policy" target="_blank">
-          cookie Policy
+          cookie policy
         </a>
       </p>
       <div css={styles.buttonWraper}>
@@ -76,7 +78,7 @@ function CookieBanner({ updateConsent }) {
           Accept
         </button>
         <button
-          onClick={() => updateConsent("yes")}
+          onClick={() => updateConsent("no")}
           css={styles.cookieButtonDeny}
         >
           Deny
