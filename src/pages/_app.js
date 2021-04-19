@@ -70,6 +70,7 @@ function MyApp({ Component, pageProps }) {
         mode={mode}
         changeMode={changeMode}
         consent={consent}
+        updateConsent={updateConsent}
         setConsent={setConsent}
       />
       {consent === "new" && <CookieBanner updateConsent={updateConsent} />}

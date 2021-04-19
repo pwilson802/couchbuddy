@@ -24,7 +24,7 @@ const colors = {
   },
 };
 
-function CookiePolicy() {
+function CookiePolicy({ consent, updateConsent }) {
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -71,6 +71,33 @@ function CookiePolicy() {
       alignItems: "center",
       justifyContent: "center",
       width: "100%",
+    }),
+    buttonWraper: css({
+      display: "flex",
+      justifyContent: "flex-end",
+    }),
+    cookieButton: css({
+      background: "transparent",
+      border: "solid",
+      borderColor: colors[mode]["text"],
+      color: colors[mode]["text"],
+      padding: "8px 30px",
+      fontSize: "14px",
+      margin: "0 16px 16px 16px",
+      borderRadius: "2px",
+      cursor: "pointer",
+      outline: "none",
+    }),
+    cookieButtonEnabled: css({
+      background: "#FDD782",
+      border: "0",
+      color: "f5f6fa",
+      padding: "8px 30px",
+      fontSize: "14px",
+      margin: "0 16px 16px 16px",
+      borderRadius: "2px",
+      cursor: "pointer",
+      outline: "none",
     }),
   };
   return (
@@ -226,6 +253,30 @@ function CookiePolicy() {
           them, you might not be able to use all of the features the Website and
           Services offer.
         </p>
+        <p>
+          You may adjust your cookie options for this website by using the below
+          buttons.
+        </p>
+        <div css={styles.buttonWraper}>
+          <button
+            onClick={() => updateConsent("yes")}
+            css={
+              consent == "yes"
+                ? styles.cookieButtonEnabled
+                : styles.cookieButton
+            }
+          >
+            ACCEPT COOKIES
+          </button>
+          <button
+            onClick={() => updateConsent("no")}
+            css={
+              consent == "no" ? styles.cookieButtonEnabled : styles.cookieButton
+            }
+          >
+            DENY COOKIES
+          </button>
+        </div>
         <h2>Changes and amendments</h2>
         <p>
           We reserve the right to modify this Policy or its terms relating to

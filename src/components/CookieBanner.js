@@ -13,27 +13,35 @@ function CookieBanner({ updateConsent }) {
       width: "100%",
       background: "#2f3640",
       color: "#f5f6fa",
-      padding: "0 32px",
+      padding: "0px 8px",
       boxShadow: "0 -2px 16px rgba(47,54,64,0.39)",
       zIndex: "999",
       transition: "400ms",
+      "@media(min-width: 768px)": {
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        flexDirection: "row",
+        padding: "8px 32px",
+      },
     }),
     policyLink: css({
       textDecoration: "underline",
       color: "#f5f6fa",
     }),
     cookieParapraph: css({
-      margin: "24px 0",
-      lineHeight: "2",
+      margin: "8px 8px 8px 0",
+      lineHeight: "1.7",
+      fontSize: "14px",
     }),
     cookieButtonAccept: css({
       background: "#FDD782",
       border: "0",
       color: "f5f6fa",
-      padding: "12px 48px",
-      fontSize: "18px",
+      padding: "8px 30px",
+      fontSize: "14px",
       margin: "0 16px 16px 16px",
-      borderRadius: "8px",
+      borderRadius: "2px",
       cursor: "pointer",
       outline: "none",
     }),
@@ -56,16 +64,15 @@ function CookieBanner({ updateConsent }) {
   return (
     <div css={styles.cookieContainer}>
       <p css={styles.cookieParapraph}>
-        This website uses cookies or similar technologies. Some cookies are
-        necessary to the function of the website and therefore cannot be
-        refused. We use other cookies for creating a better user experience by
-        saving your preferences and analysing how you use the site. You can deny
-        this if you wish. For more information read our{" "}
-        <a css={styles.policyLink} href="/about/privacy-policy" target="_blank">
+        This website uses cookies or similar technologies. This is to create a
+        better user experience by saving your preferences and analysing how you
+        use the site. By continuing to use this website, you consent to the use
+        of cookies in accordance with our{" "}
+        {/* <a css={styles.policyLink} href="/about/privacy-policy" target="_blank">
           {" "}
           privacy policy
-        </a>{" "}
-        and{" "}
+        </a>{" "} */}
+        {/* and{" "} */}
         <a css={styles.policyLink} href="/about/cookie-policy" target="_blank">
           cookie policy
         </a>
@@ -75,14 +82,14 @@ function CookieBanner({ updateConsent }) {
           onClick={() => updateConsent("yes")}
           css={styles.cookieButtonAccept}
         >
-          Accept
+          ACCEPT
         </button>
-        <button
+        {/* <button
           onClick={() => updateConsent("no")}
           css={styles.cookieButtonDeny}
         >
           Deny
-        </button>
+        </button> */}
       </div>
     </div>
   );
