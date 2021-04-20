@@ -13,6 +13,7 @@ import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
 import Footer from "./Footer";
 import Burger from "./Burger";
+import LocationSelectSmall from "./LocationSelectSmall";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
@@ -348,9 +349,9 @@ export default function SearchPage({
       display: "flex",
       margin: 10,
       flexDirection: "row",
-      "@media(min-width: 768px)": {
-        justifyContent: "center",
-      },
+      // "@media(min-width: 768px)": {
+      //   justifyContent: "center",
+      // },
     }),
     locationWrap: css({
       position: "absolute",
@@ -438,11 +439,26 @@ export default function SearchPage({
         marginTop: "50px",
       },
     }),
+    locationSmall: css({
+      display: "none",
+      "@media(min-width: 700px)": {
+        display: "block",
+      },
+    }),
   };
   return (
     <div>
       <div css={styles.wrapper}>
         <div css={styles.nav}>
+          {loaded && (
+            <div css={styles.locationSmall}>
+              <LocationSelectSmall
+                mode={mode}
+                location={location}
+                handleLocation={handleLocation}
+              />
+            </div>
+          )}
           <div css={styles.logoWrap}>
             <Logo setPage={setPage} logo={"main"} width={250} />
           </div>
@@ -507,7 +523,13 @@ export default function SearchPage({
               />
             </div>
             <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
-            <Footer activePage="app" setPage={setPage} mode={mode} />
+            <Footer
+              activePage="app"
+              setPage={setPage}
+              mode={mode}
+              location={location}
+              handleLocation={handleLocation}
+            />
           </div>
         ) : (
           <SpinnerMovie />

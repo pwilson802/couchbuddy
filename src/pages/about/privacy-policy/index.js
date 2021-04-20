@@ -24,7 +24,7 @@ const colors = {
   },
 };
 
-function PrivacyPolicy() {
+function PrivacyPolicy({ location, handleLocation }) {
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -478,7 +478,12 @@ function PrivacyPolicy() {
         <p>This document was last updated on April 17, 2021</p>
       </main>
       <footer>
-        <Footer activePage="about" mode={mode} />
+        <Footer
+          activePage="about"
+          mode={mode}
+          location={location}
+          handleLocation={handleLocation}
+        />
       </footer>
     </>
   );

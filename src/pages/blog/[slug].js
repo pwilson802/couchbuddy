@@ -177,7 +177,12 @@ function Article({ location, handleLocation, mode, changeMode, pageDetails }) {
         </div>
       </main>
       <footer>
-        <Footer activePage="blog" mode={mode} />
+        <Footer
+          activePage="blog"
+          mode={mode}
+          location={location}
+          handleLocation={handleLocation}
+        />
       </footer>
     </>
   );

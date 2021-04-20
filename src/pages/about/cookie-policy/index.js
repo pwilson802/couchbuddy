@@ -24,7 +24,7 @@ const colors = {
   },
 };
 
-function CookiePolicy({ consent, updateConsent }) {
+function CookiePolicy({ consent, updateConsent, location, handleLocation }) {
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -304,7 +304,12 @@ function CookiePolicy({ consent, updateConsent }) {
         <p>This document was last updated on April 17, 2021</p>
       </main>
       <footer>
-        <Footer activePage="about" mode={mode} />
+        <Footer
+          activePage="about"
+          mode={mode}
+          location={location}
+          handleLocation={handleLocation}
+        />
       </footer>
     </>
   );

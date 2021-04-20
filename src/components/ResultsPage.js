@@ -283,7 +283,13 @@ export default function ResultsPage({
                 ></MovieCard>
               );
             })}
-            <Footer activePage="app" setPage={setPage} mode={mode} />
+            <Footer
+              activePage="app"
+              setPage={setPage}
+              mode={mode}
+              location={location}
+              handleLocation={handleLocation}
+            />
           </div>
         )
       ) : (

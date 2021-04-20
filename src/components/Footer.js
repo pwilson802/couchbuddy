@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 import Link from "next/link";
+import LocationSelectSmall from "./LocationSelectSmall";
 
 const colors = {
   light: {
@@ -15,14 +16,15 @@ const colors = {
   },
 };
 
-function Footer({ activePage, mode, setPage }) {
+function Footer({ activePage, mode, setPage, location, handleLocation }) {
   const styles = {
     footerWrap: css({
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      marginTop: 50,
+      marginTop: 20,
+      marginRight: "10px",
     }),
     about: css({
       display: "inline",
@@ -39,7 +41,15 @@ function Footer({ activePage, mode, setPage }) {
       textDecoration: "none",
       cursor: "pointer",
       display: "inline",
-      margin: "0 15px 15px 20px",
+      margin: "0 0",
+      fontSize: "0.8rem",
+      color: colors[mode]["text"],
+    }),
+    seperator: css({
+      // textDecoration: "none",
+      // cursor: "pointer",
+      // display: "inline",
+      margin: "0 20px",
       fontSize: "0.8rem",
       color: colors[mode]["text"],
     }),
@@ -47,7 +57,6 @@ function Footer({ activePage, mode, setPage }) {
       textDecoration: "none",
       cursor: "pointer",
       display: "inline",
-      margin: "0 15px 15px 20px",
       fontSize: "0.8rem",
     }),
     link: css({
@@ -64,9 +73,25 @@ function Footer({ activePage, mode, setPage }) {
       display: "block",
       color: colors[mode]["selected"],
     }),
+    locationWrapper: css({
+      textAlign: "center",
+      "@media(min-width: 700px)": {
+        display: "none",
+      },
+    }),
+    wrapper: css({
+      margin: "20px 0",
+    }),
   };
   return (
-    <div>
+    <div css={styles.wrapper}>
+      <div css={styles.locationWrapper}>
+        <LocationSelectSmall
+          mode={mode}
+          location={location}
+          handleLocation={handleLocation}
+        />
+      </div>
       <div css={styles.footerWrap}>
         {activePage == "app" ? (
           <div css={styles.text}>
@@ -89,7 +114,7 @@ function Footer({ activePage, mode, setPage }) {
             </div>
           </Link>
         )}
-        <p css={styles.text}>|</p>
+        <p css={styles.seperator}>|</p>
         <Link href={"/blog"}>
           <div css={styles.text}>
             <a
@@ -100,7 +125,7 @@ function Footer({ activePage, mode, setPage }) {
             </a>
           </div>
         </Link>
-        <p css={styles.text}>|</p>
+        <p css={styles.seperator}>|</p>
         <Link href={"/about"}>
           <div css={styles.text}>
             <a

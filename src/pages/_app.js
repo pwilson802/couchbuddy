@@ -7,6 +7,8 @@ function MyApp({ Component, pageProps }) {
   const [location, setLocation] = useState(null);
   const [mode, setMode] = useState("dark");
   const [consent, setConsent] = useState("no");
+  const [refine, setRefine] = useState(false);
+  const [refineData, setRefineData] = useState({});
 
   const changeMode = (mode) => {
     if (consent == "yes") {
@@ -36,6 +38,8 @@ function MyApp({ Component, pageProps }) {
   }, [location]);
 
   function handleLocation(loc) {
+    setRefine(false);
+    setRefineData({});
     localStorage.setItem("backupLocation", loc.target.value);
     setLocation(loc.target.value);
   }
@@ -72,6 +76,10 @@ function MyApp({ Component, pageProps }) {
         consent={consent}
         updateConsent={updateConsent}
         setConsent={setConsent}
+        refineData={refineData}
+        refine={refine}
+        setRefine={setRefine}
+        setRefineData={setRefineData}
       />
       {consent === "new" && <CookieBanner updateConsent={updateConsent} />}
     </>

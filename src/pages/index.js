@@ -13,6 +13,10 @@ export default function Home({
   mode,
   changeMode,
   consent,
+  refine,
+  setRefine,
+  refineData,
+  setRefineData,
 }) {
   useEffect(() => {
     const currentMode = localStorage.getItem("mode") || "dark";
@@ -62,6 +66,10 @@ export default function Home({
           location={location}
           handleLocation={handleLocation}
           consent={consent}
+          refineData={refineData}
+          refine={refine}
+          setRefine={setRefine}
+          setRefineData={setRefineData}
         />
       </main>
     </div>

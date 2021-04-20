@@ -6,13 +6,21 @@ import SearchPage from "./SearchPage";
 import ResultsPage from "./ResultsPage";
 import Footer from "./Footer";
 
-function App({ mode, changeMode, location, handleLocation, consent }) {
+function App({
+  mode,
+  changeMode,
+  location,
+  handleLocation,
+  consent,
+  refine,
+  setRefine,
+  refineData,
+  setRefineData,
+}) {
   const [page, setPage] = useState("SearchPage");
   const [width, setWidth] = useState(0);
   const [screenSize, setScreenSize] = useState("small");
   const [searchDetails, setSearchDetails] = useState({});
-  const [refine, setRefine] = useState(false);
-  const [refineData, setRefineData] = useState({});
 
   const handleSearchDetails = (item) => {
     setSearchDetails(item);

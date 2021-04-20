@@ -24,7 +24,7 @@ const colors = {
   },
 };
 
-function About({ setConsent }) {
+function About({ setConsent, location, handleLocation }) {
   const [mode, setMode] = useState("dark");
 
   const changeMode = (mode) => {
@@ -263,7 +263,12 @@ function About({ setConsent }) {
         </div>
       </main>
       <footer>
-        <Footer activePage="about" mode={mode} />
+        <Footer
+          activePage="about"
+          mode={mode}
+          location={location}
+          handleLocation={handleLocation}
+        />
       </footer>
     </>
   );

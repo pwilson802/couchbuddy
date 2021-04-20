@@ -54,16 +54,19 @@ const options = [
 
 const colors = {
   light: {
-    text: "black",
+    text: "#96D0D3",
     selectBackground: "white",
     locationFocus: "rgba(225,44,134, 0.2)",
     locationBackground: "transparent",
+    selected: "#E12C86",
   },
   dark: {
-    text: "rgba(255,255,255, 0.8)",
+    // text: "rgba(255,255,255, 0.8)",
+    text: "#96D0D3",
     selectBackground: "#15202Ab",
     locationFocus: "rgba(225,44,134, 0.2)",
     locationBackground: "transparent",
+    selected: "#E12C86",
   },
 };
 
@@ -78,13 +81,16 @@ function LocationSelectSmall({ mode, location, handleLocation }) {
       fontSize: "0.8rem",
       border: "none",
       cursor: "pointer",
-      textIndent: "0px",
+      textIndent: intendation[location],
       "&:focus": {
         border: "none",
         outline: "none",
       },
       "&:active": {
         border: "none",
+      },
+      "@media(min-width: 700px)": {
+        textIndent: 0,
       },
     }),
     option: css({
@@ -128,3 +134,52 @@ function LocationSelectSmall({ mode, location, handleLocation }) {
 }
 
 export default LocationSelectSmall;
+
+const intendation = {
+  AR: "20px",
+  AT: "25px",
+  AU: "20px",
+  BE: "22px",
+  BR: "30px",
+  CA: "24px",
+  CL: "31px",
+  CO: "20px",
+  CZ: "2px",
+  DE: "20px",
+  DK: "20px",
+  EC: "22px",
+  EE: "26px",
+  FI: "26px",
+  FR: "27px",
+  GR: "26px",
+  HU: "21px",
+  ID: "19px",
+  IE: "25px",
+  IN: "31px",
+  IT: "34px",
+  JP: "28px",
+  LT: "18px",
+  LV: "28px",
+  MX: "26px",
+  MY: "23px",
+  NL: "13px",
+  NO: "24px",
+  NZ: "11px",
+  PE: "32px",
+  PH: "15px",
+  PL: "25px",
+  PT: "20px",
+  RO: "20px",
+  RU: "29px",
+  KR: "10px",
+  ES: "30px",
+  SE: "23px",
+  SG: "19px",
+  TH: "21px",
+  TR: "25px",
+  GB: "0px",
+  US: "33px",
+  VE: "17px",
+  ZA: "13px",
+  CH: "13px",
+};
