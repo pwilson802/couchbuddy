@@ -19,7 +19,7 @@ const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
 
 async function filterMoviesByData(duration, sortByVote) {
   const url = `${DATA_URL}/movie-filter.json`;
-  const response = await fetch(url);
+  const response = await fetchRetry(url, 3);
   const allMovies = await response.json();
   const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
   if (sortByVote === true) {
@@ -32,7 +32,7 @@ async function filterMoviesByData(duration, sortByVote) {
 
 async function getMovieIDsforGenres(genres) {
   const url = `${DATA_URL}/genres.json`;
-  const response = await fetch(url);
+  const response = await fetchRetry(url, 3);
   const genresObject = await response.json();
   let result = [];
   for (let i = 0; i < genres.length; i++) {
@@ -251,7 +251,7 @@ export default function ResultsPage({
             {items.map((item, index) => {
               if (item == "ad") {
                 return (
-                  <div css={styles.adWrap}>
+                  <div css={styles.adWrap} key={`Ad${index}`}>
                     {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
                     {screenSize === "small" ? (
                       <Adsense
@@ -324,3 +324,12 @@ function compare(a, b) {
   }
   return comparison;
 }
+
+const fetchRetry = async (url, n) => {
+  try {
+    return await fetch(url);
+  } catch (err) {
+    if (n === 1) throw err;
+    return await fetchRetry(url, n - 1);
+  }
+};

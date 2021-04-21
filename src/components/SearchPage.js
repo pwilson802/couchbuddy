@@ -40,67 +40,9 @@ const genreObj = {
   Western: false,
 };
 
-async function getIPLocation() {
-  const validCodes = [
-    "AR",
-    "AT",
-    "AU",
-    "BE",
-    "BR",
-    "CA",
-    "CL",
-    "CO",
-    "CZ",
-    "DE",
-    "DK",
-    "EC",
-    "EE",
-    "ES",
-    "FI",
-    "FR",
-    "GB",
-    "GR",
-    "HU",
-    "ID",
-    "IE",
-    "IN",
-    "IT",
-    "JP",
-    "KR",
-    "LT",
-    "LV",
-    "MX",
-    "MY",
-    "NL",
-    "NO",
-    "NZ",
-    "PE",
-    "PH",
-    "PL",
-    "PT",
-    "RO",
-    "RU",
-    "SE",
-    "SG",
-    "TH",
-    "TR",
-    "US",
-    "VE",
-    "ZA",
-    "CH",
-  ];
-  const response = await fetch("https://ipapi.co/json/");
-  const json = await response.json();
-  const countryCode = json["country_code"];
-  if (validCodes.includes(countryCode)) {
-    return countryCode;
-  }
-  return "US";
-}
-
 async function getLocalProviders(country) {
   const url = `${DATA_URL}/providers-${country}.json`;
-  const response = await fetch(url);
+  const response = await fetchRetry(url, 3);
   return await response.json();
 }
 
@@ -126,7 +68,7 @@ function makeProvidersObj(data) {
 
 async function getLocalCertifications(country) {
   const url = `${DATA_URL}/certifications-${country}.json`;
-  const response = await fetch(url);
+  const response = await fetchRetry(url, 3);
   return await response.json();
 }
 
@@ -140,7 +82,7 @@ function makeCertificationsObj(data) {
 
 async function getAllProviderData() {
   const url = `${DATA_URL}/all-data-providers.json`;
-  const response = await fetch(url);
+  const response = await fetchRetry(url, 3);
   return await response.json();
 }
 
@@ -436,7 +378,7 @@ export default function SearchPage({
     }),
     app: css({
       "@media(min-width: 700px)": {
-        marginTop: "50px",
+        marginTop: "30px",
       },
     }),
     locationSmall: css({
@@ -538,3 +480,12 @@ export default function SearchPage({
     </div>
   );
 }
+
+const fetchRetry = async (url, n) => {
+  try {
+    return await fetch(url);
+  } catch (err) {
+    if (n === 1) throw err;
+    return await fetchRetry(url, n - 1);
+  }
+};

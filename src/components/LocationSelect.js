@@ -40,17 +40,17 @@ const options = [
   { value: "PT", label: "Portugal" },
   { value: "RO", label: "Romania" },
   { value: "RU", label: "Russia" },
+  { value: "SG", label: "Singapore" },
+  { value: "ZA", label: "South Africa" },
   { value: "KR", label: "South Korea" },
   { value: "ES", label: "Spain" },
   { value: "SE", label: "Sweden" },
-  { value: "SG", label: "Singapore" },
+  { value: "CH", label: "Switzerland" },
   { value: "TH", label: "Thailand" },
   { value: "TR", label: "Turkey" },
   { value: "GB", label: "United Kingdom" },
   { value: "US", label: "USA" },
   { value: "VE", label: "Venezuela" },
-  { value: "ZA", label: "South Africa" },
-  { value: "CH", label: "Switzerland" },
 ];
 
 const colors = {

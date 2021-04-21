@@ -197,7 +197,7 @@ export async function getStaticProps(context) {
   async function getMovieProviders(id) {
     let TMB_KEY = process.env.TMB_KEY;
     let url = `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${TMB_KEY}`;
-    const response = await fetch(url);
+    const response = await fetchRetry(url, 3);
     const providers = await response.json();
     return providers.results;
   }
@@ -205,7 +205,7 @@ export async function getStaticProps(context) {
   async function getMovieDetails(id) {
     let TMB_KEY = process.env.TMB_KEY;
     let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
-    const response = await fetch(url);
+    const response = await fetchRetry(url, 3);
     const movieDetails = await response.json();
     return movieDetails;
   }
@@ -328,3 +328,13 @@ export async function getStaticPaths() {
 }
 
 export default Article;
+
+const fetchRetry = async (url, n) => {
+  try {
+    return await fetch(url);
+  } catch (err) {
+    console.log("failed to fetch", n);
+    if (n === 1) throw err;
+    return await fetch_retry(url, n - 1);
+  }
+};

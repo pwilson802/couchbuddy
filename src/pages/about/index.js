@@ -81,7 +81,7 @@ function About({ setConsent, location, handleLocation }) {
       alignItems: "center",
       justifyContent: "center",
       color: colors[mode]["text"],
-      marginTop: "4rem",
+      marginTop: "2rem",
       width: "100%",
     }),
     policy: css({

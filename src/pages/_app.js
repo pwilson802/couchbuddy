@@ -138,14 +138,14 @@ async function getIPLocation() {
     "CH",
   ];
   try {
-    const response = await fetch("https://ipapi.co/json/");
+    const response = await fetchRetry("https://ipapi.co/json/", 3);
     const json = await response.json();
     const countryCode = json["country_code"];
     if (validCodes.includes(countryCode)) {
       localStorage.setItem("backupLocation", countryCode);
       return countryCode;
     }
-    return "AU";
+    return localStorage.getItem("backupLocation") || "AU";
   } catch {
     return localStorage.getItem("backupLocation") || "AU";
   }
@@ -158,3 +158,12 @@ function changeBackground(mode) {
     document.body.style = "background: white";
   }
 }
+
+const fetchRetry = async (url, n) => {
+  try {
+    return await fetch(url);
+  } catch (err) {
+    if (n === 1) throw err;
+    return await fetchRetry(url, n - 1);
+  }
+};
