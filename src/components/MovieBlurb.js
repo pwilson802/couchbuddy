@@ -49,7 +49,6 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
       paddingBottom: "50px",
     }),
   };
-  console.log(itemIndex);
 
   return (
     <article css={styles.articleWrap}>
