@@ -103,6 +103,9 @@ function Article({
       justifyContent: "space-between",
       marginRight: "5px",
     }),
+    text: css({
+      color: colors[mode]["text"],
+    }),
   };
 
   return (
@@ -183,6 +186,7 @@ function Article({
               location={location}
             />
           )}
+          <h5 css={styles.text}>More from Couch Buddy...</h5>
           <BlogPreviewScroll mode={mode} previews={previews} />
         </div>
       </main>
