@@ -42,7 +42,6 @@ function Article({
     metaDescription,
     slug,
   } = pageDetails.article[0].fields;
-  console.log(previews);
 
   // const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
@@ -329,7 +328,6 @@ export async function getStaticProps(context) {
   const previews = allPreviews.filter(
     (item) => item.fields.slug != context.params.slug
   );
-  console.log(previews);
 
   return {
     props: {
