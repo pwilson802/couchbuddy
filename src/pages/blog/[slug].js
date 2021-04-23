@@ -8,6 +8,7 @@ import NavBlog from "../../components/NavBlog";
 import Footer from "../../components/Footer";
 import BlogSocials from "../../components/BlogSocials";
 import BlogMovieList from "../../components/BlogMovieList";
+import BlogPreviewScroll from "../../components/BlogPreviewScroll";
 import BlogQuiz from "../../components/BlogQuiz";
 const colors = {
   light: {
@@ -22,7 +23,14 @@ const colors = {
   },
 };
 
-function Article({ location, handleLocation, mode, changeMode, pageDetails }) {
+function Article({
+  location,
+  handleLocation,
+  mode,
+  changeMode,
+  pageDetails,
+  previews,
+}) {
   const {
     heading,
     sharingDescription,
@@ -34,6 +42,7 @@ function Article({ location, handleLocation, mode, changeMode, pageDetails }) {
     metaDescription,
     slug,
   } = pageDetails.article[0].fields;
+  console.log(previews);
 
   // const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
@@ -174,6 +183,7 @@ function Article({ location, handleLocation, mode, changeMode, pageDetails }) {
               location={location}
             />
           )}
+          <BlogPreviewScroll mode={mode} previews={previews} />
         </div>
       </main>
       <footer>
@@ -193,6 +203,20 @@ export async function getStaticProps(context) {
     space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
     accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_DELIVERY_KEY,
   });
+
+  async function fetchEntries() {
+    const entries = await client.getEntries({
+      content_type: "articleTitle",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
+  async function getPreviews() {
+    const allPreviews = await fetchEntries();
+    shuffle(allPreviews);
+    return allPreviews;
+  }
 
   async function getMovieProviders(id) {
     let TMB_KEY = process.env.TMB_KEY;
@@ -297,9 +321,16 @@ export async function getStaticProps(context) {
     pageDetails = await makeQuiz(article);
   }
 
+  const allPreviews = await getPreviews();
+  const previews = allPreviews.filter(
+    (item) => item.fields.slug != context.params.slug
+  );
+  console.log(previews);
+
   return {
     props: {
       pageDetails,
+      previews,
     },
   };
 }
@@ -338,3 +369,14 @@ const fetchRetry = async (url, n) => {
     return await fetch_retry(url, n - 1);
   }
 };
+
+function shuffle(data) {
+  // shuffle the questions using Fisher-Yates Algorithm
+  for (let i = data.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i);
+    const temp = data[i];
+    data[i] = data[j];
+    data[j] = temp;
+  }
+  return data;
+}
