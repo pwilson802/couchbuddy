@@ -31,11 +31,16 @@ function MyApp({ Component, pageProps }) {
     async function pageLoad() {
       const consentStatus = getConsent();
       setConsent(consentStatus);
+      if (consentStatus == "yes") {
+        window["ga-disable-G-HE4FSJS60K"] = false;
+      } else {
+        window["ga-disable-G-HE4FSJS60K"] = true;
+      }
       const currentLocation = location || (await getIPLocation());
       setLocation(currentLocation);
     }
     pageLoad();
-  }, [location]);
+  }, [location, consent]);
 
   function handleLocation(loc) {
     setRefine(false);
@@ -47,25 +52,23 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        {consent == "yes" && (
-          <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-JEN15TQ9KZ"
-          />
-        )}
-        {consent == "yes" && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-HE4FSJS60K"
+        />
+        )
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
               gtag('config', 'G-HE4FSJS60K');
           `,
-            }}
-          />
-        )}
+          }}
+        />
+        )
       </Head>
       <Component
         {...pageProps}
