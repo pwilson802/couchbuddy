@@ -24,18 +24,27 @@ function MyApp({ Component, pageProps }) {
 
   const updateConsent = (con) => {
     localStorage.setItem("consent", con);
+    if (con == "yes") {
+      window["ga-disable-G-HE4FSJS60K"] = false;
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-HE4FSJS60K");
+    }
     setConsent(con);
   };
 
   useEffect(() => {
     async function pageLoad() {
       const consentStatus = getConsent();
-      setConsent(consentStatus);
       if (consentStatus == "yes") {
         window["ga-disable-G-HE4FSJS60K"] = false;
       } else {
         window["ga-disable-G-HE4FSJS60K"] = true;
       }
+      setConsent(consentStatus);
       const currentLocation = location || (await getIPLocation());
       setLocation(currentLocation);
     }
