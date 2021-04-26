@@ -25,6 +25,7 @@ function MyApp({ Component, pageProps }) {
   const updateConsent = (con) => {
     localStorage.setItem("consent", con);
     if (con == "yes") {
+      console.log("consented yes");
       window["ga-disable-G-HE4FSJS60K"] = false;
       window.dataLayer = window.dataLayer || [];
       function gtag() {
