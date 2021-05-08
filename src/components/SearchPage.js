@@ -40,8 +40,29 @@ const genreObj = {
   Western: false,
 };
 
-async function getLocalProviders(country) {
-  const url = `${DATA_URL}/providers-${country}.json`;
+const tvGenreObj = {
+  'Comedy': false,
+  'Animation': false,
+  'Kids': false,
+  'Action & Adventure': false,
+  'Sci-Fi & Fantasy': false,
+  'Reality': false,
+  'Drama': false,
+  'Crime': false,
+  'Mystery': false,
+  'Soap': false,
+  'Family': false,
+  'Documentary': false,
+  'News': false,
+  'Talk': false,
+  'Science Fiction': false,
+  'War & Politics': false,
+  'Western': false,
+}
+
+async function getLocalProviders(country, view) {
+  const url = `${DATA_URL}/${view == "tv" ? "tv_" : ""}providers-${country}.json`;
+  console.log(url)
   const response = await fetchRetry(url, 3);
   return await response.json();
 }
@@ -132,6 +153,8 @@ export default function SearchPage({
   refine,
   refineData,
   consent,
+  view,
+  handleViewChange
 }) {
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
@@ -142,10 +165,12 @@ export default function SearchPage({
   const [localCertificationMovies, setLocalCertificationMovies] = useState({});
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
+  const [seasons, setSeasons] = useState([1,50])
+  const [dateRange, setDateRange] = useState([])
   const [loaded, setLoaded] = useState(false);
 
   async function configureProviders(location) {
-    const localProviderData = await getLocalProviders(location);
+    const localProviderData = await getLocalProviders(location, view);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
     const cachedProviders = getSelectedProviders(
@@ -272,7 +297,11 @@ export default function SearchPage({
         setDuration(refineData.duration);
         setSortByVote(refineData.sortByVote);
       } else {
-        setSelectedGenres(genreObj);
+        if (view == "movie"){
+          setSelectedGenres(genreObj);
+        } else {
+          setSelectedGenres(tvGenreObj)
+        }
         await configureProviders(location);
         await configureCertifications(location);
       }
@@ -281,7 +310,7 @@ export default function SearchPage({
     if (location != null) {
       pageLoad();
     }
-  }, [location]);
+  }, [location, view]);
 
   const styles = {
     wrapper: css({
@@ -291,9 +320,6 @@ export default function SearchPage({
       display: "flex",
       margin: 10,
       flexDirection: "row",
-      // "@media(min-width: 768px)": {
-      //   justifyContent: "center",
-      // },
     }),
     locationWrap: css({
       position: "absolute",
@@ -404,6 +430,9 @@ export default function SearchPage({
           <div css={styles.logoWrap}>
             <Logo setPage={setPage} logo={"main"} width={250} />
           </div>
+          <div>
+            <button onClick={handleViewChange}>{view}</button>
+          </div>
           <Burger
             handleLocation={handleLocation}
             location={location}
@@ -451,11 +480,13 @@ export default function SearchPage({
               mode={mode}
               setSelected={setSelectedCertifications}
             />
+            { view === "movie" &&
             <Duration
               duration={duration}
               handleDuration={handleDuration}
               mode={mode}
             />
+            }
             <div css={styles.sortButtonWrap}>
               <GeneralButton
                 handleClick={() => setSortByVote(!sortByVote)}

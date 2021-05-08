@@ -21,10 +21,19 @@ function App({
   const [width, setWidth] = useState(0);
   const [screenSize, setScreenSize] = useState("small");
   const [searchDetails, setSearchDetails] = useState({});
+  const [view, setView] = useState("movie")
 
   const handleSearchDetails = (item) => {
     setSearchDetails(item);
   };
+
+  const handleViewChange = () => {
+    if (view == "movie") {
+      setView("tv")
+    } else {
+      setView("movie")
+    }
+  }
 
   const changePage = (page) => {
     setPage(page);
@@ -64,6 +73,8 @@ function App({
           refine={refine}
           refineData={refineData}
           consent={consent}
+          view={view}
+          handleViewChange={handleViewChange}
         />
       )}
       {page === "ResultsPage" && (
@@ -78,6 +89,7 @@ function App({
           handleLocation={handleLocation}
           setRefine={setRefine}
           setRefineData={setRefineData}
+          view={view}
         />
       )}
     </div>
