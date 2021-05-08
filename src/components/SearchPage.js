@@ -14,9 +14,7 @@ import SpinnerMovie from "./SpinnerMovie";
 import Footer from "./Footer";
 import Burger from "./Burger";
 import LocationSelectSmall from "./LocationSelectSmall";
-// const DATA_BUCKET = process.env.DATA_BUCKET;
-const DATA_BUCKET = "couchbuddy-data";
-const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
+const DATA_URL = process.env.NEXT_PUBLIC_DATA_URL;
 import CookieBanner from "../components/CookieBanner";
 
 const genreObj = {
