@@ -6,6 +6,8 @@ import Logo from "./Logo";
 import Genres from "./Genres";
 import Providers from "./Providers";
 import Duration from "./Duration";
+import Seasons from "./Seasons";
+import DateRange from "./DateRange"
 import DropDownGenres from "./DropDownGenres";
 import DropDownProviders from "./DropDownProviders";
 import NavButton from "./NavButton";
@@ -164,7 +166,8 @@ export default function SearchPage({
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
   const [seasons, setSeasons] = useState([1,50])
-  const [dateRange, setDateRange] = useState([])
+  const [dateRange, setDateRange] = useState([1950,2030])
+  const [dateFilter, setDateFilter] = useState("anytime")
   const [loaded, setLoaded] = useState(false);
 
   async function configureProviders(location) {
@@ -221,6 +224,10 @@ export default function SearchPage({
   const handleDuration = (num) => {
     setDuration(num);
   };
+
+  const handleSeasons = (item) => {
+    setSeasons(item)
+  }
 
   const handleSubmit = () => {
     const dataMissing = CheckMissingData();
@@ -485,6 +492,15 @@ export default function SearchPage({
               mode={mode}
             />
             }
+            {view == "tv" &&
+            <Seasons
+            seasons={seasons}
+            handleSeasons={handleSeasons}
+            mode={mode}
+          />
+            
+            }
+            <DateRange dateRange={dateRange} mode={mode} setDateRange={setDateRange} dateFilter={dateFilter} setDateFilter={setDateFilter} />
             <div css={styles.sortButtonWrap}>
               <GeneralButton
                 handleClick={() => setSortByVote(!sortByVote)}
@@ -511,6 +527,7 @@ export default function SearchPage({
 }
 
 const fetchRetry = async (url, n) => {
+  console.log(url)
   try {
     return await fetch(url);
   } catch (err) {

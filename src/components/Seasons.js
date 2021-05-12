@@ -14,7 +14,7 @@ const colors = {
   },
 };
 
-function Duration({ duration, handleDuration, mode }) {
+function Seasons({ seasons, handleSeasons, mode }) {
   const styles = {
     durationText: css({
       textAlign: "center",
@@ -29,28 +29,35 @@ function Duration({ duration, handleDuration, mode }) {
 
   return (
     <div>
-      <p css={styles.durationText}>{duration} minutes</p>
+      <p css={styles.durationText}>Number of seasons: {seasons[0]} - {seasons[1]}</p>
       <div css={styles.sliderWrapper}>
-        <Slider
-          min={0}
-          max={400}
-          step={1}
-          value={duration}
-          onChange={(item) => handleDuration(item)}
+        <Range
+          min={1}
+          max={50}
+          allowCross={false}
+          value={seasons}
+          onChange={(item) => handleSeasons(item)}
           railStyle={{ backgroundColor: "rgba(241,136,143,.5)", height: 10 }}
-          trackStyle={{ backgroundColor: "#F1888F", height: 10 }}
-          handleStyle={{
+          trackStyle={[{ backgroundColor: "#F1888F", height: 10 }]}
+          handleStyle={[{
             borderColor: "#E12C86",
             height: 28,
             width: 28,
             // marginLeft: -14,
             marginTop: -9,
             backgroundColor: "#E12C86",
-          }}
+          },{
+            borderColor: "#E12C86",
+            height: 28,
+            width: 28,
+            // marginLeft: -14,
+            marginTop: -9,
+            backgroundColor: "#E12C86",
+          }]}
         />
       </div>
     </div>
   );
 }
 
-export default Duration;
+export default Seasons;

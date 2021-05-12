@@ -15,7 +15,7 @@ import Footer from "./Footer";
 import MovieCardLoading from "./MovieCardLoading";
 // const DATA_BUCKET = process.env.DATA_BUCKET;
 const DATA_BUCKET = "couchbuddy-data";
-const DATA_URL = "https://d1jby5x0ota8zi.cloudfront.net";
+const DATA_URL = process.env.NEXT_PUBLIC_DATA_URL;
 
 async function filterMoviesByData(duration, sortByVote) {
   const url = `${DATA_URL}/movie-filter.json`;
