@@ -68,6 +68,7 @@ async function getLocalProviders(country, view) {
   }providers-${country}.json`;
   console.log("providersURL:", url);
   const response = await fetchRetry(url, 3);
+  console.log("recieved the url");
   return await response.json();
 }
 

@@ -268,7 +268,7 @@ function MovieCard({
           {screenSize === "small" && (
             <div css={styles.topWrap}>
               <p css={styles.title}>{title}</p>
-              <div css={styles.status}>{status}</div>
+              <TVStatus status={status} />
             </div>
           )}
           <div css={styles.bodyWrapper}>
@@ -284,7 +284,6 @@ function MovieCard({
               {screenSize === "large" && (
                 <div css={styles.titleStatusWrap}>
                   <p css={styles.title}>{title}</p>
-                  {/* <div css={styles.status}>{status}</div> */}
                   <TVStatus status={status} />
                 </div>
               )}
