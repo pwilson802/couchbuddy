@@ -41,20 +41,20 @@ function DateRangeSlider({ dateRange, handleDateRange, mode, dynamicKey }) {
           allowCross={false}
           value={dateRange}
           onChange={(item) => handleDateRange(item)}
-          railStyle={{ backgroundColor: "rgba(253,215,130,.08)", height: 60 }}
-          trackStyle={[{ backgroundColor: "rgba(253,215,130,.2)", height: 60 }]}
+          railStyle={{ backgroundColor: "rgba(253,215,130,.00)", height: 60 }}
+          trackStyle={[{ backgroundColor: "rgba(225, 44, 134, 0.2)", height: 60 }]}
           handleStyle={[{
             borderColor: "#FDD782",
             marginTop: "-2px",
             height: 37,
-            width: 5,
+            width: 4,
             backgroundColor: "#FDD782",
             borderRadius: "0px"
           },{
             borderColor: "#FDD782",
             marginTop: "-2px",
             height: 37,
-            width: 5,
+            width: 4,
             backgroundColor: "#FDD782",
             borderRadius: "0px"
           }]}

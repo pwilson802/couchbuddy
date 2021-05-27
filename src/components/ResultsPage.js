@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
 import MovieCard from "./MovieCard";
+import TVCard from "./TVCard";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
@@ -12,26 +13,97 @@ import { Adsense } from "@ctrl/react-adsense";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NavResults from "./NavResults";
 import Footer from "./Footer";
-import MovieCardLoading from "./MovieCardLoading";
-// const DATA_BUCKET = process.env.DATA_BUCKET;
-const DATA_BUCKET = "couchbuddy-data";
 const DATA_URL = process.env.NEXT_PUBLIC_DATA_URL;
 
-async function filterMoviesByData(duration, sortByVote) {
+async function getMovieFilterData(ids) {
   const url = `${DATA_URL}/movie-filter.json`;
   const response = await fetchRetry(url, 3);
-  const allMovies = await response.json();
-  const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
-  if (sortByVote === true) {
-    moviesUnderDuration.sort(compare);
-    const result = moviesUnderDuration.map((item) => Number(item.id));
-    return result;
-  }
-  return moviesUnderDuration.map((item) => Number(item.id));
+  const allTV = await response.json();
+  const result = allTV.filter((item) => {
+    return ids.includes(item.id);
+  });
+  return result;
 }
 
-async function getMovieIDsforGenres(genres) {
-  const url = `${DATA_URL}/genres.json`;
+async function filterMoviesByData(
+  duration,
+  sortByVote,
+  allMovies,
+  filterByDate,
+  dateRange
+) {
+  const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
+  const moviesInDateRange = filterByDate
+    ? filterMovieDate(moviesUnderDuration, dateRange)
+    : moviesUnderDuration;
+  if (sortByVote === true) {
+    moviesInDateRange.sort(compare);
+    const result = moviesInDateRange.map((item) => Number(item.id));
+    return result;
+  }
+  return moviesInDateRange.map((item) => Number(item.id));
+}
+
+function filterMovieDate(movies, dateRange) {
+  return movies.filter((item) => {
+    const year = item.d.split("-")[0];
+    if (year >= dateRange[0] && year <= dateRange[1]) {
+      return true;
+    }
+  });
+}
+
+async function getTVFilterData(ids) {
+  const url = `${DATA_URL}/tv-filter.json`;
+  const response = await fetchRetry(url, 3);
+  const allTV = await response.json();
+  const result = allTV.filter((item) => {
+    return ids.includes(item.id);
+  });
+  return result;
+}
+
+function filterTVSeason(tvShows, seasons) {
+  return tvShows.filter((item) => {
+    if (item.se >= seasons[0] && item.se <= seasons[1]) {
+      return true;
+    }
+    return false;
+  });
+}
+
+function filterTVDate(tvShows, dateRange, dateFilter) {
+  if (dateFilter == "releaseDate") {
+    return tvShows.filter((item) => {
+      const year = item.d.split("-")[0];
+      if (year >= dateRange[0] && year <= dateRange[1]) {
+        return true;
+      }
+    });
+  }
+  return tvShows.filter((item) => {
+    const year = Number(item.d.split("-")[0]);
+    const seasons = item.se;
+    const yearsOn = [];
+    const lastYear = year + seasons;
+    for (let i = year; i <= lastYear; i++) {
+      yearsOn.push(i);
+    }
+    return yearsOn.some((y) => {
+      if (y >= dateRange[0] && y <= dateRange[1]) {
+        return true;
+      }
+    });
+  });
+}
+
+function filterTVFinished(tvShows) {
+  return tvShows.filter((item) => item.st == "Ended");
+}
+
+async function getMovieIDsforGenres(genres, view) {
+  const url =
+    view == "movie" ? `${DATA_URL}/genres.json` : `${DATA_URL}/tv_genres.json`;
   const response = await fetchRetry(url, 3);
   const genresObject = await response.json();
   let result = [];
@@ -87,6 +159,11 @@ export default function ResultsPage({
     sortByVote,
     selectedCertifications,
     selectedProviders,
+    view,
+    dateRange,
+    dateFilter,
+    seasons,
+    onlyfinishedTv,
   } = searchDetails;
 
   function getProviders(id) {
@@ -105,35 +182,87 @@ export default function ResultsPage({
       (item) => selectedGenres[item]
     );
     async function updateMovies() {
-      const matchedMoviesByGenre = await getMovieIDsforGenres(genres);
+      const matchedMoviesByGenre = await getMovieIDsforGenres(genres, view);
       const matchedMoviesbyProvider = Object.values(providerMovies).flat();
       const moviesInProvider = matchedMoviesByGenre.filter((movie) =>
         matchedMoviesbyProvider.includes(movie)
       );
-      const filterMovieData = sortByVote || duration != 400;
-      const moviesByLength =
-        filterMovieData === true
-          ? await filterMoviesByData(duration, sortByVote)
-          : moviesInProvider;
-      const moviesInLength = moviesByLength.filter((item) =>
-        moviesInProvider.includes(item)
+      async function filterMovies(movies) {
+        const filterMovieData =
+          sortByVote ||
+          duration != 400 ||
+          dateRange[0] != 1950 ||
+          dateRange[1] != 2030;
+        if (filterMovieData == false) {
+          return movies;
+        }
+        const filterData = await getMovieFilterData(movies);
+        const filterByDate = dateRange[0] != 1950 || dateRange[1] != 2030;
+        const moviesByLength =
+          filterMovieData === true
+            ? await filterMoviesByData(
+                duration,
+                sortByVote,
+                filterData,
+                filterByDate,
+                dateRange
+              )
+            : movies;
+        const moviesInLength = moviesByLength.filter((item) =>
+          movies.includes(item)
+        );
+        const moviesInCertification =
+          certificationMovies === true
+            ? moviesInLength
+            : filterCertification(moviesInLength);
+        return moviesInCertification;
+      }
+
+      async function filterTV(tvShows) {
+        const filterTVData =
+          sortByVote ||
+          onlyfinishedTv ||
+          seasons[0] != 1 ||
+          seasons[1] != 50 ||
+          dateRange[0] != 1950 ||
+          dateRange[1] != 2030;
+        if (filterTVData == false) {
+          return tvShows;
+        }
+        const filterData = await getTVFilterData(tvShows);
+        const filterBySeason = seasons[0] != 1 || seasons[1] != 50;
+        const tvBySeason = filterBySeason
+          ? filterTVSeason(filterData, seasons)
+          : filterData;
+        const filterByDate = dateRange[0] != 1950 || dateRange[1] != 2030;
+        const tvByDate = filterByDate
+          ? filterTVDate(tvBySeason, dateRange, dateFilter)
+          : tvBySeason;
+        console.log("before sort:", tvByDate);
+        const tvByFinished = onlyfinishedTv
+          ? filterTVFinished(tvByDate)
+          : tvByDate;
+        const tvSorted = sortByVote ? tvByFinished.sort(compare) : tvByFinished;
+        const tvIds = tvSorted.map((item) => Number(item.id));
+        const tvInCertification =
+          certificationMovies === true ? tvIds : filterCertification(tvIds);
+        return tvInCertification;
+      }
+
+      const filteredIDs =
+        view == "movie"
+          ? await filterMovies(moviesInProvider)
+          : await filterTV(moviesInProvider);
+      const result = reduceShuffleMovies(filteredIDs, sortByVote).reduce(
+        (acc, curr) => {
+          let providers = getProviders(curr);
+          acc.push({ id: curr, providers: providers });
+          return acc;
+        },
+        []
       );
-      const moviesInCertification =
-        // TODO - Check this is working to skip the filter for certifiation movies
-        certificationMovies === true
-          ? moviesInLength
-          : filterCertification(moviesInLength);
-      const result = reduceShuffleMovies(
-        moviesInCertification,
-        sortByVote
-      ).reduce((acc, curr) => {
-        let providers = getProviders(curr);
-        acc.push({ id: curr, providers: providers });
-        return acc;
-      }, []);
       const uniqResult = Array.from(new Set(result));
       setMovies(uniqResult);
-      // setActiveMovies(result.slice(0, 6));
       if (uniqResult.length === 0) {
         setNothingFound(true);
       }
@@ -167,6 +296,10 @@ export default function ResultsPage({
       selectedCertifications: selectedCertifications,
       sortByVote: sortByVote,
       selectedProviders: selectedProviders,
+      dateRange: dateRange,
+      dateFilter: dateFilter,
+      seasons: seasons,
+      onlyfinishedTv: onlyfinishedTv,
     });
     setPage("SearchPage");
   };
@@ -271,7 +404,7 @@ export default function ResultsPage({
                   </div>
                 );
               }
-              return (
+              return view == "movie" ? (
                 <MovieCard
                   id={item.id}
                   providers={item.providers}
@@ -281,6 +414,16 @@ export default function ResultsPage({
                   key={item.id}
                   width={width}
                 ></MovieCard>
+              ) : (
+                <TVCard
+                  id={item.id}
+                  providers={item.providers}
+                  allProviderData={allProviderData}
+                  screenSize={screenSize}
+                  mode={mode}
+                  key={item.id}
+                  width={width}
+                />
               );
             })}
             <Footer
@@ -293,7 +436,7 @@ export default function ResultsPage({
           </div>
         )
       ) : (
-        <SpinnerMovie />
+        <SpinnerMovie view={view} mode={mode} />
       )}
     </div>
   );

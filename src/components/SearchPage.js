@@ -7,7 +7,7 @@ import Genres from "./Genres";
 import Providers from "./Providers";
 import Duration from "./Duration";
 import Seasons from "./Seasons";
-import DateRange from "./DateRange"
+import DateRange from "./DateRange";
 import DropDownGenres from "./DropDownGenres";
 import DropDownProviders from "./DropDownProviders";
 import NavButton from "./NavButton";
@@ -18,6 +18,8 @@ import Burger from "./Burger";
 import LocationSelectSmall from "./LocationSelectSmall";
 const DATA_URL = process.env.NEXT_PUBLIC_DATA_URL;
 import CookieBanner from "../components/CookieBanner";
+import SelectionItem from "./SelectionItem";
+import SearchSwitch from "./SearchSwitch";
 
 const genreObj = {
   Action: false,
@@ -41,28 +43,30 @@ const genreObj = {
 };
 
 const tvGenreObj = {
-  'Comedy': false,
-  'Animation': false,
-  'Kids': false,
-  'Action & Adventure': false,
-  'Sci-Fi & Fantasy': false,
-  'Reality': false,
-  'Drama': false,
-  'Crime': false,
-  'Mystery': false,
-  'Soap': false,
-  'Family': false,
-  'Documentary': false,
-  'News': false,
-  'Talk': false,
-  'Science Fiction': false,
-  'War & Politics': false,
-  'Western': false,
-}
+  Animation: false,
+  Comedy: false,
+  Kids: false,
+  "Action & Adventure": false,
+  "Sci-Fi & Fantasy": false,
+  Reality: false,
+  Drama: false,
+  Crime: false,
+  Mystery: false,
+  Soap: false,
+  Family: false,
+  Documentary: false,
+  News: false,
+  Talk: false,
+  "War & Politics": false,
+  Western: false,
+  Romance: false,
+};
 
 async function getLocalProviders(country, view) {
-  const url = `${DATA_URL}/${view == "tv" ? "tv_" : ""}providers-${country}.json`;
-  console.log(url)
+  const url = `${DATA_URL}/${
+    view == "tv" ? "tv_" : ""
+  }providers-${country}.json`;
+  console.log("providersURL:", url);
   const response = await fetchRetry(url, 3);
   return await response.json();
 }
@@ -87,8 +91,10 @@ function makeProvidersObj(data) {
   }, {});
 }
 
-async function getLocalCertifications(country) {
-  const url = `${DATA_URL}/certifications-${country}.json`;
+async function getLocalCertifications(country, view) {
+  const url = `${DATA_URL}/${
+    view == "tv" ? "tv_" : ""
+  }certifications-${country}.json`;
   const response = await fetchRetry(url, 3);
   return await response.json();
 }
@@ -154,7 +160,8 @@ export default function SearchPage({
   refineData,
   consent,
   view,
-  handleViewChange
+  setView,
+  handleViewChange,
 }) {
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
@@ -165,13 +172,15 @@ export default function SearchPage({
   const [localCertificationMovies, setLocalCertificationMovies] = useState({});
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
-  const [seasons, setSeasons] = useState([1,50])
-  const [dateRange, setDateRange] = useState([1950,2030])
-  const [dateFilter, setDateFilter] = useState("anytime")
+  const [seasons, setSeasons] = useState([1, 50]);
+  const [dateRange, setDateRange] = useState([1950, 2030]);
+  const [dateFilter, setDateFilter] = useState("anytime");
   const [loaded, setLoaded] = useState(false);
+  const [onlyfinishedTv, setOnlyFinishedTv] = useState(false);
 
   async function configureProviders(location) {
     const localProviderData = await getLocalProviders(location, view);
+    console.log("localProviderData", localProviderData);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
     const cachedProviders = getSelectedProviders(
@@ -188,7 +197,7 @@ export default function SearchPage({
   }
 
   async function configureCertifications(location) {
-    const localCertificationData = await getLocalCertifications(location);
+    const localCertificationData = await getLocalCertifications(location, view);
     const certificationsObj = await makeCertificationsObj(
       localCertificationData
     );
@@ -226,8 +235,8 @@ export default function SearchPage({
   };
 
   const handleSeasons = (item) => {
-    setSeasons(item)
-  }
+    setSeasons(item);
+  };
 
   const handleSubmit = () => {
     const dataMissing = CheckMissingData();
@@ -248,12 +257,22 @@ export default function SearchPage({
       providerMovies: providerMovies,
       allProviderData: allProviderData,
       selectedGenres: selectedGenres,
-      duration: duration,
       certificationMovies: certificationMovies,
       sortByVote: sortByVote,
       selectedCertifications: selectedCertifications,
       selectedProviders: selectedProviders,
+      dateRange: dateRange,
+      dateFilter: dateFilter,
+      onlyfinishedTv: onlyfinishedTv,
     };
+    if (view == "movie") {
+      searchData["view"] = "movie";
+      searchData["duration"] = duration;
+    } else {
+      searchData["view"] = "tv";
+      searchData["seasons"] = seasons;
+    }
+    console.log("searchData:", searchData);
     handleSearchDetails(searchData);
     setPage("ResultsPage");
   };
@@ -299,13 +318,26 @@ export default function SearchPage({
         setSelectedCertifications(refineData.selectedCertifications);
         setSelectedProviders(refineData.selectedProviders);
         setSelectedGenres(refineData.selectedGenres);
-        setDuration(refineData.duration);
         setSortByVote(refineData.sortByVote);
+        setDateRange(refineData.dateRange);
+        setDateFilter(refineData.dateFilter);
+        if (view == "tv") {
+          setSeasons(refineData.seasons);
+          setOnlyFinishedTv(refineData.onlyfinishedTv);
+        } else {
+          setDuration(refineData.duration);
+          setSeasons([1, 50]);
+        }
       } else {
-        if (view == "movie"){
+        setDateRange([1950, 2030]);
+        setSeasons([1, 50]);
+        setDateFilter("anytime");
+        setSortByVote(false);
+        setOnlyFinishedTv(false);
+        if (view == "movie") {
           setSelectedGenres(genreObj);
         } else {
-          setSelectedGenres(tvGenreObj)
+          setSelectedGenres(tvGenreObj);
         }
         await configureProviders(location);
         await configureCertifications(location);
@@ -352,9 +384,18 @@ export default function SearchPage({
       justifyContent: "center",
       alignItems: "center",
       alignSelf: "center",
+      marginTop: "20px",
       "@media(min-width: 700px)": {
         position: "absolute",
-        top: "25px",
+        top: "5px",
+        left: "75%",
+        width: "250px",
+        transform: "translate(-50%, -50%)",
+        display: "block",
+      },
+      "@media(min-width: 1080px)": {
+        position: "absolute",
+        top: "5px",
         left: "50%",
         width: "250px",
         transform: "translate(-50%, -50%)",
@@ -418,12 +459,23 @@ export default function SearchPage({
         display: "block",
       },
     }),
+    selectionWrapper: css({
+      display: "flex",
+      justifyContent: "center",
+    }),
+    searchSwitchWrap: css({
+      width: "100%",
+      "@media(min-width: 700px)": {
+        width: "auto",
+      },
+    }),
   };
+  console.log("seasons", seasons);
   return (
     <div>
       <div css={styles.wrapper}>
         <div css={styles.nav}>
-          {loaded && (
+          {location && (
             <div css={styles.locationSmall}>
               <LocationSelectSmall
                 mode={mode}
@@ -432,11 +484,17 @@ export default function SearchPage({
               />
             </div>
           )}
-          <div css={styles.logoWrap}>
-            <Logo setPage={setPage} logo={"main"} width={250} />
-          </div>
-          <div>
-            <button onClick={handleViewChange}>{view}</button>
+          {width > 700 && (
+            <div css={styles.logoWrap}>
+              <Logo setPage={setPage} logo={"main"} width={250} />
+            </div>
+          )}
+          <div css={styles.searchSwitchWrap}>
+            <SearchSwitch
+              view={view}
+              mode={mode}
+              handleViewChange={handleViewChange}
+            />
           </div>
           <Burger
             handleLocation={handleLocation}
@@ -479,37 +537,59 @@ export default function SearchPage({
                 mode={mode}
               />
             )}
+            <DateRange
+              dateRange={dateRange}
+              mode={mode}
+              setDateRange={setDateRange}
+              dateFilter={dateFilter}
+              setDateFilter={setDateFilter}
+              width={width}
+              view={view}
+            />
             <Genres
               selectedGenres={selectedCertifications}
               handleGenre={handleCertifications}
               mode={mode}
               setSelected={setSelectedCertifications}
             />
-            { view === "movie" &&
-            <Duration
-              duration={duration}
-              handleDuration={handleDuration}
-              mode={mode}
-            />
-            }
-            {view == "tv" &&
-            <Seasons
-            seasons={seasons}
-            handleSeasons={handleSeasons}
-            mode={mode}
-          />
-            
-            }
-            <DateRange dateRange={dateRange} mode={mode} setDateRange={setDateRange} dateFilter={dateFilter} setDateFilter={setDateFilter} />
-            <div css={styles.sortButtonWrap}>
-              <GeneralButton
-                handleClick={() => setSortByVote(!sortByVote)}
-                selected={sortByVote}
+            {view === "movie" && (
+              <Duration
+                duration={duration}
+                handleDuration={handleDuration}
                 mode={mode}
-                buttonText={"Sort by Rating"}
               />
+            )}
+            {view == "tv" && (
+              <Seasons
+                seasons={seasons}
+                handleSeasons={handleSeasons}
+                mode={mode}
+              />
+            )}
+            <div css={styles.selectionWrapper}>
+              <div css={styles.selections}>
+                <SelectionItem
+                  selection={"Sort by Vote"}
+                  enabled={sortByVote}
+                  handleSwitch={() => setSortByVote(!sortByVote)}
+                  mode={mode}
+                  refine={refine}
+                />
+                {view == "tv" && (
+                  <SelectionItem
+                    selection={"Finished Only"}
+                    enabled={onlyfinishedTv}
+                    handleSwitch={() => setOnlyFinishedTv(!onlyfinishedTv)}
+                    mode={mode}
+                    refine={refine}
+                  />
+                )}
+              </div>
             </div>
-            <NavButton handleSubmit={handleSubmit} buttonText={"Get Movies"} />
+            <NavButton
+              handleSubmit={handleSubmit}
+              buttonText={view == "movie" ? "Get Movies" : "Get TV"}
+            />
             <Footer
               activePage="app"
               setPage={setPage}
@@ -517,9 +597,14 @@ export default function SearchPage({
               location={location}
               handleLocation={handleLocation}
             />
+            {width < 700 && (
+              <div css={styles.logoWrap}>
+                <Logo setPage={setPage} logo={"main"} width={250} />
+              </div>
+            )}
           </div>
         ) : (
-          <SpinnerMovie />
+          <SpinnerMovie view={view} mode={mode} />
         )}
       </div>
     </div>
@@ -527,7 +612,7 @@ export default function SearchPage({
 }
 
 const fetchRetry = async (url, n) => {
-  console.log(url)
+  console.log(url);
   try {
     return await fetch(url);
   } catch (err) {

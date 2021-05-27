@@ -12,7 +12,7 @@ const colors = {
     },
   };
 
-function DateRangeDecades({mode, dateRange, handleDateRange, setDynamicKey}){
+function DateRangeDecades({mode, dateRange, handleDateRange, setDynamicKey, dateFilter, setDateFilter}){
 
     const updateRange = (item) => {
         if (item == dateRange[0] - 10){
@@ -25,6 +25,9 @@ function DateRangeDecades({mode, dateRange, handleDateRange, setDynamicKey}){
             handleDateRange([item, item+10])
         }
         setDynamicKey(Date.now())
+        if (dateFilter == "anytime"){
+            setDateFilter("releaseDate")
+        }
     }
 
 
@@ -35,18 +38,23 @@ function DateRangeDecades({mode, dateRange, handleDateRange, setDynamicKey}){
             marginTop: "25px",
         }),
         dateBox: css({
-            borderStyle: "solid",
+            borderRightStyle: "solid",
+            borderWidth: "1px",
             borderColor: "rgb(150,208,211)",
             width: "100%",
             cursor: "pointer",
             textAlign: "center",
             color: colors[mode]['text'],
             zIndex: "99"
+        }),
+        firstBox: css({
+            borderLeftStyle: "solid",
         })
+
     }
 
     return <div css={styles.wrapper}>
-        <div onClick={() => updateRange(1950)} css={styles.dateBox}>50s</div>
+        <div onClick={() => updateRange(1950)} css={[styles.dateBox, styles.firstBox]}>50s</div>
         <div onClick={() => updateRange(1960)} css={styles.dateBox}>60s</div>
         <div onClick={() => updateRange(1970)} css={styles.dateBox}>70s</div>
         <div onClick={() => updateRange(1980)} css={styles.dateBox}>80s</div>
