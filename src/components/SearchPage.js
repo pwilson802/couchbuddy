@@ -180,7 +180,6 @@ export default function SearchPage({
 
   async function configureProviders(location) {
     const localProviderData = await getLocalProviders(location, view);
-    console.log("localProviderData", localProviderData);
     const providersObj = makeProvidersObj(localProviderData);
     const allProviderData = await getAllProviderData();
     const cachedProviders = getSelectedProviders(
@@ -470,7 +469,6 @@ export default function SearchPage({
       },
     }),
   };
-  console.log("seasons", seasons);
   return (
     <div>
       <div css={styles.wrapper}>
@@ -616,6 +614,7 @@ const fetchRetry = async (url, n) => {
   try {
     return await fetch(url);
   } catch (err) {
+    console.log("error", err);
     if (n === 1) throw err;
     return await fetchRetry(url, n - 1);
   }
