@@ -66,9 +66,7 @@ async function getLocalProviders(country, view) {
   const url = `${DATA_URL}/${
     view == "tv" ? "tv_" : ""
   }providers-${country}.json`;
-  console.log("providersURL:", url);
   const response = await fetchRetry(url, 3);
-  console.log("recieved the url");
   return await response.json();
 }
 
@@ -272,7 +270,6 @@ export default function SearchPage({
       searchData["view"] = "tv";
       searchData["seasons"] = seasons;
     }
-    console.log("searchData:", searchData);
     handleSearchDetails(searchData);
     setPage("ResultsPage");
   };
@@ -611,11 +608,9 @@ export default function SearchPage({
 }
 
 const fetchRetry = async (url, n) => {
-  console.log(url);
   try {
     return await fetch(url);
   } catch (err) {
-    console.log("error", err);
     if (n === 1) throw err;
     return await fetchRetry(url, n - 1);
   }

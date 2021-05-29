@@ -238,7 +238,6 @@ export default function ResultsPage({
         const tvByDate = filterByDate
           ? filterTVDate(tvBySeason, dateRange, dateFilter)
           : tvBySeason;
-        console.log("before sort:", tvByDate);
         const tvByFinished = onlyfinishedTv
           ? filterTVFinished(tvByDate)
           : tvByDate;
