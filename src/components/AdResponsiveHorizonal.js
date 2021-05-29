@@ -20,7 +20,6 @@ function AdResponsiveHorizontal() {
           .push({});
       }
     } catch {
-      console.log("cathed the error");
       // Pass
     }
   }, []);

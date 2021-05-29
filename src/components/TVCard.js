@@ -12,7 +12,6 @@ async function getTvDetails(id) {
   let url = `/api/tv/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  console.log(movieDetails);
   return movieDetails;
 }
 
