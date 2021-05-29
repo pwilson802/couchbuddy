@@ -255,6 +255,7 @@ function MovieCard({
     topWrap: css({
       display: "flex",
       justifyContent: "space-between",
+      alignItems: "flex-start",
     }),
     titleStatusWrap: css({
       display: "flex",
