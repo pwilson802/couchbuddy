@@ -18,10 +18,10 @@ export default function Home({
   refineData,
   setRefineData,
 }) {
-  useEffect(() => {
-    const currentMode = localStorage.getItem("mode") || "dark";
-    changeMode(currentMode);
-  }, []);
+  // useEffect(() => {
+  //   const currentMode = localStorage.getItem("mode") || "dark";
+  //   changeMode(currentMode);
+  // }, []);
 
   return (
     <div>

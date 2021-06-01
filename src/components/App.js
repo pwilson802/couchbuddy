@@ -41,6 +41,8 @@ function App({
   };
 
   useEffect(() => {
+    const currentMode = localStorage.getItem("mode") || "dark";
+    changeMode(currentMode);
     const handleResizeWindow = () => {
       const newWidth = window.innerWidth;
       setWidth(newWidth);
