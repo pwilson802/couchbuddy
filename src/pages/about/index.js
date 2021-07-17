@@ -204,12 +204,7 @@ function About({ setConsent, location, handleLocation }) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image
-            src="/justwatch.png"
-            alt="Just Watch"
-            width={152}
-            height={23}
-          />
+          <img src="/justwatch.png" alt="Just Watch" width={152} height={23} />
         </a>
         <br />
         <p css={styles.text}>

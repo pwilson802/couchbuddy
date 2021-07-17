@@ -273,7 +273,7 @@ function MovieCard({
           )}
           <div css={styles.bodyWrapper}>
             <div onClick={onPress} css={styles.imageBox}>
-              <Image
+              <img
                 src={image}
                 alt={`${title} poster`}
                 width={111}

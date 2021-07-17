@@ -243,7 +243,7 @@ function MovieCard({
           {screenSize === "small" && <p css={styles.title}>{title}</p>}
           <div css={styles.bodyWrapper}>
             <div onClick={onPress} css={styles.imageBox}>
-              <Image
+              <img
                 src={image}
                 alt={`${title} poster`}
                 width={111}
