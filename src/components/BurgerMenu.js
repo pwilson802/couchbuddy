@@ -59,6 +59,12 @@ const BlogTextContainer = styled.div`
   font-family: "Pacifico";
 `;
 
+const AboutContainer = styled.div`
+  font-size: 28px;
+  font-family: "Kanit";
+  font-weight: "bold";
+`
+
 const menuVariants = {
   open: {
     transform: "translateX(3%)",
@@ -178,7 +184,7 @@ function BurgerMenu({
           }}
         >
           <Link href={"/about"}>
-            <div>About</div>
+            <AboutContainer>About</AboutContainer>
           </Link>
         </MenuContainerItem>
         {showCountry && (
