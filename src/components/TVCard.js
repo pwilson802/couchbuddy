@@ -83,7 +83,7 @@ function MovieCard({
       } else {
         setStatus(status);
       }
-      const imagePath = "http://image.tmdb.org/t/p/w185" + poster_path;
+      const imagePath = "https://image.tmdb.org/t/p/w185" + poster_path;
       setImage(imagePath);
       const providerLogos = providers.map(
         (item) => allProviderData[item]["logo"]

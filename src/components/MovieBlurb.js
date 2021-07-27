@@ -69,6 +69,7 @@ function MovieBlurb({ id, body, providers, movieDetails, mode, itemIndex }) {
             style={{ display: "block" }}
             responsive={true}
           />
+          {/* <FakeAd num="1" /> */}
         </div>
       )}
     </article>
