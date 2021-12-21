@@ -30,3 +30,19 @@ body {
   font-weight: 700;
   font-display: swap;
 }
+
+@font-face {
+  font-family: "CorbenBold";
+  src: url("/fonts/Corben-Bold.ttf");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CorbenRegular";
+  src: url("/fonts/Corben-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

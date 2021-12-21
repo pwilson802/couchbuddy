@@ -53,12 +53,14 @@ function BlogQuiz({
     score: css({
       margin: 0,
       padding: 0,
-      fontSize: "22px",
+      fontSize: "26px",
+      fontFamily: "CorbenBold",
     }),
     rank: css({
       margin: 0,
       padding: 0,
       fontSize: "22px",
+      fontFamily: "CorbenRegular",
     }),
     adWrap: css({
       marginTop: "3rem",
@@ -97,7 +99,7 @@ function BlogQuiz({
           {score} / {pageDetails.questions.length}
         </p>
         <p css={styles.rank}>
-          Your rank:{" "}
+          Rank:{" "}
           {score < 4
             ? rankFive
             : score < 7
