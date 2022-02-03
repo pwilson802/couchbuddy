@@ -10,6 +10,7 @@ import BlogSocials from "../../components/BlogSocials";
 import BlogMovieList from "../../components/BlogMovieList";
 import BlogPreviewScroll from "../../components/BlogPreviewScroll";
 import BlogQuiz from "../../components/BlogQuiz";
+import BlogStory from "../../components/BlogStory";
 const colors = {
   light: {
     text: "black",
@@ -185,6 +186,18 @@ function Article({
               location={location}
             />
           )}
+          {pageDetails.type === "story" && (
+            <BlogStory
+              articleType={articleType}
+              author={author}
+              heading={heading}
+              slug={slug}
+              introduction={introduction}
+              pageDetails={pageDetails}
+              mode={mode}
+              location={location}
+            />
+          )}
           <h5 css={styles.text}>More from Couch Buddy...</h5>
           <BlogPreviewScroll mode={mode} previews={previews} />
         </div>
@@ -273,6 +286,24 @@ export async function getStaticProps(context) {
     console.log(`Error getting Entries for ${contentType.name}.`);
   }
 
+  async function fetchParagraphs() {
+    const entries = await client.getEntries({
+      "fields.slug": context.params.slug,
+      content_type: "storyParagraph",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
+  async function fetchMedias() {
+    const entries = await client.getEntries({
+      "fields.slug": context.params.slug,
+      content_type: "storyMedia",
+    });
+    if (entries.items) return entries.items;
+    console.log(`Error getting Entries for ${contentType.name}.`);
+  }
+
   async function makeWhattoWatch(article) {
     const response = {};
     const blurbs = await fetchWhattoWatchEntries();
@@ -311,6 +342,36 @@ export async function getStaticProps(context) {
     return response;
   }
 
+  async function makeStory(article) {
+    const response = {}
+    const paragraphs = await fetchParagraphs()
+    const media = await fetchMedias()
+    const paragraphList = paragraphs.map((item) => {
+      const fields = item.fields;
+      return {
+        slug: fields.slug,
+        paragraph: fields.paragraph,
+        order: fields.order,
+      };
+    });
+    const mediaList = media.map((item) => {
+      const fields = item.fields;
+      return {
+        slug: fields.slug,
+        address: fields.address,
+        type: fields.type,
+        order: fields.order,
+        imageText: fields.imageText,
+      };
+    });
+    response["type"] = "story";
+    response["article"] = article;
+    response["paragraphs"] = paragraphList;
+    response["medias"] = mediaList;
+    console.log(response)
+    return response
+  }
+
   const article = await fetchArticle();
   const articleType = article[0].fields.articleType;
 
@@ -322,6 +383,10 @@ export async function getStaticProps(context) {
 
   if (articleType === "quiz") {
     pageDetails = await makeQuiz(article);
+  }
+
+  if (articleType == "story") {
+    pageDetails = await makeStory(article)
   }
 
   const allPreviews = await getPreviews();

@@ -1,9 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BlogSocials from "./BlogSocials";
-import MovieBlurb from "./MovieBlurb";
+import BlogStoryParagraph from "./BlogStoryParagraph";
 
 const colors = {
   light: {
@@ -18,7 +18,7 @@ const colors = {
   },
 };
 
-function BlogMovieList({
+function BlogStory({
   articleType,
   author,
   heading,
@@ -28,7 +28,29 @@ function BlogMovieList({
   mode,
   location,
 }) {
-  const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
+    const [width, setWidth] = useState(0);
+
+    useEffect(() => {
+    const handleResizeWindow = () => {
+      const newWidth = window.innerWidth;
+      setWidth(newWidth);
+    };
+    handleResizeWindow();
+    // subscribe to window resize event "onComponentDidMount"
+    window.addEventListener("resize", handleResizeWindow);
+    return () => {
+      // unsubscribe "onComponentDestroy"
+      window.removeEventListener("resize", handleResizeWindow);
+    };
+  }, []);
+
+    const medias = pageDetails.medias.reduce((acc, curr) => {
+    let tempObj = {address: curr.address, type: curr.type, imageText: curr.imageText}
+    acc[curr.order] = tempObj
+    return acc 
+    }, {})
+    console.log(pageDetails)
+    const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
   const styles = {
     pageWrapper: css({
@@ -61,9 +83,9 @@ function BlogMovieList({
       marginTop: 40,
     }),
   };
-  console.log(pageDetails)
 
-  return (
+
+    return (
     <div css={styles.pageWrapper}>
       <h1 css={styles.heading}>{heading}</h1>
       <div css={styles.authorSocials}>
@@ -81,23 +103,25 @@ function BlogMovieList({
         </div>
       </div>
       <p css={styles.introduction}>{introduction}</p>
-      <div css={styles.quizWrapper}>
-        {pageDetails.blurbs.length > 0
-          ? pageDetails.blurbs.map((p, index) => (
-              <MovieBlurb
-                id={p.fields.movieId}
-                body={p.fields.body}
-                key={p.fields.movieId}
-                providers={p.fields.providers[location] || {}}
-                movieDetails={p.fields.movieDetails}
-                mode={mode}
-                itemIndex={index}
-              />
-            ))
+            <div css={styles.quizWrapper}>
+        {pageDetails.paragraphs.length > 0
+                    ? pageDetails.paragraphs.map((p, index) => {
+                        const media = medias[p.order] || null
+              
+                        return (
+                        <BlogStoryParagraph
+                                paragraph={p.paragraph}
+                                mode={mode}
+                                itemIndex={index}
+                                media={media}
+                                width={width}
+                        />)
+                    })
           : null}
       </div>
     </div>
-  );
+    )
+    
 }
 
-export default BlogMovieList;
+export default BlogStory

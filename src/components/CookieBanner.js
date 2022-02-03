@@ -62,7 +62,7 @@ function CookieBanner({ updateConsent }) {
     }),
   };
   return (
-    <div css={styles.cookieContainer}>
+    <div css={styles.cookieContainer} data-nosnippet="data-nosnippet">
       <p css={styles.cookieParapraph}>
         This website uses cookies or similar technologies. This is to create a
         better user experience by saving your preferences and analysing how you
