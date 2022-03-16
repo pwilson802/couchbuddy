@@ -11,6 +11,8 @@ import BlogMovieList from "../../components/BlogMovieList";
 import BlogPreviewScroll from "../../components/BlogPreviewScroll";
 import BlogQuiz from "../../components/BlogQuiz";
 import BlogStory from "../../components/BlogStory";
+import BlogRandomMovieQuiz from "../../components/BlogRandomMovieQuiz";
+
 const colors = {
   light: {
     text: "black",
@@ -107,6 +109,7 @@ function Article({
       color: colors[mode]["text"],
     }),
   };
+  console.log(pageDetails)
 
   return (
     <>
@@ -160,9 +163,13 @@ function Article({
         changeMode={changeMode}
       />
       <main css={styles.pageWrapper}>
-        <div css={styles.imageWrapper}>
-          <img css={styles.image} src={sharingImage} alt={heading} />
-        </div>
+        {(pageDetails.type === "What to watch" ||
+          pageDetails.type === "quiz" ||
+          pageDetails.type === "story") &&
+          <div css={styles.imageWrapper}>
+            <img css={styles.image} src={sharingImage} alt={heading} />
+          </div>
+        }
         <div css={styles.articlesWrapper}>
           {pageDetails.type === "What to watch" && (
             <BlogMovieList
@@ -198,8 +205,26 @@ function Article({
               location={location}
             />
           )}
-          <h5 css={styles.text}>More from Couch Buddy...</h5>
-          <BlogPreviewScroll mode={mode} previews={previews} />
+          {pageDetails.type === "random-movie-quiz" && (
+            <BlogRandomMovieQuiz
+              articleType={articleType}
+              author={author}
+              heading={heading}
+              slug={slug}
+              introduction={introduction}
+              pageDetails={pageDetails}
+              mode={mode}
+              location={location}
+            />
+          )}
+          {(pageDetails.type === "What to watch" ||
+            pageDetails.type === "quiz" ||
+            pageDetails.type === "story") &&
+            <div>
+              <h5 css={styles.text}>More from Couch Buddy...</h5>
+              <BlogPreviewScroll mode={mode} previews={previews} />
+            </div>
+          }
         </div>
       </main>
       <footer>
@@ -342,6 +367,13 @@ export async function getStaticProps(context) {
     return response;
   }
 
+  async function makeRandomMovieQuiz(article) {
+    const response = {};
+    response["article"] = article;
+    response["type"] = "random-movie-quiz";
+    return response;
+  }
+
   async function makeStory(article) {
     const response = {}
     const paragraphs = await fetchParagraphs()
@@ -368,7 +400,6 @@ export async function getStaticProps(context) {
     response["article"] = article;
     response["paragraphs"] = paragraphList;
     response["medias"] = mediaList;
-    console.log(response)
     return response
   }
 
@@ -387,6 +418,10 @@ export async function getStaticProps(context) {
 
   if (articleType == "story") {
     pageDetails = await makeStory(article)
+  }
+
+ if (articleType == "random-movie-quiz") {
+   pageDetails = await makeRandomMovieQuiz(article)
   }
 
   const allPreviews = await getPreviews();
