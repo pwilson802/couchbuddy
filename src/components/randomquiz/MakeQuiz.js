@@ -24,7 +24,7 @@ function MakeQuestionsList() {
     makeWhoPlayedCharacterQuestion,
     makeWhoDidActorPlayQuestion,
     makeWhoDidActorPlayQuestion,
-    makePickMovieinYearQuestion,
+    makeWhoDidntDirectQuestion,
     makeWhoDidntDirectQuestion,
     makeMovieFromPictureQuestion,
     makeMovieFromPictureQuestion,
@@ -98,7 +98,7 @@ async function getMovieDetails(id) {
 }
 
 async function getPopularMovies() {
-  const page = Math.floor(Math.random() * 5) + 1;
+  const page = Math.floor(Math.random() * 20) + 1;
   const url = `/api/randomquiz/getpopularmovies/${page}`;
   const response = await fetchRetry(url, 3);
   const json = await response.json();
@@ -330,7 +330,7 @@ async function makeCharacterinMovieQuestion(movie, extraMovies) {
   const alternatives = await getAlternativeMovies(movie, 3, character)
   // console.log(alternatives)
   const year = movie["release_date"].split("-")[0]
-  const question = `The character ${character} is in which ${year} movie?`
+  const question = `The character ${character} is in which ${year} movie?`.replace(" (voice)", "")
   const answers = [movie.original_title]
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
@@ -539,7 +539,7 @@ async function makeMoviesStaringPersonQuestion() {
   let starsMovies = []
   for (let movie of popularMovies) {
     star = await getStarfromMovie(movie)
-    if (star.popularity < 10) {
+    if (star.popularity < 20) {
       continue
     }
     starsMovies = await getMoviesByActor(star)
@@ -548,6 +548,7 @@ async function makeMoviesStaringPersonQuestion() {
     }
     console.log(`---------------star does not have many movies`)
   }
+  starsMovies = starsMovies.slice(0,12)
   shuffle(starsMovies)
   const correctMovies = starsMovies.slice(0, 2)
   const answers = correctMovies.map(item => item.title)

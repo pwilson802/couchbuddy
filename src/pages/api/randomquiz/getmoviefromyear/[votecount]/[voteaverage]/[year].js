@@ -3,7 +3,8 @@ export default async function handler(req, res) {
   const {
     query: { votecount, voteaverage, year },
   } = req;
-    let url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMB_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&primary_release_year=${year}&vote_count.gte=${votecount}&vote_average.gte=${voteaverage}&without_genres=99&with_watch_monetization_types=flatrate&with_runtime.gte=75`
+    let runtime = year < 1970 ? 60 : 85
+    let url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMB_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&primary_release_year=${year}&vote_count.gte=${votecount}&vote_average.gte=${voteaverage}&without_genres=99&with_watch_monetization_types=flatrate&with_runtime.gte=${runtime}`
   let retry = 0;
   while (true) {
     const response = await fetchRetry(url, 3);
