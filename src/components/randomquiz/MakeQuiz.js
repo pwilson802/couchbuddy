@@ -36,11 +36,11 @@ function MakeQuestionsList() {
   return questions
 }
 
-async function MakeQuestion(question, movie, extraMovies, index) {
+async function MakeQuestion(question, movie, extraMovies, index, internalData) {
   const movieList = [movie, ...extraMovies.slice(index,)]
   for (let m of movieList) {
-    let newQuestion = await question(m, extraMovies.slice(20,))
-    let validate = validateQuestion(newQuestion)
+    let newQuestion = await question(m, extraMovies.slice(20,), internalData)
+    let validate = validateQuestion(newQuestion[0])
     if (validate) {
       return newQuestion
     }
@@ -211,12 +211,25 @@ async function getAlternativeActors(castDetails, movie, num) {
 }
 
 async function getSimilarMovieByDirector(director, movie) {
-  const url = `/api/randomquiz/getsimilarmovies/${movie.id}`;
+  const url = `/api/randomquiz/getsimilarmovies/${movie.id}/1`;
   const response = await fetchRetry(url, 3);
   const json = await response.json();
-  const movies = json['results']
-  shuffle(movies)
-  for (movie of movies) {
+  const allMovies = json['results']
+  const year = movie["release_date"].split("-")[0]
+  let closeMovies = allMovies.filter((item) => {
+    let movieYear = item["release_date"].split("-")[0]
+    if (year - movieYear < 10 && year - movieYear > -10) {
+      return true
+    }
+  })
+  let closeIds = closeMovies.map((item) => item.id)
+  shuffle(closeMovies)
+  for (let movie of allMovies) {
+    if (!closeIds.includes(movie.id)){
+      closeMovies.push(movie)
+    }
+  }
+  for (movie of closeMovies) {
     let crew = await getMovieCrew(movie.id)
     let movieDirector = crew.filter(item => item.job === "Director")[0]
     if (movieDirector.id !== director.id) {
@@ -226,15 +239,62 @@ async function getSimilarMovieByDirector(director, movie) {
 
 }
 
+async function getSimilarMovies(id, year) {
+  let allMovies = []
+  const pages = [1, 2, 3, 4, 5]
+  for (let page of pages) {
+    let url = `/api/randomquiz/getsimilarmovies/${id}/${page}`;
+    let response = await fetchRetry(url, 3);
+    let json = await response.json();
+    let moviesAll = json['results']
+    shuffle(moviesAll)
+    allMovies = [...allMovies, ...moviesAll]
+  }
+
+  let closeMovies = allMovies.filter((item) => {
+    let movieYear = item["release_date"].split("-")[0]
+    if (year - movieYear < 5 && year - movieYear > -5) {
+      return true
+    }
+  })
+  console.log("+++++++++++++++++++++++++++++++++++++")
+  console.log(closeMovies)
+  console.log("+++++++++++++++++++++++++++++++++++++")
+  let closeIds = closeMovies.map((item) => item.id)
+  console.log(closeIds)
+  shuffle(closeMovies)
+  for (let movie of allMovies) {
+    if (!closeIds.includes(movie.id)){
+      closeMovies.push(movie)
+    }
+  }
+  let ids = []
+  let result = []
+  for (let movie of closeMovies) {
+    if (ids.includes(movie.id)){
+      continue
+    }
+    result.push(movie)
+    ids.push(movie.id)
+  }
+  console.log("-----------RESULT OF SIMILAR MOVIES------------------")
+  console.log(result)
+  return result
+
+}
+
 async function getAlternativeMovies(originalMovie, num, character = "", actor = "") {
   const id = originalMovie.id
-  const url = `/api/randomquiz/getsimilarmovies/${id}`;
-  const response = await fetchRetry(url, 3);
-  const json = await response.json();
-  const moviesAll = json['results']
+  const year = originalMovie["release_date"].split("-")[0]
+  // getSimilarMovies(id, year)
+  // const url = `/api/randomquiz/getsimilarmovies/${id}/1`;
+  // const response = await fetchRetry(url, 3);
+  // const json = await response.json();
+  // const moviesAll = json['results']
+  const moviesAll = await getSimilarMovies(id, year)
   const movies = moviesAll.filter((item) => item.title !== originalMovie.title )
   // check how many are returned, maybe only select the top few and shuffle them?
-  shuffle(movies)
+  // shuffle(movies)
   let titles = []
   if (character !== "") {
       let count = 0
@@ -288,15 +348,22 @@ async function getChastMember(id) {
   }
 }
 
-async function makeTaglineQuestion(movie, extraMovies) {
-  const startTime =new Date().getTime();  
+async function makeTaglineQuestion(movie, extraMovies, internalData) {
+  let id = movie.id
+  let usedMovies = internalData["tagline"]
+  const startTime = new Date().getTime();  
   let tagline = await getMovieTagline(movie['id'])
+  tagline = usedMovies.includes(movie.id) ? "" : tagline
   if (tagline === "") {
     // console.log("--------TAGLINE IS EMPTY--------")
     for (let m of extraMovies) {
       movie = m
+      if (usedMovies.includes(movie.id)) {
+        continue
+      }
       tagline = await getMovieTagline(movie['id'])
       if (tagline !== "") {
+        id = movie.id
         break
       } 
     }
@@ -309,17 +376,24 @@ async function makeTaglineQuestion(movie, extraMovies) {
   //do something 
   const endTime = new Date().getTime();
   console.log(`makeTaglineQuestion: ${(endTime - startTime) / 1000} seconds`);
-  return questionObject
+  internalData["tagline"].push(id)
+  return [questionObject, internalData]
 }
 
-async function makeCharacterinMovieQuestion(movie, extraMovies) {
+async function makeCharacterinMovieQuestion(movie, extraMovies, internalData) {
+  let id = movie.id
+  let usedMovies = internalData["characterInMovie"]
   const startTime =new Date().getTime();
   let character = await getMainCharacter(movie['id'])
+  character = usedMovies.includes(movie.id) ? "" : character
   if (character === "") {
     console.log("---------NO CHARACTER IN MOVIE-----------")
     console.log("movie:", movie.original_title)
     for (let m of extraMovies) {
       movie = m
+      if (usedMovies.includes(movie.id)) {
+        continue
+      }
       character = await getMovieTagline(movie['id'])
       if (character !== "") {
         break
@@ -335,19 +409,25 @@ async function makeCharacterinMovieQuestion(movie, extraMovies) {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeCharacterinMovieQuestion: ${(endTime - startTime) / 1000} seconds`);
-  return questionObject
+  internalData["characterInMovie"].push(id)
+  return [questionObject, internalData]
+  // return questionObject
 }
 
-async function makeWhoPlayedCharacterQuestion(movie, extraMovies) {
+async function makeWhoPlayedCharacterQuestion(movie, extraMovies, internalData) {
+  let id = movie.id
+  let usedMovies = internalData["whoPlayedCharacter"]
   const startTime =new Date().getTime();
-  // console.log('makeWhoPlayedCharacterQuestion')
-  // console.log("movie:", movie.original_title)
   let castDetails = await getChastMember(movie['id'])
+  castDetails = usedMovies.includes(movie.id) ? "" : castDetails
   if (castDetails === "") {
     console.log("---------NO CHARACTER IN MOVIE-----------")
     console.log("movie:", movie.original_title)
     for (let m of extraMovies) {
       movie = m
+      if (usedMovies.includes(movie.id)) {
+        continue
+      }
       castDetails = await getChastMember(movie['id'])
       if (castDetails !== "") {
         break
@@ -363,7 +443,9 @@ async function makeWhoPlayedCharacterQuestion(movie, extraMovies) {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeWhoPlayedCharacterQuestion: ${(endTime - startTime) / 1000} seconds`);
-  return questionObject
+  internalData["whoPlayedCharacter"].push(id)
+  return [questionObject, internalData]
+  //return questionObject
 
 }
 
@@ -420,16 +502,21 @@ async function getCloseYearMovies(year) {
   return result
 }
 
-async function makeWhoDidActorPlayQuestion(movie, extraMovies) {
+/////// HERE
+async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
+  let id = movie.id
+  let usedMovies = internalData["whoDidActorPlay"]
   const startTime =new Date().getTime();
   // console.log(extraMovies)
   let cast = await getMovieCast(movie['id'])
   let otherCast = alternateCastMembers(cast)
-  // console.log(otherCast)
+  otherCast = usedMovies.includes(movie.id) ? false : otherCast
   if (!otherCast) {
     for (let m of extraMovies) {
       movie = m
-      // console.log("movie not viable for question: ", m.original_title)
+      if (usedMovies.includes(movie.id)) {
+        continue
+      }
       cast = await getMovieCast(movie['id'])
       otherCast = alternateCastMembers(cast)
       if (otherCast !== false) {
@@ -445,6 +532,8 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies) {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeWhoDidActorPlayQuestion: ${(endTime - startTime) / 1000} seconds`);
+  internalData["whoDidActorPlay"].push(id)
+  return [questionObject, internalData]
   return questionObject
 }
 
@@ -481,10 +570,13 @@ async function validateDirector(director, compareMovie) {
 }
 
 
-async function getValidDirectorAndMovies(movie) {
+async function getValidDirectorAndMovies(movie, usedDirectors) {
   const crew = await getMovieCrew(movie.id)
   const director = crew.filter(item => item.job === "Director")[0]
   // console.log(movie.title, director)
+  if (usedDirectors.includes(director.id)) {
+    return false
+  }
   const movies = await validateDirector(director, movie)
   if (movies === false) {
     return false
@@ -493,14 +585,15 @@ async function getValidDirectorAndMovies(movie) {
   return [director, allMovies]
 }
 
-async function makeWhoDidntDirectQuestion() {
+async function makeWhoDidntDirectQuestion(movie, extraMovies, internalData) {
+  let usedDirectors = internalData["WhoDidntDirect"]
   const startTime =new Date().getTime();
   const movies = await getPopularMovies()
   // console.log('popular movies', movies)
   shuffle(movies)
   let directorMovies
   for (let movie of movies) {
-    directorMovies = await getValidDirectorAndMovies(movie)
+    directorMovies = await getValidDirectorAndMovies(movie, usedDirectors)
     if (directorMovies !== false) {
       break
     }
@@ -516,10 +609,12 @@ async function makeWhoDidntDirectQuestion() {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeWhoDidntDirectQuestion: ${(endTime - startTime) / 1000} seconds`);
+  internalData["WhoDidntDirect"].push(director.id)
+  return [questionObject, internalData]
   return questionObject
 }
 
-async function makeMovieFromPictureQuestion(movie) {
+async function makeMovieFromPictureQuestion(movie, extraMovies, internalData) {
   const startTime =new Date().getTime();
   const imageUrl = await getMovieImage(movie)
   const alternatives = await getAlternativeMovies(movie, 3)
@@ -528,10 +623,11 @@ async function makeMovieFromPictureQuestion(movie) {
   const questionObject = makeQuestionObject(question, answers, alternatives, imageUrl)
   const endTime = new Date().getTime();
   console.log(`makeMovieFromPictureQuestion: ${(endTime - startTime) / 1000} seconds`);
-  return questionObject
+  return [questionObject, internalData]
 }
 
-async function makeMoviesStaringPersonQuestion() {
+async function makeMoviesStaringPersonQuestion(movie, extraMovies, internalData) {
+  let usedPeople = internalData["movieStaringPerson"]
   const startTime =new Date().getTime();
   const popularMovies = await getPopularMovies()
   shuffle(popularMovies)
@@ -539,6 +635,9 @@ async function makeMoviesStaringPersonQuestion() {
   let starsMovies = []
   for (let movie of popularMovies) {
     star = await getStarfromMovie(movie)
+    if (usedPeople.includes(star.id)) {
+      continue
+    }
     if (star.popularity < 20) {
       continue
     }
@@ -565,7 +664,9 @@ async function makeMoviesStaringPersonQuestion() {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeMoviesStaringPersonQuestion: ${(endTime - startTime) / 1000} seconds`);
-  return questionObject
+  internalData["movieStaringPerson"].push(star.id)
+  return [questionObject, internalData]
+  // return questionObject
 }
 
 const fetchRetry = async (url, n) => {

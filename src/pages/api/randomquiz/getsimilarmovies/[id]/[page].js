@@ -1,9 +1,9 @@
 export default async function handler(req, res) {
   let TMB_KEY = process.env.TMB_KEY;
   const {
-    query: { id },
+    query: { id, page },
   } = req;
-    let url = `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${TMB_KEY}&language=en-US&page=1`;
+    let url = `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${TMB_KEY}&language=en-US&page=${page}`;
   let retry = 0;
   while (true) {
     const response = await fetchRetry(url, 3);

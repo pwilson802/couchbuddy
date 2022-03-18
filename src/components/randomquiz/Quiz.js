@@ -19,6 +19,16 @@ const colors = {
   },
 };
 
+// const quizData = {
+//   tagline: [],
+//   characterInMovie: [],
+//   whoPlayedCharacter: [],
+//   whoDidActorPlay: [],
+//   WhoDidntDirect: [],
+//   movieFromPicture: [],
+//   movieStaringPerson: []
+// }
+
 
 function Quiz({ mode, setStartRequested, heading, introduction }) {
   const [introVisibility, setIntroVisibility] = useState("visible")
@@ -27,8 +37,18 @@ function Quiz({ mode, setStartRequested, heading, introduction }) {
   const [isFinished, setIsFinished] = useState(false)
   const [score, setScore] = useState(0)
   const [restarting, setRestarting] = useState(false)
+  // const [internalData, setInternalData] = useState(quizData)
 
   async function setupQuiz() {
+    let internalData = {
+      tagline: [],
+      characterInMovie: [],
+      whoPlayedCharacter: [],
+      whoDidActorPlay: [],
+      WhoDidntDirect: [],
+      movieFromPicture: [],
+      movieStaringPerson: []
+    }
     setIntroVisibility("hidden")
     setRestarting(true)
     let movies, extraMovies
@@ -36,9 +56,11 @@ function Quiz({ mode, setStartRequested, heading, introduction }) {
     const questionsList = MakeQuestionsList()
     const tempQuestions = []
     for (let i = 0; i < 15; i++){
-      let newQuestion = await MakeQuestion(questionsList[i], movies[i], extraMovies, i)
-      tempQuestions.push(newQuestion)
+      let newQuestion = await MakeQuestion(questionsList[i], movies[i], extraMovies, i, internalData)
+      internalData = newQuestion[1]
+      tempQuestions.push(newQuestion[0])
       setQuestions(tempQuestions)
+      console.log("internal Data", internalData)
   }
   }
   
