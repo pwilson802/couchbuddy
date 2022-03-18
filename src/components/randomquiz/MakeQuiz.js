@@ -404,7 +404,8 @@ async function makeCharacterinMovieQuestion(movie, extraMovies, internalData) {
   const alternatives = await getAlternativeMovies(movie, 3, character)
   // console.log(alternatives)
   const year = movie["release_date"].split("-")[0]
-  const question = `The character ${character} is in which ${year} movie?`.replace(" (voice)", "")
+  const characterName = character.replace(" (voice)", "")
+  const question = `The character ${characterName} is in which ${year} movie?`
   const answers = [movie.original_title]
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
