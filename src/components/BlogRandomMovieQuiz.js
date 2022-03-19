@@ -78,7 +78,7 @@ function BlogRandomMovieQuiz({
       height: "80vh",
       padding: "30px",
       position: "relative",
-      minHeight: "400px"
+      minHeight: "500px"
     }),
     logo: css({
       width: "25%",
