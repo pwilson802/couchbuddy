@@ -19,18 +19,8 @@ const colors = {
   },
 };
 
-// const quizData = {
-//   tagline: [],
-//   characterInMovie: [],
-//   whoPlayedCharacter: [],
-//   whoDidActorPlay: [],
-//   WhoDidntDirect: [],
-//   movieFromPicture: [],
-//   movieStaringPerson: []
-// }
 
-
-function Quiz({ mode, setStartRequested, heading, introduction }) {
+function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
   const [introVisibility, setIntroVisibility] = useState("visible")
   const [questions, setQuestions] = useState([])
   const [activeQuestion, setActiveQuestion] = useState(0);
@@ -40,6 +30,7 @@ function Quiz({ mode, setStartRequested, heading, introduction }) {
   // const [internalData, setInternalData] = useState(quizData)
 
   async function setupQuiz() {
+    setEndPage(false)
     let internalData = {
       tagline: [],
       characterInMovie: [],
@@ -65,6 +56,7 @@ function Quiz({ mode, setStartRequested, heading, introduction }) {
   }
   
   async function resetQuiz() {
+    setEndPage(false)
     setRestarting(true)
     setQuestions([])
     setActiveQuestion(0)
@@ -99,19 +91,32 @@ function Quiz({ mode, setStartRequested, heading, introduction }) {
       color: colors[mode]["text"],
       visibility: introVisibility
     }),
+    numbers: css({
+      color: colors[mode]["text"],
+      position: "absolute",
+      top: "5px",
+      left: "10px",
+      fontFamily: "CorbenBold",
+      fontSize: "1.2rem"
+    })
   };
   return (
     <div>
       {questions[activeQuestion] ?
         <div>
-          {!isFinished && <Question
+          {!isFinished &&
+            <div>
+              <div css={styles.numbers }>{activeQuestion + 1} / 15</div>
+            <Question
             questionDetails={questions[activeQuestion]}
             handleQuestion={handleQuestion}
             mode={mode }
-          />}
+            />
+          </div>
+          }
         </div> :
         isFinished ?
-          <QuizEnd score={score} resetQuiz={resetQuiz} questions={questions} mode={mode} /> :
+          <QuizEnd score={score} resetQuiz={resetQuiz} questions={questions} mode={mode} setEndPage={setEndPage} /> :
           (
           <div>
             <h1 css={styles.heading}>{heading}</h1>

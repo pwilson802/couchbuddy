@@ -76,11 +76,14 @@ function QuestionDoubleAnswer({ questionDetails, handleQuestion, mode }) {
   
         
     }
-    const question = questionDetails.question
+    const question = questionDetails.question.split("!!!")[1]
     const answers = questionDetails.answers
     const styles = {
         text: css({
             color: colors[mode]["text"],
+            marginBottom: "2rem",
+            marginTop: "1.5rem",
+            textAlign: "center",
         }),
     }
 

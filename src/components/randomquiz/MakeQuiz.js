@@ -370,7 +370,7 @@ async function makeTaglineQuestion(movie, extraMovies, internalData) {
   }
   const alternatives = await getAlternativeMovies(movie, 3)
   // console.log(alternatives)
-  const question = "Name the movie from the tagline: " + tagline
+  const question = `tagline!!!Name the movie from the tagline:\n${tagline}`
   const answers = [movie.original_title]
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   //do something 
@@ -404,8 +404,7 @@ async function makeCharacterinMovieQuestion(movie, extraMovies, internalData) {
   const alternatives = await getAlternativeMovies(movie, 3, character)
   // console.log(alternatives)
   const year = movie["release_date"].split("-")[0]
-  const characterName = character.replace(" (voice)", "")
-  const question = `The character ${characterName} is in which ${year} movie?`
+  const question = `characterInMovie!!!The character ${character} is in which ${year} movie?`
   const answers = [movie.original_title]
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
@@ -437,10 +436,12 @@ async function makeWhoPlayedCharacterQuestion(movie, extraMovies, internalData) 
   }
   const alternatives = await getAlternativeActors(castDetails, movie, 3)
   const year = movie["release_date"].split("-")[0]
-  const question = `who played ${castDetails.character} in the ${year} movie ${movie.title}`
-  // console.log(question)
+  let question = `whoPlayedCharacter!!!Who played ${castDetails.character} in the ${year} movie ${movie.title}?`
+  if (question.includes("(voice)")) {
+    question = question.replace("Who played", "Who voiced")
+    question = question.replace("(voice) ","")
+  }
   const answers = [castDetails.name]
-  // console.log(alternatives)
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeWhoPlayedCharacterQuestion: ${(endTime - startTime) / 1000} seconds`);
@@ -527,7 +528,7 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
     }
   }
   const year = movie["release_date"].split("-")[0]
-  const question = `Who did ${cast[0].name} play in the ${year} movie ${movie.title}`
+  const question = `whoDidActorPlay!!!Who did ${cast[0].name} play in the ${year} movie ${movie.title}?`
   const answers = [cast[0].character]
   const alternatives = otherCast.map(item => item.character)
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
@@ -606,7 +607,7 @@ async function makeWhoDidntDirectQuestion(movie, extraMovies, internalData) {
   const answers = [answerObj.title]
   const alternatives = directedMovies.map(item => item.title)
   const directorName = director.name
-  const question = `Which movie was not directed by ${directorName}`
+  const question = `WhoDidntDirect!!!Which movie was NOT directed by ${directorName}?`
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeWhoDidntDirectQuestion: ${(endTime - startTime) / 1000} seconds`);
@@ -620,7 +621,7 @@ async function makeMovieFromPictureQuestion(movie, extraMovies, internalData) {
   const imageUrl = await getMovieImage(movie)
   const alternatives = await getAlternativeMovies(movie, 3)
   const answers = [movie.title]
-  const question = `Name the movie from the picture:`
+  const question = `movieFromPicture!!!Name the movie from the picture`
   const questionObject = makeQuestionObject(question, answers, alternatives, imageUrl)
   const endTime = new Date().getTime();
   console.log(`makeMovieFromPictureQuestion: ${(endTime - startTime) / 1000} seconds`);
@@ -661,7 +662,7 @@ async function makeMoviesStaringPersonQuestion(movie, extraMovies, internalData)
   })
   // console.log(allAlternatives)
   const alternatives = allAlternatives.slice(0,2)
-  const question = `Pick the 2 movies starting ${star.name}`
+  const question = `movieStaringPerson!!!Pick the 2 movies starting ${star.name}`
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   console.log(`makeMoviesStaringPersonQuestion: ${(endTime - startTime) / 1000} seconds`);

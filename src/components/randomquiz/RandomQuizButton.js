@@ -31,7 +31,7 @@ function RandomQuizButton({ mode, setupQuiz }) {
         width: "30%",
       },
       opacity: colors[mode]["opacity"],
-      width: "70%",
+      width: "40%",
     }),
   };
 

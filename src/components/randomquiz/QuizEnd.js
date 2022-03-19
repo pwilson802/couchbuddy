@@ -2,9 +2,11 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { useState, useEffect } from "react"
-import CouchBuddyAd from "../CouchBuddyAd";
+import CouchBuddyAd2 from "../CouchBuddyAd2";
 import FakeAd from "../FakeAd";
 import QuizSocials from "./QuizSocials"
+import CopyAnimation from "./CopyAnimation"
+import CopyButton from "./CopyButton"
 
 const colors = {
   light: {
@@ -15,7 +17,7 @@ const colors = {
   },
 };
 
-function QuizEnd({ score, resetQuiz, questions, mode }) {
+function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
 
   const styles = {
     wrapper: css({
@@ -41,7 +43,7 @@ function QuizEnd({ score, resetQuiz, questions, mode }) {
         }),
     button: css({
       color: colors[mode]["text"],
-      padding: "10px 20px",
+      padding: "25px 23px",
       fontFamily: "Arial",
       margin: "10px",
       border: "1px solid #E12C86",
@@ -49,6 +51,11 @@ function QuizEnd({ score, resetQuiz, questions, mode }) {
       borderRadius: "10px",
       fontWeight: "bold",
       backgroundColor: "#E12C86",
+      height: "42px",
+      textAlign: "center",
+      display: "flex", 
+      alignItems: "center", 
+      justifyContent: "center"
     }),
     buttonwrap: css({
       display: "flex",
@@ -76,6 +83,9 @@ function QuizEnd({ score, resetQuiz, questions, mode }) {
   }
   const questionsText = makeQuestionClip(questions)
   console.log(questionsText)
+  useState(() => {
+    setEndPage(true)
+  }, [])
     
     return(
       <div css={styles.wrapper}>
@@ -86,13 +96,14 @@ function QuizEnd({ score, resetQuiz, questions, mode }) {
           <div css={styles.score}>{score}/15</div>
           <div >
             <div css={styles.buttonwrap}>
-              <div css={styles.button} onClick={() => resetQuiz() }>Start Again</div>
-              <div css={styles.button} onClick={() => copyText()}>Copy ✂️</div>
+              <div css={styles.button} onClick={() => resetQuiz()}>Start Again</div>
+              {/* <CopyButton handleClick={copyText} mode={mode} /> */}
+              <div css={styles.button} onClick={() => copyText()}>Copy 📋</div>
             </div>
           </div>
         </div>
         <div css={styles.right}>
-                <CouchBuddyAd mode={mode} />
+                <CouchBuddyAd2 mode={mode} />
                 <FakeAd num={1} />
         </div>
       </div>

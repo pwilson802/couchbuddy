@@ -6,6 +6,7 @@ import BlogSocials from "./BlogSocials";
 import BlogQuizSocials from "./BlogQuizSocials";
 import RandomQuizButton from "./randomquiz/RandomQuizButton"
 import Quiz from "./randomquiz/Quiz"
+import BlogPreviewScroll  from "./BlogPreviewScroll"
 
 const colors = {
   light: {
@@ -27,8 +28,13 @@ function BlogRandomMovieQuiz({
   pageDetails,
   mode,
   location,
+  previews,
 }) {
+  const [endPage, setEndPage] = useState(false)
   const styles = {
+    text: css({
+      color: colors[mode]["heading"],
+    }),
     heading: css({
       textAlign: "center",
       margin: 0,
@@ -69,9 +75,10 @@ function BlogRandomMovieQuiz({
       backgroundColor: "rgba(150, 208, 211, 0.3)",
       borderRadius: "25px",
       width: "100%",
-      height: "93vh",
+      height: "80vh",
       padding: "30px",
-      position: "relative"
+      position: "relative",
+      minHeight: "400px"
     }),
     logo: css({
       width: "25%",
@@ -80,17 +87,17 @@ function BlogRandomMovieQuiz({
       right: "10px"
     })
   };
-  // const startQuiz = () => {
-  //   setStartRequested(true)
-  //   setTimeout(() => {
-  //     setGameLoaded(true)
-  //   }, 2000)
-  // }
 
   return (
     <div css={styles.background}>
       <img css={styles.logo} src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" />
-      <Quiz heading={heading} introduction={introduction} mode={mode} />
+      <Quiz heading={heading} introduction={introduction} mode={mode} setEndPage={setEndPage} />
+      {/* {!endPage && (
+        <div>
+          <h5 css={styles.text}>More from Couch Buddy...</h5>
+          <BlogPreviewScroll mode={mode} previews={previews} />
+        </div>
+      )} */}
     </div>
   );
 }

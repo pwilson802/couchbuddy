@@ -215,6 +215,7 @@ function Article({
               pageDetails={pageDetails}
               mode={mode}
               location={location}
+              previews={previews }
             />
           )}
           {(pageDetails.type === "What to watch" ||

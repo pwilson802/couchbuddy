@@ -19,8 +19,14 @@ function QuestionSingleAnswer({ questionDetails, handleQuestion, mode }) {
     const [isFinished, setIsFinished] = useState(false)
     const [isLocked, setIsLocked] = useState(false)
 
-    const question = questionDetails.question
+    let [questionType, question] = questionDetails.question.split("!!!")
     const answers = questionDetails.answers
+    let tagline = ""
+    console.log("questionType:", questionType)
+    if (questionType == "tagline") {
+        [question, tagline] = question.split("\n")
+        console.log(question.split("\n"))
+    }
 
     const resetQuestion = (correct, answer) => {
         const answers = [answer]
@@ -44,17 +50,33 @@ function QuestionSingleAnswer({ questionDetails, handleQuestion, mode }) {
     const styles = {
         textImage: css({
             color: colors[mode]["text"],
+            textAlign: "center",
+            marginTop: "5px",
         }),
         text: css({
             color: colors[mode]["text"],
             marginBottom: "2rem",
+            marginTop: "1.5rem",
+            textAlign: "center",
+        }),
+        textTagline: css({
+            color: colors[mode]["text"],
+            textAlign: "center",
             marginTop: "1rem",
+            marginBottom: "1rem"
+        }),
+        tagline: css({
+            fontFamily: "MaliRegular",
+            textAlign: "center",
+            fontSize: "1.4rem",
+            color: "#FDD782",
+            marginBottom: "2rem",
         }),
         imageWrapper: css({
             display: "flex",
             alignItems: "center", 
             justifyContent: "center",
-            marginTop: "15px",
+            // marginTop: "15px",
             borderRadius: 10,
             minHeight: "160px",
         }),
@@ -64,8 +86,9 @@ function QuestionSingleAnswer({ questionDetails, handleQuestion, mode }) {
     }
 
     return <div>
-        <div css={questionDetails.imageUrl ? styles.textImage : styles.text}>{question}</div>
         {questionDetails.imageUrl && <div css={styles.imageWrapper}><img css={styles.image } src={questionDetails.imageUrl} alt="question hint" /></div>} 
+        <div css={questionDetails.imageUrl ? styles.textImage : questionType == "tagline" ? styles.textTagline : styles.text}>{question}</div>
+        {questionType == "tagline" && <div css={styles.tagline}>{tagline}</div> }
         {answers.map((item, index) => {
             return <QuizAnswer answer={item} handleAnswered={handleAnswered} key={index} finished={isFinished} locked={isLocked} mode={mode }/>
         })}

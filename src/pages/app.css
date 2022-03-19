@@ -46,3 +46,11 @@ body {
   font-weight: 400;
   font-display: swap;
 }
+
+@font-face {
+  font-family: "MaliRegular";
+  src: url("/fonts/Mali-Regular.ttf");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

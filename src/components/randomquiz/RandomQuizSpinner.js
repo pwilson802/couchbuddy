@@ -29,7 +29,7 @@ function RandomQuizSpinner({ view, mode }) {
         width: "30%",
       },
       opacity: colors[mode]["opacity"],
-      width: "70%",
+      width: "40%",
     }),
   };
   return (

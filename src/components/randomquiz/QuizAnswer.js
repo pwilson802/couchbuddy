@@ -38,7 +38,7 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
       margin: "20px",
       border: "2px solid #FEF4E1",
       cursor: "pointer",
-      height: "2.8rem",
+      minHeight: "2.8rem",
       }),
     unselected: css({
       color: colors[mode]["text"],
@@ -46,9 +46,8 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
       fontFamily: "Arial",
       margin: "20px",
       border: "2px solid #FEF4E1",
-      height: "2.8rem", ursor: "pointer",
+      minHeight: "2.8rem",
       cursor: "pointer",
-      
       }),
     wrongAnswer: css({
       padding: "10px",
@@ -57,7 +56,7 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
       border: "2px solid rgba(242, 226, 206, 0.3)",
       opacity: "0.7",
       display: "flex",
-      height: "2.8rem",
+      minHeight: "2.8rem",
       }),
     rightAnswer: css({
       backgroundColor: "rgba(253, 215, 130, 0.5)",
@@ -67,7 +66,7 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
       border: "2px solid rgba(253, 215, 130)",
       color: colors[mode]["text"],
       display: "flex",
-      height: "2.8rem",
+      minHeight: "2.8rem",
     }),
       animation: css({
         marginLeft: "1rem",
