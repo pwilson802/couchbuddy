@@ -21,7 +21,6 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
 
     useEffect(() => {
         setAnswered(false)
-        // handleAnswered(true, false)
     }, [answer])
 
     function handleClick() {
@@ -48,6 +47,18 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
       border: "2px solid #FEF4E1",
       minHeight: "2.8rem",
       cursor: "pointer",
+      "&:hover": {
+        backgroundColor: "rgba(225, 44, 134, 0.2)",
+        transition: "0.5s",
+      boxShadow: "1px 2px 5px rgba(254, 244, 225,0.5)",
+
+      },
+      "&:active": {
+        backgroundColor: "rgba(225, 44, 134, 0.3)",
+        boxShadow: "1px 2px 5px rgba(225, 44, 134, 0.5) inset",
+        boxShadow: "1px 2px 5px rgba(254, 244, 225,0.5)",
+      },
+
       }),
     wrongAnswer: css({
       padding: "10px",

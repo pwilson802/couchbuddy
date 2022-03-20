@@ -71,6 +71,10 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
       left: "20px"
     }),
     left: css({
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
     "@media(min-width: 768px)": {
         marginRight: "40px",
       },
@@ -78,9 +82,11 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
     }
   
   function copyText() {
+  console.log("questions", questions)
   const entryText = makeQuestionClip(questions)
     navigator.clipboard.writeText(entryText);
   }
+
   const questionsText = makeQuestionClip(questions)
   console.log(questionsText)
   useState(() => {
@@ -111,12 +117,12 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
 }
 
 function makeQuestionClip(questions) {
-  let response = ""
-  console.log(questions.length)
+  let response = "QUIZ\n\n"
+  // console.log(questions.length)
   for (let i = 0; i < questions.length; i++) {
     let question = questions[i]
-    console.log(question)
-    response = response + `${i + 1}: ${question.question} (${question.correct ? "correct" : "incorrect"})
+    // console.log(question)
+    response = response + `${i + 1}: ${question.question.split("!!!")[1]} 
     ${question.imageUrl ? question.imageUrl : ""}
     a: ${question.answers[0]["answer"]}
     b: ${question.answers[1]["answer"]}
@@ -124,13 +130,21 @@ function makeQuestionClip(questions) {
     d: ${question.answers[3]["answer"]}\n\n`
   }
   const correctAnswers = questions.map(item => item.answers.filter((item) => item.correct))
-  let answers = ""
+  let answers = "CORRECT ANSWERS\n\n"
   for (let i = 0; i < correctAnswers.length; i++) {
-    console.log(correctAnswers)
-    let answersString = correctAnswers[i].join(", ")
-    answers = answers + `${i + 1}: ${answersString} || `
+    let answersString = correctAnswers[i].map((item) => item.answer).join(", ")
+    answers = answers + `${i + 1}: ${answersString} | `
   }
-  response = response + answers
+  let yourAnswers = "\n\nYOUR ANSWERS\n\n"
+  console.log(questions)
+  for (let i = 0; i < questions.length; i++) {
+    let question = questions[i]
+    let questionAnswers = question.answered
+    let correct = question.correct ? "✔️" : "❌"
+    let answersString = questionAnswers.join(", ")
+    yourAnswers = yourAnswers + `${i + 1}: ${answersString} ${correct} | `
+  }
+  response = response + answers + yourAnswers
   return response
 }
 

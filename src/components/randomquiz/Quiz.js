@@ -81,6 +81,9 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
   };
    
   const styles = {
+    wrapper: css({
+      height: "100%"
+    }),
     heading: css({
       textAlign: "center",
       margin: "20px 0 0 0",
@@ -101,7 +104,7 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
     })
   };
   return (
-    <div>
+    <div css={styles.wrapper}>
       {questions[activeQuestion] ?
         <div>
           {!isFinished &&

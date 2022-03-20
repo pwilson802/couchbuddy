@@ -67,11 +67,14 @@ function Article({
     }),
     pageWrapper: css({
       margin: "70px 3%",
-      "@media(min-width: 1024px)": {
-        margin: "70px  40%",
-      },
       "@media(min-width: 768px)": {
         margin: "70px  10%",
+      },
+    }),
+    pageWrapperRandomQuiz: css({
+      margin: "70px 3%",
+      "@media(min-width: 768px)": {
+        margin: "70px  8%",
       },
     }),
     heading: css({
@@ -91,10 +94,18 @@ function Article({
       display: "flex",
       alignItems: "center",
     }),
-    articlesWrapper: css({
+    articlesWrapperRandomQuiz: css({
+      // "@media(min-width: 1024px)": {
+      //   margin: "0 40%",
+      // },
       "@media(min-width: 1024px)": {
-        margin: "0 40%",
+        margin: "0 10%",
       },
+    }),
+    articlesWrapper: css({
+      // "@media(min-width: 1024px)": {
+      //   margin: "0 40%",
+      // },
       "@media(min-width: 768px)": {
         margin: "0 10%",
       },
@@ -162,7 +173,7 @@ function Article({
         mode={mode}
         changeMode={changeMode}
       />
-      <main css={styles.pageWrapper}>
+      <main css={(pageDetails.type === "random-movie-quiz") ? styles.pageWrapperRandomQuiz : styles.pageWrapper}>
         {(pageDetails.type === "What to watch" ||
           pageDetails.type === "quiz" ||
           pageDetails.type === "story") &&
@@ -170,7 +181,7 @@ function Article({
             <img css={styles.image} src={sharingImage} alt={heading} />
           </div>
         }
-        <div css={styles.articlesWrapper}>
+        <div css={(pageDetails.type === "random-movie-quiz") ? styles.articlesWrapperRandomQuiz : styles.articlesWrapper}>
           {pageDetails.type === "What to watch" && (
             <BlogMovieList
               articleType={articleType}

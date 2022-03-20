@@ -76,9 +76,12 @@ function QuestionSingleAnswer({ questionDetails, handleQuestion, mode }) {
             display: "flex",
             alignItems: "center", 
             justifyContent: "center",
-            // marginTop: "15px",
+            marginTop: "15px",
             borderRadius: 10,
             minHeight: "160px",
+            "@media(min-width: 768px)": {
+                marginTop: 0,
+      },
         }),
         image: css({
             borderRadius: 10,
