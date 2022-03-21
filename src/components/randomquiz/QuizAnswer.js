@@ -20,7 +20,7 @@ function QuizAnswer({ answer, handleAnswered, finished, locked, mode}) {
   const [show, setShow] = useState(false)
 
     useEffect(() => {
-        setAnswered(false)
+      setAnswered(false)
     }, [answer])
 
     function handleClick() {

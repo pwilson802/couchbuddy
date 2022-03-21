@@ -24,10 +24,18 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
   const [introVisibility, setIntroVisibility] = useState("visible")
   const [questions, setQuestions] = useState([])
   const [activeQuestion, setActiveQuestion] = useState(0);
+  const [loadedQuestions, setLoadedQuestions] = useState(0);
   const [isFinished, setIsFinished] = useState(false)
   const [score, setScore] = useState(0)
   const [restarting, setRestarting] = useState(false)
   // const [internalData, setInternalData] = useState(quizData)
+
+  // const updateLoadedQuestions = () => {
+  //   console.log("updating loaded questions")
+  //   console.log(loadedQuestions)
+  //   let newNumber = loadedQuestions + 1
+  //   setLoadedQuestions(newNumber)
+  // }
 
   async function setupQuiz() {
     setEndPage(false)
@@ -47,15 +55,17 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
     const questionsList = MakeQuestionsList()
     const tempQuestions = []
     for (let i = 0; i < 15; i++){
+      extraMovies = extraMovies.slice(i)
       let newQuestion = await MakeQuestion(questionsList[i], movies[i], extraMovies, i, internalData)
       internalData = newQuestion[1]
       tempQuestions.push(newQuestion[0])
       setQuestions(tempQuestions)
-      console.log("internal Data", internalData)
+      setLoadedQuestions(i)
   }
   }
   
   async function resetQuiz() {
+    setLoadedQuestions(0)
     setEndPage(false)
     setRestarting(true)
     setQuestions([])
@@ -103,6 +113,8 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
       fontSize: "1.2rem"
     })
   };
+  console.log(activeQuestion)
+  console.log(questions)
   return (
     <div css={styles.wrapper}>
       {questions[activeQuestion] ?
@@ -113,7 +125,7 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
             <Question
             questionDetails={questions[activeQuestion]}
             handleQuestion={handleQuestion}
-            mode={mode }
+                mode={mode}
             />
           </div>
           }

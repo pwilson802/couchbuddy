@@ -376,7 +376,7 @@ async function makeTaglineQuestion(movie, extraMovies, internalData) {
   //do something 
   // const endTime = new Date().getTime();
   // console.log(`makeTaglineQuestion: ${(endTime - startTime) / 1000} seconds`);
-  internalData["tagline"].push(id)
+  internalData["tagline"].push(movie.id)
   return [questionObject, internalData]
 }
 
@@ -412,7 +412,7 @@ async function makeCharacterinMovieQuestion(movie, extraMovies, internalData) {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   // const endTime = new Date().getTime();
   // console.log(`makeCharacterinMovieQuestion: ${(endTime - startTime) / 1000} seconds`);
-  internalData["characterInMovie"].push(id)
+  internalData["characterInMovie"].push(movie.id)
   return [questionObject, internalData]
   // return questionObject
 }
@@ -448,7 +448,7 @@ async function makeWhoPlayedCharacterQuestion(movie, extraMovies, internalData) 
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   const endTime = new Date().getTime();
   // console.log(`makeWhoPlayedCharacterQuestion: ${(endTime - startTime) / 1000} seconds`);
-  internalData["whoPlayedCharacter"].push(id)
+  internalData["whoPlayedCharacter"].push(movie.id)
   return [questionObject, internalData]
   //return questionObject
 
@@ -542,7 +542,7 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
   const questionObject = makeQuestionObject(question, answers, alternatives, false)
   // const endTime = new Date().getTime();
   // console.log(`makeWhoDidActorPlayQuestion: ${(endTime - startTime) / 1000} seconds`);
-  internalData["whoDidActorPlay"].push(id)
+  internalData["whoDidActorPlay"].push(movie.id)
   return [questionObject, internalData]
   return questionObject
 }

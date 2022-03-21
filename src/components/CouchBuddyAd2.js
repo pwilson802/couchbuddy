@@ -50,9 +50,8 @@ function CouchBuddyAdd2({ mode }) {
     }),
   };
   return (
-    <Link href={"/"}>
       <div css={styles.adwrapper}>
-        <a href={"/"} css={styles.link}>
+        <a href={"/"} target="_blank" css={styles.link}>
           <img
             css={styles.image}
             src={`/ad2.png`}
@@ -60,7 +59,6 @@ function CouchBuddyAdd2({ mode }) {
           />
         </a>
       </div>
-    </Link>
   );
 }
 
