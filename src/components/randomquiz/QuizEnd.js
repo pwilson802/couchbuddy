@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import CouchBuddyAd2 from "../CouchBuddyAd2";
 import FakeAd from "../FakeAd";
 import QuizSocials from "./QuizSocials"
+import { Adsense } from "@ctrl/react-adsense";
 import CopyAnimation from "./CopyAnimation"
 import CopyButton from "./CopyButton"
 
@@ -78,6 +79,9 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
     "@media(min-width: 768px)": {
         marginRight: "40px",
       },
+    }),
+    adWrap: css({
+      marginTop: "2rem"
     })
     }
   
@@ -109,8 +113,17 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
           </div>
         </div>
         <div css={styles.right}>
-                <CouchBuddyAd2 mode={mode} />
-                <FakeAd num={1} />
+          <CouchBuddyAd2 mode={mode} />
+          <div css={styles.adWrap}>
+          <Adsense
+            client="ca-pub-9245347946008848"
+            slot="5327454859"
+            style={{ display: "block" }}
+            responsive={true}
+          />
+          {/* <FakeAd num={1} /> */}
+        </div>
+               
         </div>
       </div>
     )
