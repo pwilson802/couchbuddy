@@ -86,13 +86,13 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
     }
   
   function copyText() {
-  console.log("questions", questions)
+  // console.log("questions", questions)
   const entryText = makeQuestionClip(questions)
     navigator.clipboard.writeText(entryText);
   }
 
   const questionsText = makeQuestionClip(questions)
-  console.log(questionsText)
+  // console.log(questionsText)
   useState(() => {
     setEndPage(true)
   }, [])
@@ -149,7 +149,7 @@ function makeQuestionClip(questions) {
     answers = answers + `${i + 1}: ${answersString} | `
   }
   let yourAnswers = "\n\nYOUR ANSWERS\n\n"
-  console.log(questions)
+  // console.log(questions)
   for (let i = 0; i < questions.length; i++) {
     let question = questions[i]
     let questionAnswers = question.answered

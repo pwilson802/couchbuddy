@@ -22,10 +22,10 @@ function QuestionSingleAnswer({ questionDetails, handleQuestion, mode }) {
     let [questionType, question] = questionDetails.question.split("!!!")
     const answers = questionDetails.answers
     let tagline = ""
-    console.log("questionType:", questionType)
+    // console.log("questionType:", questionType)
     if (questionType == "tagline") {
         [question, tagline] = question.split("\n")
-        console.log(question.split("\n"))
+        // console.log(question.split("\n"))
     }
 
     const resetQuestion = (correct, answer) => {

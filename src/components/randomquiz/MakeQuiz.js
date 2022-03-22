@@ -30,7 +30,7 @@ function MakeQuestionsList() {
     makeMovieFromPictureQuestion,
     makeMovieFromPictureQuestion,
     makeMoviesStaringPersonQuestion,
-    makeMoviesStaringPersonQuestion
+    makeMoviesStaringPersonQuestion,
   ]
   shuffle(questions)
   return questions
@@ -286,15 +286,8 @@ async function getSimilarMovies(id, year) {
 async function getAlternativeMovies(originalMovie, num, character = "", actor = "") {
   const id = originalMovie.id
   const year = originalMovie["release_date"].split("-")[0]
-  // getSimilarMovies(id, year)
-  // const url = `/api/randomquiz/getsimilarmovies/${id}/1`;
-  // const response = await fetchRetry(url, 3);
-  // const json = await response.json();
-  // const moviesAll = json['results']
   const moviesAll = await getSimilarMovies(id, year)
   const movies = moviesAll.filter((item) => item.title !== originalMovie.title )
-  // check how many are returned, maybe only select the top few and shuffle them?
-  // shuffle(movies)
   let titles = []
   if (character !== "") {
       let count = 0
@@ -316,24 +309,19 @@ async function getAlternativeMovies(originalMovie, num, character = "", actor = 
       let cast = await getMovieCast(movie['id'])
       let castIds = cast.map(item => item.id) 
       let actorNames = cast.map(item => item.name)
-      // console.log(actor)
-      // console.log(castIds)
-      // console.log(actorNames)
       if (!castIds.includes(actor.id) && !actorNames.includes(actor.name)) {
-          // console.log("adding movie", movie['title'])
           titles.push(movie['title'])
           count++
       } else {
-        // console.log("---------------Actor is in this movie")
         continue
         }
       if (count > num + 1) {
           break
         }
     }
+    return titles.slice(0,num)
   }
   titles = movies.map((item) => item.title)
-  // console.log("titles:", titles)
   return titles.slice(0,num)
 }
 
@@ -509,7 +497,7 @@ async function getCloseYearMovies(year) {
 
 
 async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
-  console.log("making who did actor play quesiton.")
+  // console.log("making who did actor play quesiton.")
   let id = movie.id
   let usedMovies = internalData["whoDidActorPlay"]
   // const startTime =new Date().getTime();
@@ -517,12 +505,12 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
   let cast = await getMovieCast(movie['id'])
   let otherCast = alternateCastMembers(cast)
   otherCast = usedMovies.includes(movie.id) ? false : otherCast
-  console.log(usedMovies)
-  console.log(movie.id)
+  // console.log(usedMovies)
+  // console.log(movie.id)
   if (!otherCast) {
-    console.log("cast not valid")
+    // console.log("cast not valid")
     for (let m of extraMovies) {
-      console.log(m.id)
+      // console.log(m.id)
       movie = m
       if (usedMovies.includes(movie.id)) {
         continue
@@ -637,8 +625,8 @@ async function makeMovieFromPictureQuestion(movie, extraMovies, internalData) {
 }
 
 async function makeMoviesStaringPersonQuestion(movie, extraMovies, internalData) {
+  // console.log("making who did star play")
   let usedPeople = internalData["movieStaringPerson"]
-  // const startTime =new Date().getTime();
   const popularMovies = await getPopularMovies()
   shuffle(popularMovies)
   let star = ""
@@ -655,16 +643,14 @@ async function makeMoviesStaringPersonQuestion(movie, extraMovies, internalData)
     if (starsMovies.length > 1) {
       break
     }
-    // console.log(`---------------star does not have many movies`)
   }
   starsMovies = starsMovies.slice(0,12)
   shuffle(starsMovies)
   const correctMovies = starsMovies.slice(0, 2)
+  // console.log("star: ", star)
+  // console.log("correct movies: ", correctMovies)
   const answers = correctMovies.map(item => item.title)
-  // need to find only movies without the person
   const alternateMovies = await getAlternativeMovies(correctMovies[0], 5, "", star)
-  // console.log(star)
-  // console.log(alternateMovies)
   const allAlternatives = alternateMovies.filter(item => {
     return !answers.includes(item.title)
   })

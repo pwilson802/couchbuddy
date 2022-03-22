@@ -85,7 +85,7 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
     }
       if (activeQuestion === 14) {
         setIsFinished(true);
-        console.log(questions)
+        // console.log(questions)
     }
       setActiveQuestion(activeQuestion + 1);
   };
@@ -113,8 +113,8 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
       fontSize: "1.2rem"
     })
   };
-  console.log(activeQuestion)
-  console.log(questions)
+  // console.log(activeQuestion)
+  // console.log(questions)
   return (
     <div css={styles.wrapper}>
       {questions[activeQuestion] ?
