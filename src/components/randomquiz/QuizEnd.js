@@ -92,7 +92,6 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
   }
 
   const questionsText = makeQuestionClip(questions)
-  // console.log(questionsText)
   useState(() => {
     setEndPage(true)
   }, [])
@@ -116,12 +115,11 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage }) {
           <CouchBuddyAd2 mode={mode} />
           <div css={styles.adWrap}>
           <Adsense
-            client="ca-pub-9245347946008848"
-            slot="5327454859"
-            style={{ display: "block" }}
-            responsive={true}
-          />
-          {/* <FakeAd num={1} /> */}
+          client="ca-pub-9245347946008848"
+          slot="5327454859"
+          style={{ width: 300, height: 100 }}
+          format=""
+        />
         </div>
                
         </div>

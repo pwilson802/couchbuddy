@@ -27,7 +27,6 @@ function QuestionDoubleAnswer({ questionDetails, handleQuestion, mode }) {
     const [myAnswers, setMyAnswers] = useState([])
 
     const resetQuestion = (correct, answers) => {
-        console.log(answers)
         handleQuestion(correct, answers)
         setNumCorrect(0)
         setIsCorrect(false)
