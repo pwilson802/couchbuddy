@@ -44,24 +44,19 @@ async function MakeQuestion(question, movie, extraMovies, index, internalData) {
     if (validate) {
       return newQuestion
     }
-    // console.log("quesiton not valid", newQuestion)
   }
 }
 
 function validateQuestion(question) {
-  // console.log(question)
   // Question is a string and long enough
   if (question.question.length < 5) {
-    // console.log("questin is not long enough")
     return false
   }
   if (question.answers.length !== 4) {
-    // console.log("not the correct amount on answers")
     return false
   }
   if (question.imageUrl) {
     if (question.imageUrl.length < 10) {
-      // console.log("imageUrl is not correct for image question")
       return false
     } 
   }
@@ -505,13 +500,13 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
   let cast = await getMovieCast(movie['id'])
   let otherCast = alternateCastMembers(cast)
   otherCast = usedMovies.includes(movie.id) ? [] : otherCast
-  console.log(otherCast)
+  // console.log(otherCast)
   // console.log(usedMovies)
   // console.log(movie.id)
   if (otherCast.length == 0) {
     // console.log("cast not valid")
     for (let m of extraMovies) {
-      console.log("cast not valid")
+      // console.log("cast not valid")
       // console.log(m.id)
       movie = m
       if (usedMovies.includes(movie.id)) {
@@ -519,7 +514,7 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
       }
       cast = await getMovieCast(movie['id'])
       otherCast = alternateCastMembers(cast)
-      console.log(otherCast)
+      // console.log(otherCast)
       if (otherCast.length == 0) {
         console.log("otherCast not valid again")
         break

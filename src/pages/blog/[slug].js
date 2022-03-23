@@ -120,7 +120,6 @@ function Article({
       color: colors[mode]["text"],
     }),
   };
-  console.log(pageDetails)
 
   return (
     <>
