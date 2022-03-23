@@ -7,6 +7,7 @@ import BlogQuizSocials from "./BlogQuizSocials";
 import RandomQuizButton from "./randomquiz/RandomQuizButton"
 import Quiz from "./randomquiz/Quiz"
 import BlogPreviewScroll  from "./BlogPreviewScroll"
+import Footer from "./Footer"
 
 const colors = {
   light: {
@@ -29,42 +30,12 @@ function BlogRandomMovieQuiz({
   mode,
   location,
   previews,
+  handleLocation,
 }) {
   const [endPage, setEndPage] = useState(false)
   const styles = {
     text: css({
       color: colors[mode]["heading"],
-    }),
-    heading: css({
-      textAlign: "center",
-      margin: 0,
-      color: colors[mode]["heading"],
-    }),
-    socials: css({
-      display: "flex",
-      justifyContent: "flex-end",
-    }),
-    introduction: css({
-      color: colors[mode]["text"],
-    }),
-    results: css({
-      color: colors[mode]["text"],
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexDirection: "column",
-    }),
-    score: css({
-      margin: 0,
-      padding: 0,
-      fontSize: "26px",
-      fontFamily: "CorbenBold",
-    }),
-    rank: css({
-      margin: 0,
-      padding: 0,
-      fontSize: "22px",
-      fontFamily: "CorbenRegular",
     }),
     adWrap: css({
       marginTop: "3rem",
@@ -85,19 +56,31 @@ function BlogRandomMovieQuiz({
       position: "absolute",
       top: "5px",
       right: "10px"
+    }),
+    moreWrapper: css({
+      marginTop: "2rem"
     })
   };
+
 
   return (
     <div css={styles.background}>
       <img css={styles.logo} src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" />
       <Quiz heading={heading} introduction={introduction} mode={mode} setEndPage={setEndPage} />
-      {/* {!endPage && (
-        <div>
+      {endPage && (
+        <div css={styles.moreWrapper}>
           <h5 css={styles.text}>More from Couch Buddy...</h5>
           <BlogPreviewScroll mode={mode} previews={previews} />
+          <footer>
+            <Footer
+              activePage="blog"
+              mode={mode}
+              location={location}
+              handleLocation={handleLocation}
+            />
+          </footer>
         </div>
-      )} */}
+      )}
     </div>
   );
 }

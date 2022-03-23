@@ -226,7 +226,8 @@ function Article({
               pageDetails={pageDetails}
               mode={mode}
               location={location}
-              previews={previews }
+              previews={previews}
+              handleLocation={handleLocation}
             />
           )}
           {(pageDetails.type === "What to watch" ||
@@ -239,14 +240,19 @@ function Article({
           }
         </div>
       </main>
-      <footer>
-        <Footer
-          activePage="blog"
-          mode={mode}
-          location={location}
-          handleLocation={handleLocation}
-        />
-      </footer>
+      {(pageDetails.type === "What to watch" ||
+        pageDetails.type === "quiz" ||
+        pageDetails.type === "story") &&
+            <footer>
+              <Footer
+                activePage="blog"
+                mode={mode}
+                location={location}
+                handleLocation={handleLocation}
+              />
+            </footer>
+ 
+      }
     </>
   );
 }

@@ -28,14 +28,6 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
   const [isFinished, setIsFinished] = useState(false)
   const [score, setScore] = useState(0)
   const [restarting, setRestarting] = useState(false)
-  // const [internalData, setInternalData] = useState(quizData)
-
-  // const updateLoadedQuestions = () => {
-  //   console.log("updating loaded questions")
-  //   console.log(loadedQuestions)
-  //   let newNumber = loadedQuestions + 1
-  //   setLoadedQuestions(newNumber)
-  // }
 
   async function setupQuiz() {
     setEndPage(false)
@@ -85,6 +77,7 @@ function Quiz({ mode, setStartRequested, heading, introduction, setEndPage }) {
     }
       if (activeQuestion === 14) {
         setIsFinished(true);
+        setEndPage(true)
         // console.log(questions)
     }
       setActiveQuestion(activeQuestion + 1);

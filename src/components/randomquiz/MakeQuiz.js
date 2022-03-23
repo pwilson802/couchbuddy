@@ -449,12 +449,12 @@ function alternateCastMembers(cast) {
     if (item.gender === answer.gender && item.popularity > 10) {
       return true
     }
-    return false
+    return []
   })
   if (viableOptions.length > 3) {
     return viableOptions.slice(0,3)
   }
-  return false
+  return []
 }
 
 async function getMovieFromYear(year) {
@@ -504,12 +504,14 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
   // console.log(extraMovies)
   let cast = await getMovieCast(movie['id'])
   let otherCast = alternateCastMembers(cast)
-  otherCast = usedMovies.includes(movie.id) ? false : otherCast
+  otherCast = usedMovies.includes(movie.id) ? [] : otherCast
+  console.log(otherCast)
   // console.log(usedMovies)
   // console.log(movie.id)
-  if (!otherCast) {
+  if (otherCast.length == 0) {
     // console.log("cast not valid")
     for (let m of extraMovies) {
+      console.log("cast not valid")
       // console.log(m.id)
       movie = m
       if (usedMovies.includes(movie.id)) {
@@ -517,8 +519,9 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
       }
       cast = await getMovieCast(movie['id'])
       otherCast = alternateCastMembers(cast)
-      if (otherCast !== false) {
-        // console.log(otherCast)
+      console.log(otherCast)
+      if (otherCast.length == 0) {
+        console.log("otherCast not valid again")
         break
       }
     }
@@ -532,7 +535,6 @@ async function makeWhoDidActorPlayQuestion(movie, extraMovies, internalData) {
   // console.log(`makeWhoDidActorPlayQuestion: ${(endTime - startTime) / 1000} seconds`);
   internalData["whoDidActorPlay"].push(movie.id)
   return [questionObject, internalData]
-  return questionObject
 }
 
 async function makePickMovieinYearQuestion(movie) {
