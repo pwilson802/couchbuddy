@@ -470,6 +470,14 @@ export default function SearchPage({
   return (
     <div>
       <div css={styles.wrapper}>
+        <button
+  type="button"
+  onClick={() => {
+    throw new Error("Sentry Frontend Error");
+  }}
+>
+  Throw error
+</button>
         <div css={styles.nav}>
           {location && (
             <div css={styles.locationSmall}>
