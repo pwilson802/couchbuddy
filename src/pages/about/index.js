@@ -124,7 +124,7 @@ function About({ setConsent, location, handleLocation }) {
         <meta name="twitter:site" content="@couch_buddy" />
         <meta
           name="twitter:image"
-          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png"
         />
         <meta property="og:title" content="CouchBuddy" />
         <meta
@@ -133,7 +133,7 @@ function About({ setConsent, location, handleLocation }) {
         />
         <meta
           property="og:image"
-          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png"
         />
       </Head>
       <main css={styles.aboutWrapper}>

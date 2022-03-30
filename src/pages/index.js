@@ -42,7 +42,7 @@ export default function Home({
         <meta name="twitter:site" content="@couch_buddy" />
         <meta
           name="twitter:image"
-          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main4.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png"
         />
         <meta property="og:title" content="CouchBuddy" />
         <meta
@@ -51,7 +51,7 @@ export default function Home({
         />
         <meta
           property="og:image"
-          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main4.png"
+          content="https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png"
         />
         <meta property="og:url" content="https://couchbuddy.info" />
         <meta property="og:type" content="website" />
