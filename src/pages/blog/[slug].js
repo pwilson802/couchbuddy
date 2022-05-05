@@ -172,15 +172,27 @@ function Article({
         mode={mode}
         changeMode={changeMode}
       />
-      <main css={(pageDetails.type === "random-movie-quiz") ? styles.pageWrapperRandomQuiz : styles.pageWrapper}>
+      <main
+        css={
+          pageDetails.type === "random-movie-quiz"
+            ? styles.pageWrapperRandomQuiz
+            : styles.pageWrapper
+        }
+      >
         {(pageDetails.type === "What to watch" ||
           pageDetails.type === "quiz" ||
-          pageDetails.type === "story") &&
+          pageDetails.type === "story") && (
           <div css={styles.imageWrapper}>
             <img css={styles.image} src={sharingImage} alt={heading} />
           </div>
-        }
-        <div css={(pageDetails.type === "random-movie-quiz") ? styles.articlesWrapperRandomQuiz : styles.articlesWrapper}>
+        )}
+        <div
+          css={
+            pageDetails.type === "random-movie-quiz"
+              ? styles.articlesWrapperRandomQuiz
+              : styles.articlesWrapper
+          }
+        >
           {pageDetails.type === "What to watch" && (
             <BlogMovieList
               articleType={articleType}
@@ -231,27 +243,26 @@ function Article({
           )}
           {(pageDetails.type === "What to watch" ||
             pageDetails.type === "quiz" ||
-            pageDetails.type === "story") &&
+            pageDetails.type === "story") && (
             <div>
               <h5 css={styles.text}>More from Couch Buddy...</h5>
               <BlogPreviewScroll mode={mode} previews={previews} />
             </div>
-          }
+          )}
         </div>
       </main>
       {(pageDetails.type === "What to watch" ||
         pageDetails.type === "quiz" ||
-        pageDetails.type === "story") &&
-            <footer>
-              <Footer
-                activePage="blog"
-                mode={mode}
-                location={location}
-                handleLocation={handleLocation}
-              />
-            </footer>
- 
-      }
+        pageDetails.type === "story") && (
+        <footer>
+          <Footer
+            activePage="blog"
+            mode={mode}
+            location={location}
+            handleLocation={handleLocation}
+          />
+        </footer>
+      )}
     </>
   );
 }
@@ -391,10 +402,17 @@ export async function getStaticProps(context) {
     return response;
   }
 
+  async function makeRandomMoviePictureQuiz(article) {
+    const response = {};
+    response["article"] = article;
+    response["type"] = "random-movie-quiz";
+    return response;
+  }
+
   async function makeStory(article) {
-    const response = {}
-    const paragraphs = await fetchParagraphs()
-    const media = await fetchMedias()
+    const response = {};
+    const paragraphs = await fetchParagraphs();
+    const media = await fetchMedias();
     const paragraphList = paragraphs.map((item) => {
       const fields = item.fields;
       return {
@@ -417,7 +435,7 @@ export async function getStaticProps(context) {
     response["article"] = article;
     response["paragraphs"] = paragraphList;
     response["medias"] = mediaList;
-    return response
+    return response;
   }
 
   const article = await fetchArticle();
@@ -434,11 +452,15 @@ export async function getStaticProps(context) {
   }
 
   if (articleType == "story") {
-    pageDetails = await makeStory(article)
+    pageDetails = await makeStory(article);
   }
 
- if (articleType == "random-movie-quiz") {
-   pageDetails = await makeRandomMovieQuiz(article)
+  if (articleType == "random-movie-quiz") {
+    pageDetails = await makeRandomMovieQuiz(article);
+  }
+
+  if (articleType == "random-movie-picture-quiz") {
+    pageDetails = await makeRandomMoviePictureQuiz(article);
   }
 
   const allPreviews = await getPreviews();
