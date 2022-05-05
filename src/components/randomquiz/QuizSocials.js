@@ -5,7 +5,7 @@ import React from "react";
 
 import { FacebookShareButton, FacebookIcon } from "react-share";
 
-function QuizSocials({ score }) {
+function QuizSocials({ score, slug }) {
   const styles = {
     shareButtons: css({
       display: "flex",
