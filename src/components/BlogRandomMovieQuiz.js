@@ -2,12 +2,9 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
-import BlogSocials from "./BlogSocials";
-import BlogQuizSocials from "./BlogQuizSocials";
-import RandomQuizButton from "./randomquiz/RandomQuizButton"
-import Quiz from "./randomquiz/Quiz"
-import BlogPreviewScroll  from "./BlogPreviewScroll"
-import Footer from "./Footer"
+import Quiz from "./randomquiz/Quiz";
+import BlogPreviewScroll from "./BlogPreviewScroll";
+import Footer from "./Footer";
 
 const colors = {
   light: {
@@ -32,7 +29,7 @@ function BlogRandomMovieQuiz({
   previews,
   handleLocation,
 }) {
-  const [endPage, setEndPage] = useState(false)
+  const [endPage, setEndPage] = useState(false);
   const styles = {
     text: css({
       color: colors[mode]["heading"],
@@ -49,24 +46,33 @@ function BlogRandomMovieQuiz({
       height: "80vh",
       padding: "30px",
       position: "relative",
-      minHeight: "500px"
+      minHeight: "500px",
     }),
     logo: css({
       width: "25%",
       position: "absolute",
       top: "5px",
-      right: "10px"
+      right: "10px",
     }),
     moreWrapper: css({
-      marginTop: "2rem"
-    })
+      marginTop: "2rem",
+    }),
   };
-
 
   return (
     <div css={styles.background}>
-      <img css={styles.logo} src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" />
-      <Quiz heading={heading} introduction={introduction} mode={mode} setEndPage={setEndPage} />
+      <img
+        css={styles.logo}
+        src={"/CouchBuddyLogo.png"}
+        alt="CouchBuddy Logo"
+      />
+      <Quiz
+        heading={heading}
+        introduction={introduction}
+        mode={mode}
+        setEndPage={setEndPage}
+        slug={slug}
+      />
       {endPage && (
         <div css={styles.moreWrapper}>
           <h5 css={styles.text}>More from Couch Buddy...</h5>

@@ -2,6 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import CouchBuddyAd from "./CouchBuddyAd";
+import CouchBuddyAd2 from "./CouchBuddyAd2";
 import TwitterFollow from "./TwitterFollow";
 import FakeAd from "./FakeAd";
 
@@ -25,7 +26,7 @@ function BlogSideBar({ mode }) {
   };
   return (
     <div css={styles.wrapper}>
-      <CouchBuddyAd mode={mode} />
+      <CouchBuddyAd2 mode={mode} />
       <FakeAd num={1} />
       <TwitterFollow mode={mode} />
     </div>

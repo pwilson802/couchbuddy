@@ -174,7 +174,7 @@ function Article({
       />
       <main
         css={
-          pageDetails.type === "random-movie-quiz"
+          pageDetails.type.includes("random-movie")
             ? styles.pageWrapperRandomQuiz
             : styles.pageWrapper
         }
@@ -188,7 +188,7 @@ function Article({
         )}
         <div
           css={
-            pageDetails.type === "random-movie-quiz"
+            pageDetails.type.includes("random-movie")
               ? styles.articlesWrapperRandomQuiz
               : styles.articlesWrapper
           }
@@ -227,7 +227,7 @@ function Article({
               location={location}
             />
           )}
-          {pageDetails.type === "random-movie-quiz" && (
+          {pageDetails.type.includes("random-movie") && (
             <BlogRandomMovieQuiz
               articleType={articleType}
               author={author}
@@ -405,7 +405,7 @@ export async function getStaticProps(context) {
   async function makeRandomMoviePictureQuiz(article) {
     const response = {};
     response["article"] = article;
-    response["type"] = "random-movie-quiz";
+    response["type"] = "random-movie-picture-quiz";
     return response;
   }
 
