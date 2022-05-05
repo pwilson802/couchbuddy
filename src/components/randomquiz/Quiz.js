@@ -143,6 +143,7 @@ function Quiz({
           questions={questions}
           mode={mode}
           setEndPage={setEndPage}
+          slug={slug}
         />
       ) : (
         <div>
