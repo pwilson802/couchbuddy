@@ -50,7 +50,7 @@ function Quiz({
     setRestarting(true);
     let movies, extraMovies;
     [movies, extraMovies] = await MakeMoviesList();
-    const questionsList = MakeQuestionsList();
+    const questionsList = MakeQuestionsList(slug);
     const tempQuestions = [];
     for (let i = 0; i < 15; i++) {
       extraMovies = extraMovies.slice(i);
