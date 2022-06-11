@@ -26,9 +26,11 @@ function Logo({ setPage, logo, width, fromPage }) {
     <div>
       {logo === "main" && (
         <Link href={"/"}>
-          <div css={styles.logo}>
-            <img src={logoImage} alt="CouchBuddy Logo" width={width} />
-          </div>
+          <a href={"/"}>
+            <div css={styles.logo}>
+              <img src={logoImage} alt="CouchBuddy Logo" width={width} />
+            </div>
+          </a>
         </Link>
       )}
       {logo === "mainSetPage" && (
@@ -38,9 +40,11 @@ function Logo({ setPage, logo, width, fromPage }) {
       )}
       {logo === "blog" && (
         <Link href={"/blog"}>
-          <div css={styles.logo}>
-            <img src={logoImage} alt="CouchBuddy Logo" width={width} />
-          </div>
+          <a href={"/blog"}>
+            <div css={styles.logo}>
+              <img src={logoImage} alt="CouchBuddy Logo" width={width} />
+            </div>
+          </a>
         </Link>
       )}
     </div>

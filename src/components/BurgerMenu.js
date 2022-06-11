@@ -63,7 +63,7 @@ const AboutContainer = styled.div`
   font-size: 28px;
   font-family: "Kanit";
   font-weight: "bold";
-`
+`;
 
 const menuVariants = {
   open: {

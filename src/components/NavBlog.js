@@ -70,11 +70,13 @@ function NavBlog({ handleLocation, location, mode, changeMode }) {
   return (
     <nav css={styles.navWrapper}>
       <Link href={"/blog"}>
-        <img
-          css={styles.logo}
-          src="/CouchBuddyBlogLogo3.png"
-          alt="CouchBuddy Logo"
-        />
+        <a href={"/blog"}>
+          <img
+            css={styles.logo}
+            src="/CouchBuddyBlogLogo3.png"
+            alt="CouchBuddy Logo"
+          />
+        </a>
       </Link>
       <div css={styles.navLinks}>
         <Burger

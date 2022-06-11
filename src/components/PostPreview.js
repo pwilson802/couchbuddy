@@ -56,15 +56,15 @@ function PostPreview({
     }),
   };
   return (
-    <Link href={articleLink}>
-      <div css={styles.wrapper}>
-        <a href={articleLink} css={styles.link}>
-          <img css={styles.image} src={sharingImage} alt={articleTitle} />
-          <h1 css={topPost ? styles.topHeading : styles.heading}>{heading}</h1>
-          {topPost && <p css={styles.introduction}>{introduction}</p>}
-        </a>
-      </div>
-    </Link>
+    // <Link href={articleLink}>
+    <div css={styles.wrapper}>
+      <a href={articleLink} css={styles.link}>
+        <img css={styles.image} src={sharingImage} alt={articleTitle} />
+        <h1 css={topPost ? styles.topHeading : styles.heading}>{heading}</h1>
+        {topPost && <p css={styles.introduction}>{introduction}</p>}
+      </a>
+    </div>
+    // </Link>
   );
 }
 
