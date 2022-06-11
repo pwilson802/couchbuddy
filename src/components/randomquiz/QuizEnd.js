@@ -8,6 +8,7 @@ import QuizSocials from "./QuizSocials";
 import { Adsense } from "@ctrl/react-adsense";
 import CopyAnimation from "./CopyAnimation";
 import CopyButton from "./CopyButton";
+import CopyConfirmation from "./CopyConfirmation";
 
 const colors = {
   light: {
@@ -19,6 +20,7 @@ const colors = {
 };
 
 function QuizEnd({ score, resetQuiz, questions, mode, setEndPage, slug }) {
+  const [showCopy, setShowCopy] = useState(false);
   const styles = {
     wrapper: css({
       display: "flex",
@@ -84,8 +86,16 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage, slug }) {
     }),
   };
 
+  const handleShowCopy = () => {
+    setShowCopy(true);
+    setTimeout(() => {
+      setShowCopy(false);
+    }, 2000);
+  };
+
   function copyText() {
     // console.log("questions", questions)
+    handleShowCopy();
     const entryText = makeQuestionClip(questions);
     navigator.clipboard.writeText(entryText);
   }
@@ -97,6 +107,7 @@ function QuizEnd({ score, resetQuiz, questions, mode, setEndPage, slug }) {
 
   return (
     <div css={styles.wrapper}>
+      {showCopy && <CopyConfirmation mode={mode} />}
       <div css={styles.socials}>
         <QuizSocials score={score} slug={slug} />
       </div>
