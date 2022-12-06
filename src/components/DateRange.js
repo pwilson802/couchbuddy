@@ -120,6 +120,9 @@ function DateRange({
 
   const handleDateRange = (item) => {
     setDateRange(item);
+    if (dateFilter == "anytime") {
+      setDateFilter("releaseDate")
+    }
   };
 
   const handleDateFilter = (item) => {
@@ -216,6 +219,7 @@ function DateRange({
             handleDateRange={handleDateRange}
             mode={mode}
             dynamicKey={dynamicKey}
+            dateFilter={dateFilter}
           />
           <DateRangeDecades
             mode={mode}

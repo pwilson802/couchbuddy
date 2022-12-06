@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Slider, { Range } from "rc-slider";
 import "rc-slider/assets/index.css";
 
@@ -35,7 +35,7 @@ function DateRangeSlider({ dateRange, handleDateRange, mode, dynamicKey }) {
       <p css={styles.durationText}>{dateRange[0]} - {dateRange[1]}</p>
       <div>
         <Range
-        key={dynamicKey}
+          key={dynamicKey}
           min={1950}
           max={2030}
           allowCross={false}
@@ -50,7 +50,7 @@ function DateRangeSlider({ dateRange, handleDateRange, mode, dynamicKey }) {
             width: 4,
             backgroundColor: "#FDD782",
             borderRadius: "0px"
-          },{
+          }, {
             borderColor: "#FDD782",
             marginTop: "-2px",
             height: 37,
