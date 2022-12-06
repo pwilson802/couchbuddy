@@ -140,8 +140,8 @@ function DateRange({
             {dateFilter == "anytime"
               ? "ANY TIME"
               : dateFilter == "releaseDate"
-              ? "Release Date"
-              : "Aired In"}
+                ? "Release Date"
+                : "Aired In"}
             {"  "}
           </span>
           <span css={styles.headingText}>
@@ -162,8 +162,8 @@ function DateRange({
             {dateFilter == "anytime"
               ? "Any Time"
               : dateFilter == "releaseDate"
-              ? "Release Date"
-              : "Aired In"}
+                ? "Release Date"
+                : "Aired In"}
             {"  "}
           </span>
           <span css={styles.text}>

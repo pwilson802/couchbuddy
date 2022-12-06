@@ -63,9 +63,8 @@ const tvGenreObj = {
 };
 
 async function getLocalProviders(country, view) {
-  const url = `${DATA_URL}/${
-    view == "tv" ? "tv_" : ""
-  }providers-${country}.json`;
+  const url = `${DATA_URL}/${view == "tv" ? "tv_" : ""
+    }providers-${country}.json`;
   const response = await fetchRetry(url, 3);
   return await response.json();
 }
@@ -91,9 +90,8 @@ function makeProvidersObj(data) {
 }
 
 async function getLocalCertifications(country, view) {
-  const url = `${DATA_URL}/${
-    view == "tv" ? "tv_" : ""
-  }certifications-${country}.json`;
+  const url = `${DATA_URL}/${view == "tv" ? "tv_" : ""
+    }certifications-${country}.json`;
   const response = await fetchRetry(url, 3);
   return await response.json();
 }
@@ -459,6 +457,7 @@ export default function SearchPage({
     selectionWrapper: css({
       display: "flex",
       justifyContent: "center",
+      marginTop: 5,
     }),
     searchSwitchWrap: css({
       width: "100%",
