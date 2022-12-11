@@ -1,10 +1,22 @@
+import { FramerTreeLayoutContext } from "framer-motion";
+
 export { MakeQuiz, MakeMoviesList, MakeQuestionsList, MakeQuestion };
 
-async function MakeMoviesList() {
+async function MakeMoviesList(slug) {
   let moviesList = [];
-  const randomNumbers = getRandomNumbers(5);
+  let maxPages = 40
+  if (slug == "random-movie-christmas-picture-quiz") {
+    maxPages = 7
+  }
+  const randomNumbers = getRandomNumbers(5, maxPages);
   for (let num of randomNumbers) {
-    let movies = await getRandomMovies(num);
+    let movies
+    if (slug == "random-movie-christmas-picture-quiz") {
+      movies = await getRandomMovies(num, true);
+    } else {
+      movies = await getRandomMovies(num, false);
+
+    }
     moviesList = [...moviesList, ...movies.results];
   }
   shuffle(moviesList);
@@ -97,10 +109,16 @@ async function MakeQuiz() {
   return questions;
 }
 
-async function getRandomMovies(page) {
-  const url = `/api/randomquiz/getrandommovies/${page}`;
+async function getRandomMovies(page, christmas) {
+  let url = ""
+  if (christmas == true) {
+    url = `/api/randomquiz/getrandomchristmasmovies/${page}`;
+  } else {
+    url = `/api/randomquiz/getrandommovies/${page}`;
+  }
   const response = await fetchRetry(url, 3);
   const result = await response.json();
+  console.log(result)
   return result;
 }
 
@@ -747,11 +765,11 @@ const fetchRetry = async (url, n) => {
   }
 };
 
-function getRandomNumbers(num) {
+function getRandomNumbers(num, maxPages) {
   const result = [];
   let counter = 0;
   while (counter < num) {
-    const randomNumber = Math.floor(Math.random() * 40) + 1;
+    const randomNumber = Math.floor(Math.random() * maxPages) + 1;
     if (!result.includes(randomNumber)) {
       result.push(randomNumber);
       counter++;

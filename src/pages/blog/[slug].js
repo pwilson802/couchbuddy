@@ -182,10 +182,10 @@ function Article({
         {(pageDetails.type === "What to watch" ||
           pageDetails.type === "quiz" ||
           pageDetails.type === "story") && (
-          <div css={styles.imageWrapper}>
-            <img css={styles.image} src={sharingImage} alt={heading} />
-          </div>
-        )}
+            <div css={styles.imageWrapper}>
+              <img css={styles.image} src={sharingImage} alt={heading} />
+            </div>
+          )}
         <div
           css={
             pageDetails.type.includes("random-movie")
@@ -244,25 +244,25 @@ function Article({
           {(pageDetails.type === "What to watch" ||
             pageDetails.type === "quiz" ||
             pageDetails.type === "story") && (
-            <div>
-              <h5 css={styles.text}>More from Couch Buddy...</h5>
-              <BlogPreviewScroll mode={mode} previews={previews} />
-            </div>
-          )}
+              <div>
+                <h5 css={styles.text}>More from Couch Buddy...</h5>
+                <BlogPreviewScroll mode={mode} previews={previews} />
+              </div>
+            )}
         </div>
       </main>
       {(pageDetails.type === "What to watch" ||
         pageDetails.type === "quiz" ||
         pageDetails.type === "story") && (
-        <footer>
-          <Footer
-            activePage="blog"
-            mode={mode}
-            location={location}
-            handleLocation={handleLocation}
-          />
-        </footer>
-      )}
+          <footer>
+            <Footer
+              activePage="blog"
+              mode={mode}
+              location={location}
+              handleLocation={handleLocation}
+            />
+          </footer>
+        )}
     </>
   );
 }
@@ -409,6 +409,13 @@ export async function getStaticProps(context) {
     return response;
   }
 
+  async function makeRandomMovieChristmasPictureQuiz(article) {
+    const response = {};
+    response["article"] = article;
+    response["type"] = "random-movie-christmas-picture-quiz";
+    return response;
+  }
+
   async function makeStory(article) {
     const response = {};
     const paragraphs = await fetchParagraphs();
@@ -461,6 +468,10 @@ export async function getStaticProps(context) {
 
   if (articleType == "random-movie-picture-quiz") {
     pageDetails = await makeRandomMoviePictureQuiz(article);
+  }
+
+  if (articleType == "random-movie-christmas-picture-quiz") {
+    pageDetails = await makeRandomMovieChristmasPictureQuiz(article);
   }
 
   const allPreviews = await getPreviews();

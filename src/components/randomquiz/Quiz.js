@@ -49,7 +49,7 @@ function Quiz({
     setIntroVisibility("hidden");
     setRestarting(true);
     let movies, extraMovies;
-    [movies, extraMovies] = await MakeMoviesList();
+    [movies, extraMovies] = await MakeMoviesList(slug);
     const questionsList = MakeQuestionsList(slug);
     const tempQuestions = [];
     for (let i = 0; i < 15; i++) {
