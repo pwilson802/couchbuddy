@@ -74,7 +74,7 @@ function MovieCard({
       setOverview(overview);
       setTagline(tagline);
       setRuntime(runtime);
-      setVoteAverage(vote_average);
+      setVoteAverage(Number(vote_average).toFixed(1));
       const imagePath = "https://image.tmdb.org/t/p/w185" + poster_path;
       setImage(imagePath);
       const providerLogos = providers.map(
@@ -261,7 +261,7 @@ function MovieCard({
                 {showAllOverview
                   ? overview
                   : overview.slice(0, 120) +
-                    (overview.length > 120 ? "..." : "")}
+                  (overview.length > 120 ? "..." : "")}
               </p>
               <div css={styles.providerSharingWrapper}>
                 <div css={styles.providerWrapper}>
