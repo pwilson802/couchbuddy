@@ -76,7 +76,7 @@ function MovieCard({
       setTitle(name);
       setOverview(overview);
       setTagline(tagline);
-      setVoteAverage(vote_average);
+      setVoteAverage(Number(vote_average).toFixed(1))
       setSeasons(number_of_seasons);
       if (status === "Returning Series") {
         setStatus("Returning");
@@ -296,7 +296,7 @@ function MovieCard({
                 {showAllOverview
                   ? overview
                   : overview.slice(0, 120) +
-                    (overview.length > 120 ? "..." : "")}
+                  (overview.length > 120 ? "..." : "")}
               </p>
               <div css={styles.providerSharingWrapper}>
                 <div css={styles.providerWrapper}>
