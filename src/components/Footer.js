@@ -103,38 +103,23 @@ function Footer({ activePage, mode, setPage, location, handleLocation }) {
             </span>
           </div>
         ) : (
-          <Link href={"/"}>
-            <div css={styles.text}>
-              <a
-                href={"/"}
-                css={activePage === "app" ? styles.linkSelected : styles.link}
-              >
-                SEARCH
-              </a>
-            </div>
+          <Link href="/" css={styles.text}>
+            <span css={activePage === "app" ? styles.linkSelected : styles.link}>
+              SEARCH
+            </span>
           </Link>
         )}
         <p css={styles.seperator}>|</p>
-        <Link href={"/blog"}>
-          <div css={styles.text}>
-            <a
-              href={"/blog"}
-              css={activePage === "blog" ? styles.linkSelected : styles.link}
-            >
-              BLOG
-            </a>
-          </div>
+        <Link href="/blog" css={styles.text}>
+          <span css={activePage === "blog" ? styles.linkSelected : styles.link}>
+            BLOG
+          </span>
         </Link>
         <p css={styles.seperator}>|</p>
-        <Link href={"/about"}>
-          <div css={styles.text}>
-            <a
-              href={"/about"}
-              css={activePage === "about" ? styles.linkSelected : styles.link}
-            >
-              ABOUT
-            </a>
-          </div>
+        <Link href="/about" css={styles.text}>
+          <span css={activePage === "about" ? styles.linkSelected : styles.link}>
+            ABOUT
+          </span>
         </Link>
       </div>
       <div css={styles.locationWrapper}></div>

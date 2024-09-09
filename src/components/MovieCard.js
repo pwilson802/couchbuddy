@@ -6,12 +6,14 @@ import ShareButtons from "./ShareButtons";
 import Image from "next/image";
 import MovieCardLoading from "./MovieCardLoading";
 import YouTubeVideo from "./YouTubeVideo";
+import { FONT_MANIFEST } from "next/dist/shared/lib/constants";
 
 async function getMovieDetails(id) {
   let url = `/api/movie/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  return movieDetails;
+  const result = JSON.parse(movieDetails)
+  return result;
 }
 
 async function getMovieTrailer(id) {
@@ -59,16 +61,15 @@ function MovieCard({
   const [showTrailer, setShowTrailer] = useState(false);
   useEffect(() => {
     async function setMovieCard() {
-      const {
-        title,
-        overview,
-        tagline,
-        runtime,
-        poster_path,
-        vote_average,
-        release_date,
-      } = await getMovieDetails(id);
-      const releaseYear = release_date.split("-")[0];
+      let movieData = await getMovieDetails(id)
+      const title = movieData.title
+      const overview = movieData.overview
+      const tagline = movieData.tagline
+      const runtime = movieData.runtime
+      const poster_path = movieData.poster_path
+      const vote_average = movieData.vote_average
+
+      const releaseYear = movieData.release_date.split("-")[0];
       setYear(releaseYear);
       setTitle(title);
       setOverview(overview);
