@@ -34,6 +34,11 @@ function Quiz({
   const [isFinished, setIsFinished] = useState(false);
   const [score, setScore] = useState(0);
   const [restarting, setRestarting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   async function setupQuiz() {
     setEndPage(false);
@@ -118,8 +123,11 @@ function Quiz({
       fontSize: "1.2rem",
     }),
   };
-  // console.log(activeQuestion)
-  // console.log(questions)
+
+  if (!isClient) {
+    return null; // or a loading indicator
+  }
+
   return (
     <div css={styles.wrapper}>
       {questions[activeQuestion] ? (
@@ -149,10 +157,12 @@ function Quiz({
         <div>
           <h1 css={styles.heading}>{heading}</h1>
           <p css={styles.introduction}>{introduction}</p>
-          {restarting ? (
-            <RandomQuizSpinner mode={mode} />
-          ) : (
-            <RandomQuizButton setupQuiz={setupQuiz} mode={mode} />
+          {isClient && (
+            restarting ? (
+              <RandomQuizSpinner mode={mode} />
+            ) : (
+              <RandomQuizButton setupQuiz={setupQuiz} mode={mode} />
+            )
           )}
         </div>
       )}

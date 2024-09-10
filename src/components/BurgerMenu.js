@@ -136,9 +136,7 @@ function BurgerMenu({
             },
           }}
         >
-          <Link href={"/blog"}>
-            <ModeSwitch mode={mode} changeMode={changeMode} />
-          </Link>
+          <ModeSwitch mode={mode} changeMode={changeMode} />
         </MenuContainerItem>
         <MenuContainerItem
           initial={false}

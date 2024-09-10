@@ -25,7 +25,7 @@ function QuizSocials({ score, slug }) {
   const quizName =
     slug === "random-movie-quiz"
       ? "random movie quiz"
-      : "ramdom movie picture quiz";
+      : "random movie picture quiz";
   const shareMessage = `I got ${score}/15 in the ${quizName}.\r\n\r\n`;
   const twitterShareMessage = `I got ${score}/15 in the ${quizName}.\n\n@couch_buddy\n`;
   const shareURLTwitter =

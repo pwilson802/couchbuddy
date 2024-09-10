@@ -117,15 +117,16 @@ async function getRandomMovies(page, christmas) {
     url = `/api/randomquiz/getrandommovies/${page}`;
   }
   const response = await fetchRetry(url, 3);
-  const result = await response.json();
-  console.log(result)
+  const responseJson = await response.json();
+  const result = JSON.parse(responseJson);
   return result;
 }
 
 async function getMovieDetails(id) {
   const url = `/api/randomquiz/getmoviedetails/${id}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   return json;
 }
 
@@ -133,21 +134,24 @@ async function getPopularMovies() {
   const page = Math.floor(Math.random() * 20) + 1;
   const url = `/api/randomquiz/getpopularmovies/${page}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   return json.results;
 }
 
 async function getMoviesByDirector(director) {
   const url = `/api/randomquiz/getmoviesbydirector/${director.id}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   return json.results;
 }
 
 async function getMoviesByActor(actor) {
   const url = `/api/randomquiz/getmoviesbyactor/${actor.id}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   return json.results;
 }
 
@@ -161,14 +165,16 @@ async function getMovieTagline(id) {
 async function getMovieCast(id) {
   const url = `/api/randomquiz/getmoviecredits/${id}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   return json["cast"];
 }
 
 async function getMovieCrew(id) {
   const url = `/api/randomquiz/getmoviecredits/${id}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   return json["crew"];
 }
 
@@ -181,7 +187,8 @@ async function getMainCharacter(id) {
   try {
     const url = `/api/randomquiz/getmoviecredits/${id}`;
     const response = await fetchRetry(url, 3);
-    const json = await response.json();
+    const responseJson = await response.json();
+    const json = JSON.parse(responseJson);
     const character = json["cast"][0]["character"];
     return character;
   } catch {
@@ -192,7 +199,8 @@ async function getMainCharacter(id) {
 async function getMovieImage(movie) {
   const url = `/api/randomquiz/getmovieimages/${movie.id}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   // console.log("movie image")
   // console.log(json)
   const images = json["backdrops"];
@@ -214,7 +222,8 @@ async function getAlternativeActors(castDetails, movie, num) {
   const page = makePageFromYear(year);
   const url = `/api/randomquiz/getpopularmoviebyrange/${startYear}/${endYear}/${page}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   const movies = json["results"];
   let count = 0;
   const result = [];
@@ -245,7 +254,8 @@ async function getAlternativeActors(castDetails, movie, num) {
 async function getSimilarMovieByDirector(director, movie) {
   const url = `/api/randomquiz/getsimilarmovies/${movie.id}/1`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   const allMovies = json["results"];
   const year = movie["release_date"].split("-")[0];
   let closeMovies = allMovies.filter((item) => {
@@ -276,7 +286,8 @@ async function getSimilarMovies(id, year) {
   for (let page of pages) {
     let url = `/api/randomquiz/getsimilarmovies/${id}/${page}`;
     let response = await fetchRetry(url, 3);
-    let json = await response.json();
+    let responseJson = await response.json();
+    let json = JSON.parse(responseJson);
     let moviesAll = json["results"];
     shuffle(moviesAll);
     allMovies = [...allMovies, ...moviesAll];
@@ -364,7 +375,8 @@ async function getChastMember(id) {
   try {
     const url = `/api/randomquiz/getmoviecredits/${id}`;
     const response = await fetchRetry(url, 3);
-    const json = await response.json();
+    const responseJson = await response.json();
+    const json = JSON.parse(responseJson);
     return json["cast"][0];
   } catch {
     return "";
@@ -524,7 +536,8 @@ async function getMovieFromYear(year) {
   }
   const url = `/api/randomquiz/getmoviefromyear/${voteCount}/${voteAverage}/${year}`;
   const response = await fetchRetry(url, 3);
-  const json = await response.json();
+  const responseJson = await response.json();
+  const json = JSON.parse(responseJson);
   const movies = json["results"];
   // console.log("movies from year", movies)
   shuffle(movies);
