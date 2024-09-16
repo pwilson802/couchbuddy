@@ -1,8 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import Logo from "./Logo";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const colors = {
   light: {
@@ -13,33 +13,27 @@ const colors = {
   },
 };
 
-function CouchBuddyAdd({ mode }) {
+function CouchBuddyAd({ mode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const styles = {
-    wrapper: css({
-      display: "flex",
-      borderTopStyle: "solid",
-      borderBottomStyle: "solid",
-      borderWidth: 1,
-      padding: "1rem",
-      borderColor: "#F1888F",
-      justifyContent: "space-around",
-      alignItems: "center",
-      cursor: "pointer",
-    }),
-    text: css({
-      color: colors[mode]["text"],
-    }),
-    link: css({
-      textDecoration: "none",
-    }),
     adwrapper: css({
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       padding: "1rem",
     }),
+    link: css({
+      textDecoration: "none",
+      display: "block", // Ensure the link is a block element
+    }),
     image: css({
       maxWidth: 350,
+      height: "auto",
       "@media(min-width: 1024px)": {
         maxWidth: 300,
       },
@@ -48,19 +42,24 @@ function CouchBuddyAdd({ mode }) {
       },
     }),
   };
+
+  if (!mounted) {
+    return <div css={styles.adwrapper}></div>; // Return an empty wrapper for SSR
+  }
+
   return (
-    <Link href={"/"}>
-      <div css={styles.adwrapper}>
-        <a href={"/"} css={styles.link}>
-          <img
-            css={styles.image}
-            src={`/couchbyddyad1.png`}
-            alt="An ad for Couch Buddy"
-          />
-        </a>
-      </div>
-    </Link>
+    <div css={styles.adwrapper}>
+      <a href="/" css={styles.link}>
+        <Image
+          src="/couchbyddyad1.png"
+          alt="An ad for Couch Buddy"
+          width={350}
+          height={200} // Adjust this value based on your image's aspect ratio
+          layout="responsive"
+        />
+      </a>
+    </div>
   );
 }
 
-export default CouchBuddyAdd;
+export default CouchBuddyAd;

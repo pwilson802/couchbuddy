@@ -103,6 +103,16 @@ const colors = {
   },
 };
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+
+  &:hover, &:focus, &:active {
+    text-decoration: none;
+    color: inherit;
+  }
+`;
+
 function BurgerMenu({
   handleLocation,
   location,
@@ -153,18 +163,18 @@ function BurgerMenu({
           }}
         >
           {inBlog === true ? (
-            <Link href={"/"}>
+            <StyledLink href={"/"}>
               <img
                 src="/logo-text.png"
                 alt="Couch Buddy"
                 height={35}
                 width={210}
               />
-            </Link>
+            </StyledLink>
           ) : (
-            <Link href={"/blog"}>
+            <StyledLink href={"/blog"}>
               <BlogTextContainer>Blog</BlogTextContainer>
-            </Link>
+            </StyledLink>
           )}
         </MenuContainerItem>
         <MenuContainerItem
@@ -181,9 +191,9 @@ function BurgerMenu({
             },
           }}
         >
-          <Link href={"/about"}>
+          <StyledLink href={"/about"}>
             <AboutContainer>About</AboutContainer>
-          </Link>
+          </StyledLink>
         </MenuContainerItem>
         {showCountry && (
           <MenuContainerItem

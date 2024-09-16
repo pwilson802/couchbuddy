@@ -12,7 +12,8 @@ async function getTvDetails(id) {
   let url = `/api/tv/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  return movieDetails;
+  const result = JSON.parse(movieDetails)
+  return result;
 }
 
 async function getTvTrailer(id) {
@@ -296,7 +297,7 @@ function MovieCard({
                 {showAllOverview
                   ? overview
                   : overview.slice(0, 120) +
-                    (overview.length > 120 ? "..." : "")}
+                  (overview.length > 120 ? "..." : "")}
               </p>
               <div css={styles.providerSharingWrapper}>
                 <div css={styles.providerWrapper}>
