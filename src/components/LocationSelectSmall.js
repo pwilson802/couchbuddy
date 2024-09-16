@@ -71,6 +71,12 @@ const colors = {
 };
 
 function LocationSelectSmall({ mode, location, handleLocation }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const styles = {
     locationSelect: css({
       WebkitAppearance: "none",
@@ -81,7 +87,7 @@ function LocationSelectSmall({ mode, location, handleLocation }) {
       fontSize: "0.8rem",
       border: "none",
       cursor: "pointer",
-      textIndent: intendation[location],
+      textIndent: mounted ? intendation[location] : "0px",
       "&:focus": {
         border: "none",
         outline: "none",
@@ -109,6 +115,10 @@ function LocationSelectSmall({ mode, location, handleLocation }) {
     }),
     locationSlect: css({}),
   };
+
+  if (!mounted) {
+    return null; // or a loading placeholder
+  }
 
   return (
     <select

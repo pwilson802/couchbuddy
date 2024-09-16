@@ -28,29 +28,30 @@ function BlogStory({
   mode,
   location,
 }) {
-    const [width, setWidth] = useState(0);
+  const [width, setWidth] = useState(null);
 
-    useEffect(() => {
+  useEffect(() => {
     const handleResizeWindow = () => {
-      const newWidth = window.innerWidth;
-      setWidth(newWidth);
+      setWidth(window.innerWidth);
     };
+
+    // Set initial width
     handleResizeWindow();
-    // subscribe to window resize event "onComponentDidMount"
+
+    // Add event listener
     window.addEventListener("resize", handleResizeWindow);
-    return () => {
-      // unsubscribe "onComponentDestroy"
-      window.removeEventListener("resize", handleResizeWindow);
-    };
+
+    // Cleanup
+    return () => window.removeEventListener("resize", handleResizeWindow);
   }, []);
 
-    const medias = pageDetails.medias.reduce((acc, curr) => {
-    let tempObj = {address: curr.address, type: curr.type, imageText: curr.imageText}
+  const medias = pageDetails.medias.reduce((acc, curr) => {
+    let tempObj = { address: curr.address, type: curr.type, imageText: curr.imageText }
     acc[curr.order] = tempObj
-    return acc 
-    }, {})
-    console.log(pageDetails)
-    const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
+    return acc
+  }, {})
+  console.log(pageDetails)
+  const authorImage = `/people/${author.toLowerCase().replace(" ", "")}.png`;
 
   const styles = {
     pageWrapper: css({
@@ -85,7 +86,7 @@ function BlogStory({
   };
 
 
-    return (
+  return (
     <div css={styles.pageWrapper}>
       <h1 css={styles.heading}>{heading}</h1>
       <div css={styles.authorSocials}>
@@ -103,25 +104,27 @@ function BlogStory({
         </div>
       </div>
       <p css={styles.introduction}>{introduction}</p>
-            <div css={styles.quizWrapper}>
-        {pageDetails.paragraphs.length > 0
-                    ? pageDetails.paragraphs.map((p, index) => {
-                        const media = medias[p.order] || null
-              
-                        return (
-                        <BlogStoryParagraph
-                                paragraph={p.paragraph}
-                                mode={mode}
-                                itemIndex={index}
-                                media={media}
-                                width={width}
-                        />)
-                    })
+      <div css={styles.quizWrapper}>
+        {pageDetails.paragraphs.length > 0 && width !== null
+          ? pageDetails.paragraphs.map((p, index) => {
+            const media = medias[p.order] || null
+
+            return (
+              <BlogStoryParagraph
+                key={index}
+                paragraph={p.paragraph}
+                mode={mode}
+                itemIndex={index}
+                media={media}
+                width={width}
+              />
+            )
+          })
           : null}
       </div>
     </div>
-    )
-    
+  )
+
 }
 
 export default BlogStory

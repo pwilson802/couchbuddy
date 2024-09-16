@@ -8,6 +8,7 @@ import BlogQuizSocials from "./BlogQuizSocials";
 import { Adsense } from "@ctrl/react-adsense";
 import CouchBuddyAd from "./CouchBuddyAd";
 
+
 const colors = {
   light: {
     text: "black",
@@ -84,15 +85,15 @@ function BlogQuiz({
       <p css={styles.introduction}>{introduction}</p>
       {pageDetails.questions.length > 0
         ? pageDetails.questions.map((p, index) => (
-            <BlogQuizQuestion
-              details={p}
-              key={index}
-              questionNumber={index}
-              score={score}
-              setScore={setScore}
-              mode={mode}
-            />
-          ))
+          <BlogQuizQuestion
+            details={p}
+            key={index}
+            questionNumber={index}
+            score={score}
+            setScore={setScore}
+            mode={mode}
+          />
+        ))
         : null}
       <div css={styles.results}>
         <p css={styles.score}>
@@ -103,12 +104,12 @@ function BlogQuiz({
           {score < 4
             ? rankFive
             : score < 7
-            ? rankFour
-            : score < 10
-            ? rankThree
-            : score < 13
-            ? rankTwo
-            : rankOne}
+              ? rankFour
+              : score < 10
+                ? rankThree
+                : score < 13
+                  ? rankTwo
+                  : rankOne}
         </p>
         <p>Share Your results</p>
         <BlogQuizSocials
@@ -118,12 +119,12 @@ function BlogQuiz({
             score < 4
               ? rankFive
               : score < 7
-              ? rankFour
-              : score < 10
-              ? rankThree
-              : score < 13
-              ? rankTwo
-              : rankOne
+                ? rankFour
+                : score < 10
+                  ? rankThree
+                  : score < 13
+                    ? rankTwo
+                    : rankOne
           }
         />
       </div>
