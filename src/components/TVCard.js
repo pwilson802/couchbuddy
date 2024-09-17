@@ -20,7 +20,8 @@ async function getTvTrailer(id) {
   let url = `/api/tvtrailer/${id}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
-  return movieDetails;
+  const result = JSON.parse(movieDetails)
+  return result;
 }
 
 const colors = {
