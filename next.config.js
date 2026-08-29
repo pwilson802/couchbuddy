@@ -6,23 +6,31 @@
 const { withSentryConfig } = require('@sentry/nextjs');
 
 const moduleExports = {
-    images: {
-    domains: ["image.tmdb.org", "d1ohygkqc6tgyk.cloudfront.net"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "image.tmdb.org" },
+      { protocol: "https", hostname: "d1ohygkqc6tgyk.cloudfront.net" },
+    ],
   },
 };
 
-const sentryWebpackPluginOptions = {
-  // Additional config options for the Sentry Webpack plugin. Keep in mind that
+const sentryBuildOptions = {
+  // Additional config options for the Sentry build plugins. Keep in mind that
   // the following options are set automatically, and overriding them is not
   // recommended:
   //   release, url, org, project, authToken, configFile, stripPrefix,
   //   urlPrefix, include, ignore
 
   silent: true, // Suppresses all logs
+
+  // Skip release/source-map upload when no auth token is available (e.g. local builds).
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN,
+  },
   // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options.
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 };
 
 // Make sure adding Sentry options is the last code to run before exporting, to
 // ensure that your source maps include changes from all other Webpack plugins
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+module.exports = withSentryConfig(moduleExports, sentryBuildOptions);
