@@ -23,6 +23,35 @@ const EXCLUDED = new Set([
   "RESTRICTED SCREENING",
 ]);
 
+// Several countries' schemes carry two parallel codes for the same
+// underlying age tier - e.g. NZ's "R13" and "RP13", GB's "12" and "12A",
+// Turkey's "6+" and "6A" - which TMDB tracks as distinct certification
+// values but which are indistinguishable to someone just trying to filter
+// by age. Group entries that share the same embedded age number and keep
+// only the one TMDB itself ranks first (lowest `order`) as the
+// representative, rather than showing every near-duplicate variant.
+function ageNumber(certification) {
+  const match = certification.match(/\d+/);
+  return match ? match[0] : null;
+}
+
+function dedupeByAgeTier(entries) {
+  const groups = new Map();
+  const singles = [];
+  for (const item of entries) {
+    const key = ageNumber(item.certification);
+    if (key === null) {
+      singles.push(item);
+      continue;
+    }
+    const existing = groups.get(key);
+    if (!existing || (item.order ?? 0) < (existing.order ?? 0)) {
+      groups.set(key, item);
+    }
+  }
+  return [...singles, ...groups.values()];
+}
+
 export default async function handler(req, res) {
   const TMB_KEY = process.env.TMB_KEY;
   const { country = "AU", view = "movie" } = req.query;
@@ -37,8 +66,10 @@ export default async function handler(req, res) {
   const data = await response.json();
   const entries = data.certifications?.[country] || [];
 
-  const certifications = entries
-    .filter((item) => !EXCLUDED.has(item.certification.toUpperCase()))
+  const filtered = entries.filter(
+    (item) => !EXCLUDED.has(item.certification.toUpperCase())
+  );
+  const certifications = dedupeByAgeTier(filtered)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
     .map((item) => item.certification);
 
