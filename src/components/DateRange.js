@@ -140,11 +140,7 @@ function DateRange({
             <DropDownButton show={show} mode={mode} menu={"genres"} />
           </div>
           <span css={styles.headingText}>
-            {dateFilter == "anytime"
-              ? "ANY TIME"
-              : dateFilter == "releaseDate"
-                ? "Release Date"
-                : "Aired In"}
+            {dateFilter == "anytime" ? "ANY TIME" : "Release Date"}
             {"  "}
           </span>
           <span css={styles.headingText}>
@@ -162,11 +158,7 @@ function DateRange({
             <DropDownButton show={show} mode={mode} menu={"genres"} />
           </div>
           <span css={styles.text}>
-            {dateFilter == "anytime"
-              ? "Any Time"
-              : dateFilter == "releaseDate"
-                ? "Release Date"
-                : "Aired In"}
+            {dateFilter == "anytime" ? "Any Time" : "Release Date"}
             {"  "}
           </span>
           <span css={styles.text}>
@@ -201,18 +193,6 @@ function DateRange({
             >
               Release Date
             </div>
-            {view == "tv" && (
-              <div
-                onClick={() => handleDateFilter("airedIn")}
-                css={
-                  dateFilter == "airedIn"
-                    ? styles.textBoxEnabled
-                    : styles.textBox
-                }
-              >
-                Aired in
-              </div>
-            )}
           </div>
           <DateRangeSlider
             dateRange={dateRange}
