@@ -1,26 +1,29 @@
 import { certificationQueryValue } from "../../../data/certifications";
+import { rankByWeightedRating } from "../../../lib/weightedRating";
 
-export default async function handler(req, res) {
-  const TMB_KEY = process.env.TMB_KEY;
-  const {
-    genres,
-    providers,
-    certifications,
-    country = "AU",
-    runtime,
-    dateStart,
-    dateEnd,
-    sortByVote,
-    page = "1",
-  } = req.query;
+const RATED_CANDIDATE_PAGES = 10;
 
+function buildParams({
+  genres,
+  providers,
+  certifications,
+  country,
+  runtime,
+  dateStart,
+  dateEnd,
+  sortByVote,
+  page,
+}) {
   const params = new URLSearchParams({
-    api_key: TMB_KEY,
+    api_key: process.env.TMB_KEY,
     language: "en-US",
     include_adult: "false",
     include_video: "false",
-    page,
-    sort_by: sortByVote === "true" ? "vote_average.desc" : "popularity.desc",
+    page: String(page),
+    // When ranking by vote, sort the raw candidate fetch by vote_count
+    // (not vote_average) so the pool skews toward statistically reliable
+    // titles before the weighted-rating re-ranking below runs on it.
+    sort_by: sortByVote === "true" ? "vote_count.desc" : "popularity.desc",
     // Matches the quality floor the old nightly pipeline applied to every
     // movie before it ever entered the dataset (see
     // couchbuddy-data-upload/load-movies-json.py: vote_count >= 14,
@@ -29,7 +32,7 @@ export default async function handler(req, res) {
     // happened against the old, pre-filtered dataset. TMDB discover has
     // no popularity filter param (confirmed: "popularity.gte" is silently
     // ignored) - the matching minimum_popularity = 4 floor is applied
-    // below as a post-filter on the fetched page instead.
+    // as a post-filter on the fetched results instead.
     "vote_count.gte": "14",
     "with_runtime.gte": "25",
   });
@@ -56,20 +59,54 @@ export default async function handler(req, res) {
   if (dateEnd && Number(dateEnd) < 2030) {
     params.set("primary_release_date.lte", `${dateEnd}-12-31`);
   }
+  return params;
+}
 
+async function fetchPage(args) {
+  const params = buildParams(args);
   const url = `https://api.themoviedb.org/3/discover/movie?${params.toString()}`;
   const response = await fetch(url);
   if (!response.ok) {
-    res.status(200).json({ results: [], page: 1, total_pages: 0, total_results: 0 });
+    return { results: [], page: args.page, total_pages: 0, total_results: 0 };
+  }
+  return await response.json();
+}
+
+export default async function handler(req, res) {
+  const { sortByVote, page = "1" } = req.query;
+
+  if (sortByVote === "true") {
+    // "Sort by Vote" is a bounded top-rated view, not an infinite scroll
+    // through the whole catalog re-ranked - fetch a candidate pool once,
+    // rank it, and return it in a single page (total_pages: 1). The
+    // client's existing buffering already reveals a large result set 10 at
+    // a time, so no pagination logic is needed on top of this.
+    const first = await fetchPage({ ...req.query, page: 1 });
+    const pagesToFetch = Math.min(first.total_pages || 1, RATED_CANDIDATE_PAGES);
+    const rest = await Promise.all(
+      Array.from({ length: pagesToFetch - 1 }, (_, i) =>
+        fetchPage({ ...req.query, page: i + 2 })
+      )
+    );
+    const candidates = [first, ...rest]
+      .flatMap((data) => data.results || [])
+      .filter((item) => item.popularity > 4);
+    const ranked = rankByWeightedRating(candidates);
+
+    res.setHeader("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=3600");
+    res.status(200).json({
+      results: ranked,
+      nextPage: 2,
+      total_pages: 1,
+      total_results: ranked.length,
+    });
     return;
   }
-  const data = await response.json();
+
+  const data = await fetchPage({ ...req.query, page });
   const results = (data.results || []).filter((item) => item.popularity > 4);
 
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=1800, stale-while-revalidate=3600"
-  );
+  res.setHeader("Cache-Control", "public, s-maxage=1800, stale-while-revalidate=3600");
   res.status(200).json({
     results,
     nextPage: (data.page || 1) + 1,
