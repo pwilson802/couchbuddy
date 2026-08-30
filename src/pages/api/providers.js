@@ -20,6 +20,17 @@ const TRANSACTIONAL_ONLY_IDS = new Set([
   332, // Fandango at Home Free
 ]);
 
+// Not a real destination service a user would recognize or have a
+// subscription to - JustWatch is TMDB's own watch-availability data
+// partner (the source of this whole endpoint's data), not a streaming
+// platform. Its display_priority is a suspiciously flat "4" in nearly
+// every country worldwide, unlike a genuine regional service, which
+// points to it being a data-aggregation artifact rather than a curated
+// catalog someone actually subscribes to.
+const NOT_A_REAL_SERVICE_IDS = new Set([
+  2285, // JustWatch TV
+]);
+
 export default async function handler(req, res) {
   const TMB_KEY = process.env.TMB_KEY;
   const { country = "AU", view = "movie" } = req.query;
@@ -38,7 +49,8 @@ export default async function handler(req, res) {
       (item) =>
         item.display_priorities &&
         country in item.display_priorities &&
-        !TRANSACTIONAL_ONLY_IDS.has(item.provider_id)
+        !TRANSACTIONAL_ONLY_IDS.has(item.provider_id) &&
+        !NOT_A_REAL_SERVICE_IDS.has(item.provider_id)
     )
     .sort(
       (a, b) => a.display_priorities[country] - b.display_priorities[country]
