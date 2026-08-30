@@ -5,6 +5,8 @@ import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
 import MovieCard from "./MovieCard";
 import TVCard from "./TVCard";
+import MovieCardTile from "./MovieCardTile";
+import TVCardTile from "./TVCardTile";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
@@ -307,6 +309,21 @@ export default function ResultsPage({
       flexDirection: "column",
       marginTop: "20px",
     }),
+    tileGrid: css({
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
+      gap: "24px 16px",
+      width: "95%",
+      maxWidth: "1400px",
+      margin: "20px auto 0",
+    }),
+    adWrapGrid: css({
+      gridColumn: "1 / -1",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "0.5rem 0",
+    }),
     prevButton: css({
       marginRight: 10,
     }),
@@ -353,53 +370,83 @@ export default function ResultsPage({
               next={fetchMoreData}
               hasMore={hasMore}
             ></InfiniteScroll>
-            {items.map((item, index) => {
-              if (item == "ad") {
-                return (
-                  <div css={styles.adWrap} key={`Ad${index}`}>
-                    {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
-                    {screenSize === "small" ? (
-                      <Adsense
-                        client="ca-pub-9245347946008848"
-                        slot="5327454859"
-                        style={{ width: 300, height: 100 }}
-                        format=""
-                      />
-                    ) : (
-                      <Adsense
-                        client="ca-pub-9245347946008848"
-                        slot="5327454859"
-                        style={{ width: 728, height: 90 }}
-                        format=""
-                      />
-                    )}
-                  </div>
+            <div css={screenSize === "large" ? styles.tileGrid : undefined}>
+              {items.map((item, index) => {
+                if (item == "ad") {
+                  return (
+                    <div
+                      css={
+                        screenSize === "large"
+                          ? styles.adWrapGrid
+                          : styles.adWrap
+                      }
+                      key={`Ad${index}`}
+                    >
+                      {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
+                      {screenSize === "small" ? (
+                        <Adsense
+                          client="ca-pub-9245347946008848"
+                          slot="5327454859"
+                          style={{ width: 300, height: 100 }}
+                          format=""
+                        />
+                      ) : (
+                        <Adsense
+                          client="ca-pub-9245347946008848"
+                          slot="5327454859"
+                          style={{ width: 728, height: 90 }}
+                          format=""
+                        />
+                      )}
+                    </div>
+                  );
+                }
+                if (screenSize === "large") {
+                  return view == "movie" ? (
+                    <MovieCardTile
+                      id={item.id}
+                      selectedProviders={selectedProviderIds}
+                      country={location}
+                      allProviderData={allProviderData}
+                      mode={mode}
+                      key={item.id}
+                    />
+                  ) : (
+                    <TVCardTile
+                      id={item.id}
+                      selectedProviders={selectedProviderIds}
+                      country={location}
+                      allProviderData={allProviderData}
+                      mode={mode}
+                      key={item.id}
+                    />
+                  );
+                }
+                return view == "movie" ? (
+                  <MovieCard
+                    id={item.id}
+                    selectedProviders={selectedProviderIds}
+                    country={location}
+                    allProviderData={allProviderData}
+                    screenSize={screenSize}
+                    mode={mode}
+                    key={item.id}
+                    width={width}
+                  ></MovieCard>
+                ) : (
+                  <TVCard
+                    id={item.id}
+                    selectedProviders={selectedProviderIds}
+                    country={location}
+                    allProviderData={allProviderData}
+                    screenSize={screenSize}
+                    mode={mode}
+                    key={item.id}
+                    width={width}
+                  />
                 );
-              }
-              return view == "movie" ? (
-                <MovieCard
-                  id={item.id}
-                  selectedProviders={selectedProviderIds}
-                  country={location}
-                  allProviderData={allProviderData}
-                  screenSize={screenSize}
-                  mode={mode}
-                  key={item.id}
-                  width={width}
-                ></MovieCard>
-              ) : (
-                <TVCard
-                  id={item.id}
-                  selectedProviders={selectedProviderIds}
-                  country={location}
-                  allProviderData={allProviderData}
-                  screenSize={screenSize}
-                  mode={mode}
-                  key={item.id}
-                  width={width}
-                />
-              );
-            })}
+              })}
+            </div>
             <Footer
               activePage="app"
               setPage={setPage}
