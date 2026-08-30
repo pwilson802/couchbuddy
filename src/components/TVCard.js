@@ -8,8 +8,13 @@ import MovieCardLoading from "./MovieCardLoading";
 import YouTubeVideo from "./YouTubeVideo";
 import TVStatus from "./TVStatus";
 
-async function getTvDetails(id) {
-  let url = `/api/tv/${id}`;
+async function getTvDetails(id, selectedProviders, country) {
+  const params = new URLSearchParams();
+  if (selectedProviders && selectedProviders.length > 0) {
+    params.set("providers", selectedProviders.join("|"));
+  }
+  if (country) params.set("country", country);
+  let url = `/api/tv/${id}?${params.toString()}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
   const result = JSON.parse(movieDetails)
@@ -42,7 +47,8 @@ const colors = {
 function MovieCard({
   id,
   allProviderData,
-  providers,
+  selectedProviders,
+  country,
   screenSize,
   mode,
   width,
@@ -72,7 +78,8 @@ function MovieCard({
         first_air_date,
         number_of_seasons,
         status,
-      } = await getTvDetails(id);
+        matchedProviders,
+      } = await getTvDetails(id, selectedProviders, country);
       const releaseYear = first_air_date.split("-")[0];
       setYear(releaseYear);
       setTitle(name);
@@ -87,7 +94,7 @@ function MovieCard({
       }
       const imagePath = "https://image.tmdb.org/t/p/w185" + poster_path;
       setImage(imagePath);
-      const providerLogos = providers.map(
+      const providerLogos = (matchedProviders || []).map(
         (item) => allProviderData[item]["logo"]
       );
       setShowAllOverview(screenSize === "large");

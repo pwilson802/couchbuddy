@@ -13,114 +13,95 @@ import { Adsense } from "@ctrl/react-adsense";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NavResults from "./NavResults";
 import Footer from "./Footer";
-const DATA_URL = process.env.NEXT_PUBLIC_DATA_URL;
+import { movieGenres, tvGenres } from "../data/genres";
 
-async function getMovieFilterData(ids) {
-  const url = `${DATA_URL}/movie-filter.json`;
-  const response = await fetchRetry(url, 3);
-  const allTV = await response.json();
-  const result = allTV.filter((item) => {
-    return ids.includes(item.id);
-  });
-  return result;
+const MAX_RANDOM_PAGE = 500;
+// Cards each trigger several TMDB calls on mount (detail + watch/providers +
+// trailer). Revealing them in chunks of 10 keeps the concurrent-request burst
+// the same size as before this migration, even though each API call to our
+// own /api/discover/* route now pulls a full TMDB page (20 results) to
+// minimize round trips.
+const REVEAL_CHUNK = 10;
+
+function selectedKeys(obj) {
+  return Object.keys(obj || {}).filter((key) => obj[key]);
 }
 
-async function filterMoviesByData(
-  duration,
-  sortByVote,
-  allMovies,
-  filterByDate,
-  dateRange
-) {
-  const moviesUnderDuration = allMovies.filter((item) => item.r < duration);
-  const moviesInDateRange = filterByDate
-    ? filterMovieDate(moviesUnderDuration, dateRange)
-    : moviesUnderDuration;
-  if (sortByVote === true) {
-    moviesInDateRange.sort(compare);
-    const result = moviesInDateRange.map((item) => Number(item.id));
-    return result;
+function genreIds(selectedGenres, view) {
+  const map = view === "movie" ? movieGenres : tvGenres;
+  return selectedKeys(selectedGenres)
+    .map((name) => map[name])
+    .filter((id) => id != null);
+}
+
+function certificationLabels(selectedCertifications) {
+  const keys = Object.keys(selectedCertifications || {});
+  if (keys.length === 0) return null;
+  const anyUnselected = keys.some((key) => !selectedCertifications[key]);
+  if (!anyUnselected) return null; // nothing narrowed, don't filter
+  const selected = selectedKeys(selectedCertifications);
+  return selected.length > 0 ? selected : null;
+}
+
+function randomPage(totalPages, exclude) {
+  const ceiling = Math.max(1, Math.min(totalPages || 1, MAX_RANDOM_PAGE));
+  if (ceiling <= 1) return 1;
+  let page;
+  let attempts = 0;
+  do {
+    page = 1 + Math.floor(Math.random() * ceiling);
+    attempts += 1;
+  } while (exclude.has(page) && attempts < 10);
+  return page;
+}
+
+function buildDiscoverUrl({
+  view,
+  page,
+  searchDetails,
+  location,
+}) {
+  const {
+    selectedGenres,
+    selectedProviders,
+    selectedCertifications,
+    sortByVote,
+    dateRange,
+    duration,
+    seasons,
+    onlyfinishedTv,
+  } = searchDetails;
+
+  const params = new URLSearchParams();
+  params.set("country", location);
+  params.set("page", String(page));
+  params.set("sortByVote", sortByVote ? "true" : "false");
+
+  const genres = genreIds(selectedGenres, view);
+  if (genres.length > 0) params.set("genres", genres.join("|"));
+
+  const providers = selectedKeys(selectedProviders);
+  if (providers.length > 0) params.set("providers", providers.join("|"));
+
+  const certifications = certificationLabels(selectedCertifications);
+  if (certifications) params.set("certifications", certifications.join("|"));
+
+  if (dateRange && (dateRange[0] !== 1950 || dateRange[1] !== 2030)) {
+    params.set("dateStart", String(dateRange[0]));
+    params.set("dateEnd", String(dateRange[1]));
   }
-  return moviesInDateRange.map((item) => Number(item.id));
-}
 
-function filterMovieDate(movies, dateRange) {
-  return movies.filter((item) => {
-    const year = item.d.split("-")[0];
-    if (year >= dateRange[0] && year <= dateRange[1]) {
-      return true;
-    }
-  });
-}
-
-async function getTVFilterData(ids) {
-  const url = `${DATA_URL}/tv-filter.json`;
-  const response = await fetchRetry(url, 3);
-  const allTV = await response.json();
-  const result = allTV.filter((item) => {
-    return ids.includes(item.id);
-  });
-  return result;
-}
-
-function filterTVSeason(tvShows, seasons) {
-  return tvShows.filter((item) => {
-    if (item.se >= seasons[0] && item.se <= seasons[1]) {
-      return true;
-    }
-    return false;
-  });
-}
-
-function filterTVDate(tvShows, dateRange, dateFilter) {
-  if (dateFilter == "releaseDate") {
-    return tvShows.filter((item) => {
-      const year = item.d.split("-")[0];
-      if (year >= dateRange[0] && year <= dateRange[1]) {
-        return true;
-      }
-    });
+  if (view === "movie") {
+    if (duration !== 400) params.set("runtime", String(duration));
+    return `/api/discover/movie?${params.toString()}`;
   }
-  return tvShows.filter((item) => {
-    const year = Number(item.d.split("-")[0]);
-    const seasons = item.se;
-    const yearsOn = [];
-    const lastYear = year + seasons;
-    for (let i = year; i <= lastYear; i++) {
-      yearsOn.push(i);
-    }
-    return yearsOn.some((y) => {
-      if (y >= dateRange[0] && y <= dateRange[1]) {
-        return true;
-      }
-    });
-  });
-}
 
-function filterTVFinished(tvShows) {
-  return tvShows.filter((item) => item.st == "Ended");
-}
-
-async function getMovieIDsforGenres(genres, view) {
-  const url =
-    view == "movie" ? `${DATA_URL}/genres.json` : `${DATA_URL}/tv_genres.json`;
-  const response = await fetchRetry(url, 3);
-  const genresObject = await response.json();
-  let result = [];
-  for (let i = 0; i < genres.length; i++) {
-    if (Object.keys(genresObject).includes(genres[i])) {
-      let movies = genresObject[genres[i]];
-      result = [...result, ...movies];
-    }
+  if (seasons && (seasons[0] !== 1 || seasons[1] !== 50)) {
+    params.set("seasonsMin", String(seasons[0]));
+    params.set("seasonsMax", String(seasons[1]));
   }
-  return result;
-}
-
-function reduceShuffleMovies(movies, sortByVote) {
-  if (!sortByVote) {
-    shuffle(movies);
-  }
-  return movies;
+  if (onlyfinishedTv) params.set("status", "finished");
+  return `/api/discover/tv?${params.toString()}`;
 }
 
 function makeItemGroup(items) {
@@ -145,20 +126,19 @@ export default function ResultsPage({
 }) {
   const [loaded, setLoaded] = useState(false);
   const [nothingFound, setNothingFound] = useState(false);
-  const [movies, setMovies] = useState([]);
   const [items, setItems] = useState([]);
+  const [buffer, setBuffer] = useState([]);
   const [hasMore, setHasMore] = useState(true);
-  const [moviesViewed, setMoviesViewed] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [usedPages, setUsedPages] = useState(new Set());
+  const [seenIds, setSeenIds] = useState(new Set());
 
   const {
     allProviderData,
-    selectedGenres,
-    providerMovies,
-    duration,
-    certificationMovies,
+    selectedProviders,
     sortByVote,
     selectedCertifications,
-    selectedProviders,
+    selectedGenres,
     view,
     dateRange,
     dateFilter,
@@ -166,132 +146,96 @@ export default function ResultsPage({
     onlyfinishedTv,
   } = searchDetails;
 
-  function getProviders(id) {
-    return Object.keys(providerMovies).filter((item) =>
-      providerMovies[item].includes(id)
-    );
+  const selectedProviderIds = selectedKeys(selectedProviders);
+
+  async function fetchDiscoverPage(page) {
+    const url = buildDiscoverUrl({ view, page, searchDetails, location });
+    const response = await fetch(url);
+    return await response.json();
   }
 
-  function filterCertification(movies) {
-    const certificationMoviesList = Object.values(certificationMovies).flat();
-    return movies.filter((movie) => certificationMoviesList.includes(movie));
+  function dedupedItems(results, alreadySeen) {
+    const fresh = [];
+    for (const item of results) {
+      if (!alreadySeen.has(item.id)) {
+        alreadySeen.add(item.id);
+        fresh.push({ id: item.id });
+      }
+    }
+    return fresh;
   }
 
   useEffect(() => {
-    const genres = Object.keys(selectedGenres).filter(
-      (item) => selectedGenres[item]
-    );
-    async function updateMovies() {
-      const matchedMoviesByGenre = await getMovieIDsforGenres(genres, view);
-      const matchedMoviesbyProvider = Object.values(providerMovies).flat();
-      const moviesInProvider = matchedMoviesByGenre.filter((movie) =>
-        matchedMoviesbyProvider.includes(movie)
-      );
-      async function filterMovies(movies) {
-        const filterMovieData =
-          sortByVote ||
-          duration != 400 ||
-          dateRange[0] != 1950 ||
-          dateRange[1] != 2030;
-        if (filterMovieData == false) {
-          return movies;
-        }
-        const filterData = await getMovieFilterData(movies);
-        const filterByDate = dateRange[0] != 1950 || dateRange[1] != 2030;
-        const moviesByLength =
-          filterMovieData === true
-            ? await filterMoviesByData(
-                duration,
-                sortByVote,
-                filterData,
-                filterByDate,
-                dateRange
-              )
-            : movies;
-        const moviesInLength = moviesByLength.filter((item) =>
-          movies.includes(item)
-        );
-        const moviesInCertification =
-          certificationMovies === true
-            ? moviesInLength
-            : filterCertification(moviesInLength);
-        return moviesInCertification;
-      }
+    async function load() {
+      const firstPage = await fetchDiscoverPage(1);
+      const total = firstPage.total_pages || 1;
+      setTotalPages(total);
 
-      async function filterTV(tvShows) {
-        const filterTVData =
-          sortByVote ||
-          onlyfinishedTv ||
-          seasons[0] != 1 ||
-          seasons[1] != 50 ||
-          dateRange[0] != 1950 ||
-          dateRange[1] != 2030;
-        if (filterTVData == false) {
-          return tvShows;
-        }
-        const filterData = await getTVFilterData(tvShows);
-        const filterBySeason = seasons[0] != 1 || seasons[1] != 50;
-        const tvBySeason = filterBySeason
-          ? filterTVSeason(filterData, seasons)
-          : filterData;
-        const filterByDate = dateRange[0] != 1950 || dateRange[1] != 2030;
-        const tvByDate = filterByDate
-          ? filterTVDate(tvBySeason, dateRange, dateFilter)
-          : tvBySeason;
-        const tvByFinished = onlyfinishedTv
-          ? filterTVFinished(tvByDate)
-          : tvByDate;
-        const tvSorted = sortByVote ? tvByFinished.sort(compare) : tvByFinished;
-        const tvIds = tvSorted.map((item) => Number(item.id));
-        const tvInCertification =
-          certificationMovies === true ? tvIds : filterCertification(tvIds);
-        return tvInCertification;
-      }
-
-      const filteredIDs =
-        view == "movie"
-          ? await filterMovies(moviesInProvider)
-          : await filterTV(moviesInProvider);
-      const result = reduceShuffleMovies(filteredIDs, sortByVote).reduce(
-        (acc, curr) => {
-          let providers = getProviders(curr);
-          acc.push({ id: curr, providers: providers });
-          return acc;
-        },
-        []
-      );
-      const uniqResult = Array.from(new Set(result));
-      setMovies(uniqResult);
-      if (uniqResult.length === 0) {
+      if (total === 0 || (firstPage.total_results || 0) === 0) {
         setNothingFound(true);
+        setLoaded(true);
+        return;
       }
-      const startingItems = uniqResult.slice(0, 10);
-      const startingItemsWithAds = makeItemGroup(startingItems);
-      if (uniqResult.length <= 10) {
-        setHasMore(false);
+
+      let dataToShow = firstPage;
+      const pagesSeen = new Set([1]);
+
+      if (!sortByVote) {
+        const page = randomPage(total, pagesSeen);
+        if (page !== 1) {
+          dataToShow = await fetchDiscoverPage(page);
+          pagesSeen.add(page);
+        }
       }
-      setMoviesViewed(startingItems.length);
-      setItems(startingItemsWithAds);
+
+      const idsSeen = new Set();
+      const newItems = dedupedItems(dataToShow.results || [], idsSeen);
+      const firstChunk = newItems.slice(0, REVEAL_CHUNK);
+      const rest = newItems.slice(REVEAL_CHUNK);
+      setItems(makeItemGroup(firstChunk));
+      setBuffer(rest);
+      setSeenIds(idsSeen);
+      setUsedPages(pagesSeen);
+      setHasMore(rest.length > 0 || total > pagesSeen.size);
       setLoaded(true);
     }
-    updateMovies();
+    load();
   }, []);
 
-  const fetchMoreData = () => {
-    const newItems = movies.slice(moviesViewed, moviesViewed + 10);
-    if (moviesViewed + 10 >= movies.length) {
-      setHasMore(false);
+  const fetchMoreData = async () => {
+    if (buffer.length > 0) {
+      const chunk = buffer.slice(0, REVEAL_CHUNK);
+      const rest = buffer.slice(REVEAL_CHUNK);
+      setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
+      setBuffer(rest);
+      setHasMore(rest.length > 0 || totalPages > usedPages.size);
+      return;
     }
-    setMoviesViewed(moviesViewed + 10);
-    const newItemsWithAds = makeItemGroup(newItems);
-    setItems([...items, ...newItemsWithAds]);
+
+    const page = sortByVote
+      ? Math.max(...usedPages) + 1
+      : randomPage(totalPages, usedPages);
+    const data = await fetchDiscoverPage(page);
+    const idsSeen = new Set(seenIds);
+    const newItems = dedupedItems(data.results || [], idsSeen);
+    const chunk = newItems.slice(0, REVEAL_CHUNK);
+    const rest = newItems.slice(REVEAL_CHUNK);
+    setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
+    setBuffer(rest);
+    setSeenIds(idsSeen);
+    const nextUsedPages = new Set(usedPages);
+    nextUsedPages.add(page);
+    setUsedPages(nextUsedPages);
+    const total = data.total_pages || totalPages;
+    setTotalPages(total);
+    setHasMore(rest.length > 0 || total > nextUsedPages.size);
   };
 
   const handleRefine = () => {
     setRefine(true);
     setRefineData({
       selectedGenres: selectedGenres,
-      duration: duration,
+      duration: searchDetails.duration,
       selectedCertifications: selectedCertifications,
       sortByVote: sortByVote,
       selectedProviders: selectedProviders,
@@ -406,7 +350,8 @@ export default function ResultsPage({
               return view == "movie" ? (
                 <MovieCard
                   id={item.id}
-                  providers={item.providers}
+                  selectedProviders={selectedProviderIds}
+                  country={location}
                   allProviderData={allProviderData}
                   screenSize={screenSize}
                   mode={mode}
@@ -416,7 +361,8 @@ export default function ResultsPage({
               ) : (
                 <TVCard
                   id={item.id}
-                  providers={item.providers}
+                  selectedProviders={selectedProviderIds}
+                  country={location}
                   allProviderData={allProviderData}
                   screenSize={screenSize}
                   mode={mode}
@@ -440,38 +386,3 @@ export default function ResultsPage({
     </div>
   );
 }
-
-function shuffle(data) {
-  // shuffle the questions using Fisher-Yates Algorithm
-  for (let i = data.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * i);
-    const temp = data[i];
-    data[i] = data[j];
-    data[j] = temp;
-  }
-  return data;
-}
-
-function compare(a, b) {
-  // const voteA = Number(a.vote_average);
-  // const voteB = Number(b.vote_average);
-  const voteA = Number(a.v);
-  const voteB = Number(b.v);
-
-  let comparison = 0;
-  if (voteA > voteB) {
-    comparison = -1;
-  } else if (voteA < voteB) {
-    comparison = 1;
-  }
-  return comparison;
-}
-
-const fetchRetry = async (url, n) => {
-  try {
-    return await fetch(url);
-  } catch (err) {
-    if (n === 1) throw err;
-    return await fetchRetry(url, n - 1);
-  }
-};

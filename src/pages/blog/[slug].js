@@ -518,7 +518,7 @@ const fetchRetry = async (url, n) => {
   } catch (err) {
     console.log("failed to fetch", n);
     if (n === 1) throw err;
-    return await fetch_retry(url, n - 1);
+    return await fetchRetry(url, n - 1);
   }
 };
 

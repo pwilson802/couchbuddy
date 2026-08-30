@@ -16,10 +16,10 @@ import SpinnerMovie from "./SpinnerMovie";
 import Footer from "./Footer";
 import Burger from "./Burger";
 import LocationSelectSmall from "./LocationSelectSmall";
-const DATA_URL = process.env.NEXT_PUBLIC_DATA_URL;
 import CookieBanner from "../components/CookieBanner";
 import SelectionItem from "./SelectionItem";
 import SearchSwitch from "./SearchSwitch";
+import { getCertificationList } from "../data/certifications";
 
 const genreObj = {
   Action: false,
@@ -62,24 +62,10 @@ const tvGenreObj = {
   Romance: false,
 };
 
-async function getLocalProviders(country, view) {
-  const url = `${DATA_URL}/${view == "tv" ? "tv_" : ""
-    }providers-${country}.json`;
+async function getProviderData(country, view) {
+  const url = `/api/providers?country=${country}&view=${view}`;
   const response = await fetchRetry(url, 3);
   return await response.json();
-}
-
-function sortProviders(json) {
-  const result = Object.keys(json).sort((a, b) => {
-    if (json[a].length > json[b].length) {
-      return -1;
-    }
-    if (json[a].length < json[b].length) {
-      return 1;
-    }
-    return 0;
-  });
-  return result;
 }
 
 function makeProvidersObj(data) {
@@ -89,35 +75,15 @@ function makeProvidersObj(data) {
   }, {});
 }
 
-async function getLocalCertifications(country, view) {
-  const url = `${DATA_URL}/${view == "tv" ? "tv_" : ""
-    }certifications-${country}.json`;
-  const response = await fetchRetry(url, 3);
-  return await response.json();
+function sortProvidersByPriority(data) {
+  return Object.keys(data).sort((a, b) => data[a].priority - data[b].priority);
 }
 
-function makeCertificationsObj(data) {
-  return Object.keys(data).reduce((acc, curr) => {
-    if (curr === "") return acc;
-    acc[curr] = false;
+function makeCertificationsObj(country) {
+  return getCertificationList(country).reduce((acc, curr) => {
+    acc[curr.label] = false;
     return acc;
   }, {});
-}
-
-async function getAllProviderData() {
-  const url = `${DATA_URL}/all-data-providers.json`;
-  const response = await fetchRetry(url, 3);
-  return await response.json();
-}
-
-function makeSelectedProviders(selectedProviders, localProviderMovies) {
-  const selected = Object.keys(selectedProviders).reduce((acc, curr) => {
-    if (selectedProviders[curr]) {
-      acc[curr] = localProviderMovies[curr];
-    }
-    return acc;
-  }, {});
-  return selected;
 }
 
 function getSelectedProviders(location, allProviders) {
@@ -162,11 +128,9 @@ export default function SearchPage({
 }) {
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
-  const [localProviderMovies, setLocalProviderMovies] = useState({});
   const [allProviderData, setAllProviderData] = useState();
   const [sortedProviders, setSortedProviders] = useState();
   const [selectedCertifications, setSelectedCertifications] = useState({});
-  const [localCertificationMovies, setLocalCertificationMovies] = useState({});
   const [duration, setDuration] = useState(400);
   const [sortByVote, setSortByVote] = useState(false);
   const [seasons, setSeasons] = useState([1, 50]);
@@ -176,9 +140,8 @@ export default function SearchPage({
   const [onlyfinishedTv, setOnlyFinishedTv] = useState(false);
 
   async function configureProviders(location) {
-    const localProviderData = await getLocalProviders(location, view);
-    const providersObj = makeProvidersObj(localProviderData);
-    const allProviderData = await getAllProviderData();
+    const providerData = await getProviderData(location, view);
+    const providersObj = makeProvidersObj(providerData);
     const cachedProviders = getSelectedProviders(
       location,
       Object.keys(providersObj)
@@ -186,19 +149,13 @@ export default function SearchPage({
     for (let provider of cachedProviders) {
       providersObj[provider] = true;
     }
-    setLocalProviderMovies(localProviderData);
     setSelectedProviders(providersObj);
-    setAllProviderData(allProviderData);
-    setSortedProviders(sortProviders(localProviderData));
+    setAllProviderData(providerData);
+    setSortedProviders(sortProvidersByPriority(providerData));
   }
 
-  async function configureCertifications(location) {
-    const localCertificationData = await getLocalCertifications(location, view);
-    const certificationsObj = await makeCertificationsObj(
-      localCertificationData
-    );
-    setLocalCertificationMovies(localCertificationData);
-    setSelectedCertifications(certificationsObj);
+  function configureCertifications(location) {
+    setSelectedCertifications(makeCertificationsObj(location));
   }
 
   const handleGenre = (genre) => {
@@ -239,21 +196,9 @@ export default function SearchPage({
     if (dataMissing) {
       return;
     }
-    const providerMovies = makeSelectedProviders(
-      selectedProviders,
-      localProviderMovies
-    );
-    const certificationsChange = Object.values(selectedCertifications).some(
-      (i) => i === false
-    );
-    const certificationMovies = certificationsChange
-      ? makeSelectedProviders(selectedCertifications, localCertificationMovies)
-      : true;
     const searchData = {
-      providerMovies: providerMovies,
       allProviderData: allProviderData,
       selectedGenres: selectedGenres,
-      certificationMovies: certificationMovies,
       sortByVote: sortByVote,
       selectedCertifications: selectedCertifications,
       selectedProviders: selectedProviders,
