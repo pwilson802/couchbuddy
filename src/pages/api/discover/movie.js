@@ -21,10 +21,18 @@ export default async function handler(req, res) {
     include_video: "false",
     page,
     sort_by: sortByVote === "true" ? "vote_average.desc" : "popularity.desc",
+    // Matches the quality floor the old nightly pipeline applied to every
+    // movie before it ever entered the dataset (see
+    // couchbuddy-data-upload/load-movies-json.py: vote_count >= 14,
+    // runtime >= 25). Without these, titles with only a handful of votes
+    // can outrank real results when sorting by vote average, which never
+    // happened against the old, pre-filtered dataset. TMDB discover has
+    // no popularity filter param (confirmed: "popularity.gte" is silently
+    // ignored) - the matching minimum_popularity = 4 floor is applied
+    // below as a post-filter on the fetched page instead.
+    "vote_count.gte": "14",
+    "with_runtime.gte": "25",
   });
-  if (sortByVote === "true") {
-    params.set("vote_count.gte", "14");
-  }
   if (genres) params.set("with_genres", genres);
   if (providers) {
     params.set("with_watch_providers", providers);
@@ -56,13 +64,14 @@ export default async function handler(req, res) {
     return;
   }
   const data = await response.json();
+  const results = (data.results || []).filter((item) => item.popularity > 4);
 
   res.setHeader(
     "Cache-Control",
     "public, s-maxage=1800, stale-while-revalidate=3600"
   );
   res.status(200).json({
-    results: data.results || [],
+    results,
     nextPage: (data.page || 1) + 1,
     total_pages: data.total_pages,
     total_results: data.total_results,

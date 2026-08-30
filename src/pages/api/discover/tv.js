@@ -19,10 +19,13 @@ function buildParams({
     include_adult: "false",
     page: String(page),
     sort_by: sortByVote === "true" ? "vote_average.desc" : "popularity.desc",
+    // Matches the quality floor the old nightly pipeline applied to every
+    // show before it ever entered the dataset (see
+    // couchbuddy-data-upload/load-tvs-json.py: vote_count >= 11). The
+    // matching minimum_popularity = 2.3 floor has no discover equivalent
+    // and is applied as a post-filter below.
+    "vote_count.gte": "11",
   });
-  if (sortByVote === "true") {
-    params.set("vote_count.gte", "14");
-  }
   if (genres) params.set("with_genres", genres);
   if (providers) {
     params.set("with_watch_providers", providers);
@@ -95,7 +98,9 @@ export default async function handler(req, res) {
 
   do {
     lastData = await fetchDiscoverPage({ ...req.query, page: currentPage });
-    let pageResults = lastData.results || [];
+    let pageResults = (lastData.results || []).filter(
+      (item) => item.popularity > 2.3
+    );
     if (needsSeasonFilter) {
       pageResults = await filterBySeasons(
         pageResults,
