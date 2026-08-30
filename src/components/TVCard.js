@@ -69,6 +69,10 @@ function MovieCard({
   const [status, setStatus] = useState("");
   useEffect(() => {
     async function setMovieCard() {
+      const [tvData, trailer] = await Promise.all([
+        getTvDetails(id, selectedProviders, country),
+        getTvTrailer(id),
+      ]);
       const {
         name,
         overview,
@@ -79,7 +83,7 @@ function MovieCard({
         number_of_seasons,
         status,
         matchedProviders,
-      } = await getTvDetails(id, selectedProviders, country);
+      } = tvData;
       const releaseYear = first_air_date.split("-")[0];
       setYear(releaseYear);
       setTitle(name);
@@ -99,7 +103,6 @@ function MovieCard({
       );
       setShowAllOverview(screenSize === "large");
       setProviderImages(providerLogos);
-      const trailer = await getTvTrailer(id);
       if (trailer.result === true) {
         setHasTrailer(true);
         setTrailerID(trailer.id);

@@ -5,16 +5,16 @@ export default async function handler(req, res) {
   } = req;
   let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMB_KEY}&language=en-US`;
   const watchUrl = `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${TMB_KEY}`;
+  // Kick this off immediately rather than after the detail fetch resolves -
+  // the two are independent TMDB calls, so there's no reason to wait on one
+  // before starting the other.
+  const matchedProvidersPromise = getMatchedProviders(watchUrl, providers, country);
   let retry = 0;
   while (true) {
     const response = await fetchRetry(url, 3);
     if (response.ok) {
       const movieDetails = await response.json();
-      movieDetails.matchedProviders = await getMatchedProviders(
-        watchUrl,
-        providers,
-        country
-      );
+      movieDetails.matchedProviders = await matchedProvidersPromise;
       res.setHeader(
         "Cache-Control",
         "public, s-maxage=3600, stale-while-revalidate=86400"

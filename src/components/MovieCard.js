@@ -68,7 +68,10 @@ function MovieCard({
   const [showTrailer, setShowTrailer] = useState(false);
   useEffect(() => {
     async function setMovieCard() {
-      let movieData = await getMovieDetails(id, selectedProviders, country)
+      const [movieData, trailer] = await Promise.all([
+        getMovieDetails(id, selectedProviders, country),
+        getMovieTrailer(id),
+      ]);
       const title = movieData.title
       const overview = movieData.overview
       const tagline = movieData.tagline
@@ -90,7 +93,6 @@ function MovieCard({
       );
       setShowAllOverview(screenSize === "large");
       setProviderImages(providerLogos);
-      const trailer = await getMovieTrailer(id);
       if (trailer.result === true) {
         setHasTrailer(true);
         setTrailerID(trailer.id);
