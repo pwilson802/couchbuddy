@@ -1,4 +1,3 @@
-import { certificationQueryValue } from "../../../data/certifications";
 import { rankByWeightedRating } from "../../../lib/weightedRating";
 
 const MAX_BACKFILL_PAGES = 3;
@@ -38,12 +37,8 @@ function buildParams({
     params.set("with_watch_monetization_types", "flatrate");
   }
   if (certifications) {
-    const mapped = certifications
-      .split("|")
-      .map((label) => certificationQueryValue(country, label))
-      .join("|");
     params.set("certification_country", country);
-    params.set("certification", mapped);
+    params.set("certification", certifications);
   }
   if (dateStart && Number(dateStart) > 1950) {
     params.set("first_air_date.gte", `${dateStart}-01-01`);
