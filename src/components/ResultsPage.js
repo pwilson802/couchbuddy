@@ -154,6 +154,24 @@ export default function ResultsPage({
     return await response.json();
   }
 
+  // TMDB's total_pages count doesn't guarantee every page in that range has
+  // results (the last page is often partial, and our own popularity
+  // post-filter can empty one out entirely) - a random pick can land on one
+  // of those. Retry a few times with different pages before giving up,
+  // tracking every page tried (empty or not) in excludeSet so callers don't
+  // waste a retry re-fetching the same empty page later.
+  async function fetchRandomNonEmptyPage(excludeSet, totalPagesKnown, maxAttempts = 4) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const page = randomPage(totalPagesKnown, excludeSet);
+      const data = await fetchDiscoverPage(page);
+      excludeSet.add(page);
+      if ((data.results || []).length > 0) {
+        return { page, data };
+      }
+    }
+    return null;
+  }
+
   function dedupedItems(results, alreadySeen) {
     const fresh = [];
     for (const item of results) {
@@ -180,12 +198,13 @@ export default function ResultsPage({
       let dataToShow = firstPage;
       const pagesSeen = new Set([1]);
 
-      if (!sortByVote) {
-        const page = randomPage(total, pagesSeen);
-        if (page !== 1) {
-          dataToShow = await fetchDiscoverPage(page);
-          pagesSeen.add(page);
+      if (!sortByVote && total > 1) {
+        const attempt = await fetchRandomNonEmptyPage(pagesSeen, total);
+        if (attempt) {
+          dataToShow = attempt.data;
         }
+        // else: every random attempt came back empty - fall back to the
+        // already-confirmed-non-empty first page rather than show nothing.
       }
 
       const idsSeen = new Set();
@@ -212,10 +231,22 @@ export default function ResultsPage({
       return;
     }
 
-    const page = sortByVote
-      ? Math.max(...usedPages) + 1
-      : randomPage(totalPages, usedPages);
-    const data = await fetchDiscoverPage(page);
+    let data;
+    const nextUsedPages = new Set(usedPages);
+    if (sortByVote) {
+      const page = Math.max(...usedPages) + 1;
+      data = await fetchDiscoverPage(page);
+      nextUsedPages.add(page);
+    } else {
+      const attempt = await fetchRandomNonEmptyPage(nextUsedPages, totalPages);
+      if (!attempt) {
+        setUsedPages(nextUsedPages);
+        setHasMore(false);
+        return;
+      }
+      data = attempt.data;
+    }
+
     const idsSeen = new Set(seenIds);
     const newItems = dedupedItems(data.results || [], idsSeen);
     const chunk = newItems.slice(0, REVEAL_CHUNK);
@@ -223,8 +254,6 @@ export default function ResultsPage({
     setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
     setBuffer(rest);
     setSeenIds(idsSeen);
-    const nextUsedPages = new Set(usedPages);
-    nextUsedPages.add(page);
     setUsedPages(nextUsedPages);
     const total = data.total_pages || totalPages;
     setTotalPages(total);
