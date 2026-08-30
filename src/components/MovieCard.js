@@ -8,8 +8,13 @@ import MovieCardLoading from "./MovieCardLoading";
 import YouTubeVideo from "./YouTubeVideo";
 import { FONT_MANIFEST } from "next/dist/shared/lib/constants";
 
-async function getMovieDetails(id) {
-  let url = `/api/movie/${id}`;
+async function getMovieDetails(id, selectedProviders, country) {
+  const params = new URLSearchParams();
+  if (selectedProviders && selectedProviders.length > 0) {
+    params.set("providers", selectedProviders.join("|"));
+  }
+  if (country) params.set("country", country);
+  let url = `/api/movie/${id}?${params.toString()}`;
   const response = await fetch(url);
   const movieDetails = await response.json();
   const result = JSON.parse(movieDetails)
@@ -42,7 +47,8 @@ const colors = {
 function MovieCard({
   id,
   allProviderData,
-  providers,
+  selectedProviders,
+  country,
   screenSize,
   mode,
   width,
@@ -62,7 +68,10 @@ function MovieCard({
   const [showTrailer, setShowTrailer] = useState(false);
   useEffect(() => {
     async function setMovieCard() {
-      let movieData = await getMovieDetails(id)
+      const [movieData, trailer] = await Promise.all([
+        getMovieDetails(id, selectedProviders, country),
+        getMovieTrailer(id),
+      ]);
       const title = movieData.title
       const overview = movieData.overview
       const tagline = movieData.tagline
@@ -79,12 +88,11 @@ function MovieCard({
       setVoteAverage(Number(vote_average).toFixed(1));
       const imagePath = "https://image.tmdb.org/t/p/w185" + poster_path;
       setImage(imagePath);
-      const providerLogos = providers.map(
+      const providerLogos = (movieData.matchedProviders || []).map(
         (item) => allProviderData[item]["logo"]
       );
       setShowAllOverview(screenSize === "large");
       setProviderImages(providerLogos);
-      const trailer = await getMovieTrailer(id);
       if (trailer.result === true) {
         setHasTrailer(true);
         setTrailerID(trailer.id);

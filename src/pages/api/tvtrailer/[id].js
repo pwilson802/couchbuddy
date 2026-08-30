@@ -9,6 +9,10 @@ export default async function handler(req, res) {
   const trailers = allMovieResponse.results.filter(
     (item) => item.type === "Trailer" && item.site === "YouTube"
   );
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=86400"
+  );
   if (trailers.length === 0) {
     const httpResponse = { result: false, id: "" };
     res.status(200).json(JSON.stringify(httpResponse));
