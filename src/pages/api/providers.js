@@ -1,5 +1,3 @@
-const MAX_PROVIDERS = 30;
-
 export default async function handler(req, res) {
   const TMB_KEY = process.env.TMB_KEY;
   const { country = "AU", view = "movie" } = req.query;
@@ -17,8 +15,7 @@ export default async function handler(req, res) {
     .filter((item) => item.display_priorities && country in item.display_priorities)
     .sort(
       (a, b) => a.display_priorities[country] - b.display_priorities[country]
-    )
-    .slice(0, MAX_PROVIDERS);
+    );
 
   const providers = {};
   ranked.forEach((item, index) => {
