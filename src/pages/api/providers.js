@@ -1,5 +1,25 @@
 const MAX_PROVIDERS = 40;
 
+// TMDB's provider list mixes flatrate (subscription) services with
+// transactional rent/buy storefronts, with no way to filter by
+// monetization type on this endpoint (confirmed: it silently ignores a
+// `monetization_types` param). Since our discover queries only ever
+// request `with_watch_monetization_types=flatrate`, selecting one of
+// these would just return zero results - and several of them are
+// confusingly similar in name/logo to the real flatrate entry (e.g.
+// "Apple TV Store" vs "Apple TV", "Amazon Video" vs "Amazon Prime
+// Video"). These IDs are global TMDB constants, verified against the
+// AU/US/GB/CA provider lists.
+const TRANSACTIONAL_ONLY_IDS = new Set([
+  2, // Apple TV Store
+  3, // Google Play Movies
+  7, // Fandango At Home (Vudu)
+  10, // Amazon Video
+  130, // Sky Store
+  192, // YouTube
+  332, // Fandango at Home Free
+]);
+
 export default async function handler(req, res) {
   const TMB_KEY = process.env.TMB_KEY;
   const { country = "AU", view = "movie" } = req.query;
@@ -14,7 +34,12 @@ export default async function handler(req, res) {
   const data = await response.json();
 
   const ranked = (data.results || [])
-    .filter((item) => item.display_priorities && country in item.display_priorities)
+    .filter(
+      (item) =>
+        item.display_priorities &&
+        country in item.display_priorities &&
+        !TRANSACTIONAL_ONLY_IDS.has(item.provider_id)
+    )
     .sort(
       (a, b) => a.display_priorities[country] - b.display_priorities[country]
     )
