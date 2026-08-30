@@ -509,7 +509,7 @@ export default function SearchPage({
             <div css={styles.selectionWrapper}>
               <div css={styles.selections}>
                 <SelectionItem
-                  selection={"Sort by Vote"}
+                  selection={"Top Rated"}
                   enabled={sortByVote}
                   handleSwitch={() => setSortByVote(!sortByVote)}
                   mode={mode}
