@@ -24,16 +24,27 @@ const EXCLUDED = new Set([
   "-", // stray placeholder value in TMDB's own TV data for Thailand
 ]);
 
-// A handful of specific, verified duplicate pairs that the general
-// digit-based dedupe below can't catch because neither code contains a
-// number - e.g. Portugal movie ratings list both "Públicos" and "P" for
-// the same general-audience tier. Deliberately NOT a generic "collapse
-// prefix matches" rule: that would also merge India's "U" and "UA", which
-// are genuinely different ratings (Universal vs Universal/Parental
-// Guidance), not duplicates. Keyed by "country:view" since a code can mean
-// different things between a country's movie and TV schemes.
-const KNOWN_DUPLICATE_LABELS = {
+// A handful of specific, verified per-country/media-type exclusions that
+// the generic rules above and below can't catch, each verified individually
+// rather than inferred from a pattern - deliberately NOT a generic rule
+// (e.g. a generic "collapse prefix matches" rule to catch Portugal's "P"
+// duplicate below would also incorrectly merge India's "U" and "UA", which
+// are genuinely different ratings, not duplicates). Keyed by "country:view"
+// since a code can mean different things between a country's movie and TV
+// schemes.
+const PER_COUNTRY_EXCLUSIONS = {
+  // Same general-audience tier as "Públicos", just abbreviated - the
+  // digit-based dedupe below can't catch this since neither code has a
+  // number in it.
   "PT:movie": new Set(["P"]),
+  // "P" and "C" are AU free-to-air scheduling classifications for
+  // children's timeslots (when a show may air, not a maturity rating like
+  // G/PG/M), and are almost never actually applied to titles in TMDB's TV
+  // data (verified: 5 and 9 results respectively across the *entire*
+  // catalog, vs. 971 for "G") - combined with any real search they
+  // practically always return nothing, so they're confusing dead ends
+  // rather than a useful filter.
+  "AU:tv": new Set(["P", "C"]),
 };
 
 // Several countries' schemes carry two parallel codes for the same
@@ -78,12 +89,12 @@ export default async function handler(req, res) {
   }
   const data = await response.json();
   const entries = data.certifications?.[country] || [];
-  const knownDuplicates = KNOWN_DUPLICATE_LABELS[`${country}:${mediaType}`];
+  const perCountryExclusions = PER_COUNTRY_EXCLUSIONS[`${country}:${mediaType}`];
 
   const filtered = entries.filter(
     (item) =>
       !EXCLUDED.has(item.certification.toUpperCase()) &&
-      !knownDuplicates?.has(item.certification)
+      !perCountryExclusions?.has(item.certification)
   );
   const certifications = dedupeByAgeTier(filtered)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
