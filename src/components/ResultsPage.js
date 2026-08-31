@@ -5,6 +5,8 @@ import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
 import MovieCard from "./MovieCard";
 import TVCard from "./TVCard";
+import MovieCardTile from "./MovieCardTile";
+import TVCardTile from "./TVCardTile";
 import SpinnerMovie from "./SpinnerMovie";
 import NavButton from "./NavButton";
 import NothingFound from "./NothingFound";
@@ -20,8 +22,22 @@ const MAX_RANDOM_PAGE = 500;
 // trailer). Revealing them in chunks of 10 keeps the concurrent-request burst
 // the same size as before this migration, even though each API call to our
 // own /api/discover/* route now pulls a full TMDB page (20 results) to
-// minimize round trips.
+// minimize round trips. This is the list/mobile reveal size - grid mode
+// computes its own target based on actual column count, see
+// computeRevealTarget below.
 const REVEAL_CHUNK = 10;
+// A fixed reveal count doesn't make sense once a row can hold 7+ tiles - 10
+// items barely fills a row and a half on a wide grid, leaving it looking
+// sparse and unfinished until the user scrolls. Aim for a few full rows
+// instead, scaling with however many columns actually fit.
+const GRID_ROWS_PER_REVEAL = 3;
+const MAX_REVEAL = 40;
+// Bounds how many extra TMDB pages a single reveal will fetch (in parallel
+// batches, see fetchAdditionalItems) to hit its target - caps worst-case
+// added latency rather than fetching indefinitely if filters are so narrow
+// that pages keep coming back thin.
+const MAX_FETCH_ROUNDS = 3;
+const MAX_BATCH_PAGES = 6;
 
 function selectedKeys(obj) {
   return Object.keys(obj || {}).filter((key) => obj[key]);
@@ -112,6 +128,61 @@ function makeItemGroup(items) {
   return items;
 }
 
+// Must match styles.tileGrid's own grid-template-columns math below, since
+// there's no clean way to ask a CSS auto-fill grid how many columns it
+// actually rendered.
+const TILE_MIN_WIDTH = 170;
+const TILE_GAP = 16;
+
+function computeGridColumns(width) {
+  if (!width) return 1;
+  const containerWidth = Math.min(width * 0.95, 1400);
+  return Math.max(
+    1,
+    Math.floor((containerWidth + TILE_GAP) / (TILE_MIN_WIDTH + TILE_GAP))
+  );
+}
+
+function computeRevealTarget(screenSize, width) {
+  if (screenSize !== "large") return REVEAL_CHUNK;
+  const columns = computeGridColumns(width);
+  return Math.min(
+    MAX_REVEAL,
+    Math.max(REVEAL_CHUNK, columns * GRID_ROWS_PER_REVEAL)
+  );
+}
+
+// The plain makeItemGroup above inserts an ad at a fixed item-index, which
+// works fine in the single-column list (every item is its own row) but
+// breaks a multi-column grid: a full-width ad forced in mid-row splits it
+// into a "7, ad, 3"-looking mess, repeating unpredictably every reveal
+// chunk since chunk-relative index 7 has no relationship to the grid's
+// actual column count. Instead, track the running count of real (non-ad)
+// items already shown and only insert an ad once the cumulative count
+// crosses a whole-row boundary (every 2 full rows), so ads always land
+// between complete rows regardless of chunk/viewport size.
+function interleaveGridAds(existingRealCount, chunk, columns) {
+  const adSpacing = columns * 2;
+  const result = [];
+  let count = existingRealCount;
+  for (const item of chunk) {
+    result.push(item);
+    count++;
+    if (count % adSpacing === 0) {
+      result.push("ad");
+    }
+  }
+  return result;
+}
+
+function groupForReveal(prevItems, chunk, screenSize, width) {
+  if (screenSize === "large") {
+    const realCount = prevItems.filter((item) => item !== "ad").length;
+    return interleaveGridAds(realCount, chunk, computeGridColumns(width));
+  }
+  return makeItemGroup(chunk);
+}
+
 export default function ResultsPage({
   searchDetails,
   setPage,
@@ -183,6 +254,67 @@ export default function ResultsPage({
     return fresh;
   }
 
+  function pickPageBatch(batchSize, pagesSeenSet, totalPagesKnown) {
+    const pages = [];
+    if (sortByVote) {
+      // "Top Rated" almost never reaches this path at all - that route
+      // already returns its whole ranked pool in one total_pages:1
+      // response, comfortably over any reveal target - but stay correct
+      // for the edge case where it doesn't.
+      let next = pagesSeenSet.size === 0 ? 1 : Math.max(...pagesSeenSet) + 1;
+      for (let i = 0; i < batchSize && next <= totalPagesKnown; i++, next++) {
+        pages.push(next);
+        pagesSeenSet.add(next);
+      }
+      return pages;
+    }
+    for (let i = 0; i < batchSize && pagesSeenSet.size < totalPagesKnown; i++) {
+      const page = randomPage(totalPagesKnown, pagesSeenSet);
+      pagesSeenSet.add(page);
+      pages.push(page);
+    }
+    return pages;
+  }
+
+  // Keeps fetching batches of pages *in parallel* until at least
+  // `neededCount` new deduped items have been accumulated, pages run out, or
+  // MAX_FETCH_ROUNDS is hit. A wide grid's reveal target can exceed what a
+  // single TMDB page (~20 results) provides, especially after the
+  // popularity post-filter thins it further, so this often needs several
+  // pages - fetching a batch per round instead of one page at a time keeps
+  // added latency to roughly one round trip per round rather than one per
+  // page (a sequential per-page loop, including the empty-page retries a
+  // single random pick can need, was taking 15+ seconds to fill a wide
+  // grid's initial reveal).
+  async function fetchAdditionalItems(
+    neededCount,
+    pagesSeenSet,
+    idsSeenSet,
+    totalPagesKnown
+  ) {
+    const accumulated = [];
+    let round = 0;
+    while (
+      accumulated.length < neededCount &&
+      pagesSeenSet.size < totalPagesKnown &&
+      round < MAX_FETCH_ROUNDS
+    ) {
+      const remaining = neededCount - accumulated.length;
+      const batchSize = Math.min(
+        MAX_BATCH_PAGES,
+        Math.max(1, Math.ceil(remaining / 10))
+      );
+      const pages = pickPageBatch(batchSize, pagesSeenSet, totalPagesKnown);
+      if (pages.length === 0) break;
+      const results = await Promise.all(pages.map(fetchDiscoverPage));
+      for (const data of results) {
+        accumulated.push(...dedupedItems(data.results || [], idsSeenSet));
+      }
+      round++;
+    }
+    return accumulated;
+  }
+
   useEffect(() => {
     async function load() {
       const firstPage = await fetchDiscoverPage(1);
@@ -195,23 +327,36 @@ export default function ResultsPage({
         return;
       }
 
-      let dataToShow = firstPage;
+      const target = computeRevealTarget(screenSize, width);
       const pagesSeen = new Set([1]);
+      const idsSeen = new Set();
+      let accumulated = dedupedItems(firstPage.results || [], idsSeen);
 
       if (!sortByVote && total > 1) {
         const attempt = await fetchRandomNonEmptyPage(pagesSeen, total);
         if (attempt) {
-          dataToShow = attempt.data;
+          // Replaces page 1's items with the random page's, same as before
+          // this change - page 1 was only ever fetched to learn totals.
+          accumulated = dedupedItems(attempt.data.results || [], idsSeen);
         }
         // else: every random attempt came back empty - fall back to the
         // already-confirmed-non-empty first page rather than show nothing.
       }
 
-      const idsSeen = new Set();
-      const newItems = dedupedItems(dataToShow.results || [], idsSeen);
-      const firstChunk = newItems.slice(0, REVEAL_CHUNK);
-      const rest = newItems.slice(REVEAL_CHUNK);
-      setItems(makeItemGroup(firstChunk));
+      if (accumulated.length < target) {
+        accumulated = accumulated.concat(
+          await fetchAdditionalItems(
+            target - accumulated.length,
+            pagesSeen,
+            idsSeen,
+            total
+          )
+        );
+      }
+
+      const firstChunk = accumulated.slice(0, target);
+      const rest = accumulated.slice(target);
+      setItems(groupForReveal([], firstChunk, screenSize, width));
       setBuffer(rest);
       setSeenIds(idsSeen);
       setUsedPages(pagesSeen);
@@ -222,42 +367,32 @@ export default function ResultsPage({
   }, []);
 
   const fetchMoreData = async () => {
-    if (buffer.length > 0) {
-      const chunk = buffer.slice(0, REVEAL_CHUNK);
-      const rest = buffer.slice(REVEAL_CHUNK);
-      setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
-      setBuffer(rest);
-      setHasMore(rest.length > 0 || totalPages > usedPages.size);
-      return;
-    }
-
-    let data;
-    const nextUsedPages = new Set(usedPages);
-    if (sortByVote) {
-      const page = Math.max(...usedPages) + 1;
-      data = await fetchDiscoverPage(page);
-      nextUsedPages.add(page);
-    } else {
-      const attempt = await fetchRandomNonEmptyPage(nextUsedPages, totalPages);
-      if (!attempt) {
-        setUsedPages(nextUsedPages);
-        setHasMore(false);
-        return;
-      }
-      data = attempt.data;
-    }
-
+    const target = computeRevealTarget(screenSize, width);
     const idsSeen = new Set(seenIds);
-    const newItems = dedupedItems(data.results || [], idsSeen);
-    const chunk = newItems.slice(0, REVEAL_CHUNK);
-    const rest = newItems.slice(REVEAL_CHUNK);
-    setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
+    const pagesSeen = new Set(usedPages);
+    let accumulated = [...buffer];
+
+    if (accumulated.length < target && pagesSeen.size < totalPages) {
+      accumulated = accumulated.concat(
+        await fetchAdditionalItems(
+          target - accumulated.length,
+          pagesSeen,
+          idsSeen,
+          totalPages
+        )
+      );
+    }
+
+    const chunk = accumulated.slice(0, target);
+    const rest = accumulated.slice(target);
+    setItems((prev) => [
+      ...prev,
+      ...groupForReveal(prev, chunk, screenSize, width),
+    ]);
     setBuffer(rest);
     setSeenIds(idsSeen);
-    setUsedPages(nextUsedPages);
-    const total = data.total_pages || totalPages;
-    setTotalPages(total);
-    setHasMore(rest.length > 0 || total > nextUsedPages.size);
+    setUsedPages(pagesSeen);
+    setHasMore(rest.length > 0 || totalPages > pagesSeen.size);
   };
 
   const handleRefine = () => {
@@ -307,6 +442,21 @@ export default function ResultsPage({
       flexDirection: "column",
       marginTop: "20px",
     }),
+    tileGrid: css({
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
+      gap: "24px 16px",
+      width: "95%",
+      maxWidth: "1400px",
+      margin: "20px auto 0",
+    }),
+    adWrapGrid: css({
+      gridColumn: "1 / -1",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "0.5rem 0",
+    }),
     prevButton: css({
       marginRight: 10,
     }),
@@ -353,53 +503,83 @@ export default function ResultsPage({
               next={fetchMoreData}
               hasMore={hasMore}
             ></InfiniteScroll>
-            {items.map((item, index) => {
-              if (item == "ad") {
-                return (
-                  <div css={styles.adWrap} key={`Ad${index}`}>
-                    {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
-                    {screenSize === "small" ? (
-                      <Adsense
-                        client="ca-pub-9245347946008848"
-                        slot="5327454859"
-                        style={{ width: 300, height: 100 }}
-                        format=""
-                      />
-                    ) : (
-                      <Adsense
-                        client="ca-pub-9245347946008848"
-                        slot="5327454859"
-                        style={{ width: 728, height: 90 }}
-                        format=""
-                      />
-                    )}
-                  </div>
+            <div css={screenSize === "large" ? styles.tileGrid : undefined}>
+              {items.map((item, index) => {
+                if (item == "ad") {
+                  return (
+                    <div
+                      css={
+                        screenSize === "large"
+                          ? styles.adWrapGrid
+                          : styles.adWrap
+                      }
+                      key={`Ad${index}`}
+                    >
+                      {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
+                      {screenSize === "small" ? (
+                        <Adsense
+                          client="ca-pub-9245347946008848"
+                          slot="5327454859"
+                          style={{ width: 300, height: 100 }}
+                          format=""
+                        />
+                      ) : (
+                        <Adsense
+                          client="ca-pub-9245347946008848"
+                          slot="5327454859"
+                          style={{ width: 728, height: 90 }}
+                          format=""
+                        />
+                      )}
+                    </div>
+                  );
+                }
+                if (screenSize === "large") {
+                  return view == "movie" ? (
+                    <MovieCardTile
+                      id={item.id}
+                      selectedProviders={selectedProviderIds}
+                      country={location}
+                      allProviderData={allProviderData}
+                      mode={mode}
+                      key={item.id}
+                    />
+                  ) : (
+                    <TVCardTile
+                      id={item.id}
+                      selectedProviders={selectedProviderIds}
+                      country={location}
+                      allProviderData={allProviderData}
+                      mode={mode}
+                      key={item.id}
+                    />
+                  );
+                }
+                return view == "movie" ? (
+                  <MovieCard
+                    id={item.id}
+                    selectedProviders={selectedProviderIds}
+                    country={location}
+                    allProviderData={allProviderData}
+                    screenSize={screenSize}
+                    mode={mode}
+                    key={item.id}
+                    width={width}
+                  ></MovieCard>
+                ) : (
+                  <TVCard
+                    id={item.id}
+                    selectedProviders={selectedProviderIds}
+                    country={location}
+                    allProviderData={allProviderData}
+                    screenSize={screenSize}
+                    mode={mode}
+                    key={item.id}
+                    width={width}
+                  />
                 );
-              }
-              return view == "movie" ? (
-                <MovieCard
-                  id={item.id}
-                  selectedProviders={selectedProviderIds}
-                  country={location}
-                  allProviderData={allProviderData}
-                  screenSize={screenSize}
-                  mode={mode}
-                  key={item.id}
-                  width={width}
-                ></MovieCard>
-              ) : (
-                <TVCard
-                  id={item.id}
-                  selectedProviders={selectedProviderIds}
-                  country={location}
-                  allProviderData={allProviderData}
-                  screenSize={screenSize}
-                  mode={mode}
-                  key={item.id}
-                  width={width}
-                />
-              );
-            })}
+              })}
+            </div>
             <Footer
               activePage="app"
               setPage={setPage}

@@ -25,7 +25,13 @@ export default async function handler(req, res) {
       retry += 1;
       console.log("retry number", retry);
       if (retry > 3) {
-        res.status(200).json({ response: "Error connecting to tmb api" });
+        // Must match the success path's JSON.stringify-wrapped shape - the
+        // client always does JSON.parse(await response.json()), so an
+        // unwrapped object here would crash that parse instead of failing
+        // gracefully.
+        res
+          .status(200)
+          .json(JSON.stringify({ response: "Error connecting to tmb api" }));
         return;
       }
     }
