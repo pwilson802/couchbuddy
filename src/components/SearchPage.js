@@ -19,7 +19,6 @@ import LocationSelectSmall from "./LocationSelectSmall";
 import CookieBanner from "../components/CookieBanner";
 import SelectionItem from "./SelectionItem";
 import SearchSwitch from "./SearchSwitch";
-import { getCertificationList } from "../data/certifications";
 
 const genreObj = {
   Action: false,
@@ -79,9 +78,15 @@ function sortProvidersByPriority(data) {
   return Object.keys(data).sort((a, b) => data[a].priority - data[b].priority);
 }
 
-function makeCertificationsObj(country) {
-  return getCertificationList(country).reduce((acc, curr) => {
-    acc[curr.label] = false;
+async function getCertificationList(country, view) {
+  const url = `/api/certifications?country=${country}&view=${view}`;
+  const response = await fetchRetry(url, 3);
+  return await response.json();
+}
+
+function makeCertificationsObj(list) {
+  return list.reduce((acc, curr) => {
+    acc[curr] = false;
     return acc;
   }, {});
 }
@@ -154,8 +159,9 @@ export default function SearchPage({
     setSortedProviders(sortProvidersByPriority(providerData));
   }
 
-  function configureCertifications(location) {
-    setSelectedCertifications(makeCertificationsObj(location));
+  async function configureCertifications(location) {
+    const list = await getCertificationList(location, view);
+    setSelectedCertifications(makeCertificationsObj(list));
   }
 
   const handleGenre = (genre) => {

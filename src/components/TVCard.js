@@ -67,47 +67,56 @@ function MovieCard({
   const [trailerID, setTrailerID] = useState("");
   const [showTrailer, setShowTrailer] = useState(false);
   const [status, setStatus] = useState("");
+  const [failed, setFailed] = useState(false);
   useEffect(() => {
     async function setMovieCard() {
-      const [tvData, trailer] = await Promise.all([
-        getTvDetails(id, selectedProviders, country),
-        getTvTrailer(id),
-      ]);
-      const {
-        name,
-        overview,
-        tagline,
-        poster_path,
-        vote_average,
-        first_air_date,
-        number_of_seasons,
-        status,
-        matchedProviders,
-      } = tvData;
-      const releaseYear = first_air_date.split("-")[0];
-      setYear(releaseYear);
-      setTitle(name);
-      setOverview(overview);
-      setTagline(tagline);
-      setVoteAverage(Number(vote_average).toFixed(1))
-      setSeasons(number_of_seasons);
-      if (status === "Returning Series") {
-        setStatus("Returning");
-      } else {
-        setStatus(status);
+      try {
+        const [tvData, trailer] = await Promise.all([
+          getTvDetails(id, selectedProviders, country),
+          getTvTrailer(id),
+        ]);
+        const {
+          name,
+          overview,
+          tagline,
+          poster_path,
+          vote_average,
+          first_air_date,
+          number_of_seasons,
+          status,
+          matchedProviders,
+        } = tvData;
+        const releaseYear = first_air_date.split("-")[0];
+        setYear(releaseYear);
+        setTitle(name);
+        setOverview(overview);
+        setTagline(tagline);
+        setVoteAverage(Number(vote_average).toFixed(1))
+        setSeasons(number_of_seasons);
+        if (status === "Returning Series") {
+          setStatus("Returning");
+        } else {
+          setStatus(status);
+        }
+        const imagePath = "https://image.tmdb.org/t/p/w185" + poster_path;
+        setImage(imagePath);
+        const providerLogos = (matchedProviders || []).map(
+          (item) => allProviderData[item]["logo"]
+        );
+        setShowAllOverview(screenSize === "large");
+        setProviderImages(providerLogos);
+        if (trailer.result === true) {
+          setHasTrailer(true);
+          setTrailerID(trailer.id);
+        }
+        setLoaded(true);
+      } catch (err) {
+        // A malformed/failed response for this title must not leave the
+        // card spinning forever - hide it instead of crashing the render
+        // with undefined fields.
+        console.error("Failed to load tv card", id, err);
+        setFailed(true);
       }
-      const imagePath = "https://image.tmdb.org/t/p/w185" + poster_path;
-      setImage(imagePath);
-      const providerLogos = (matchedProviders || []).map(
-        (item) => allProviderData[item]["logo"]
-      );
-      setShowAllOverview(screenSize === "large");
-      setProviderImages(providerLogos);
-      if (trailer.result === true) {
-        setHasTrailer(true);
-        setTrailerID(trailer.id);
-      }
-      setLoaded(true);
     }
     setMovieCard();
   }, [id]);
@@ -275,7 +284,7 @@ function MovieCard({
 
   return (
     <div css={styles.cardWrapper}>
-      {loaded ? (
+      {failed ? null : loaded ? (
         <div>
           {screenSize === "small" && (
             <div css={styles.topWrap}>
