@@ -114,6 +114,52 @@ function makeItemGroup(items) {
   return items;
 }
 
+// Must match styles.tileGrid's own grid-template-columns math below, since
+// there's no clean way to ask a CSS auto-fill grid how many columns it
+// actually rendered.
+const TILE_MIN_WIDTH = 170;
+const TILE_GAP = 16;
+
+function computeGridColumns(width) {
+  if (!width) return 1;
+  const containerWidth = Math.min(width * 0.95, 1400);
+  return Math.max(
+    1,
+    Math.floor((containerWidth + TILE_GAP) / (TILE_MIN_WIDTH + TILE_GAP))
+  );
+}
+
+// The plain makeItemGroup above inserts an ad at a fixed item-index, which
+// works fine in the single-column list (every item is its own row) but
+// breaks a multi-column grid: a full-width ad forced in mid-row splits it
+// into a "7, ad, 3"-looking mess, repeating unpredictably every reveal
+// chunk since chunk-relative index 7 has no relationship to the grid's
+// actual column count. Instead, track the running count of real (non-ad)
+// items already shown and only insert an ad once the cumulative count
+// crosses a whole-row boundary (every 2 full rows), so ads always land
+// between complete rows regardless of chunk/viewport size.
+function interleaveGridAds(existingRealCount, chunk, columns) {
+  const adSpacing = columns * 2;
+  const result = [];
+  let count = existingRealCount;
+  for (const item of chunk) {
+    result.push(item);
+    count++;
+    if (count % adSpacing === 0) {
+      result.push("ad");
+    }
+  }
+  return result;
+}
+
+function groupForReveal(prevItems, chunk, screenSize, width) {
+  if (screenSize === "large") {
+    const realCount = prevItems.filter((item) => item !== "ad").length;
+    return interleaveGridAds(realCount, chunk, computeGridColumns(width));
+  }
+  return makeItemGroup(chunk);
+}
+
 export default function ResultsPage({
   searchDetails,
   setPage,
@@ -213,7 +259,7 @@ export default function ResultsPage({
       const newItems = dedupedItems(dataToShow.results || [], idsSeen);
       const firstChunk = newItems.slice(0, REVEAL_CHUNK);
       const rest = newItems.slice(REVEAL_CHUNK);
-      setItems(makeItemGroup(firstChunk));
+      setItems(groupForReveal([], firstChunk, screenSize, width));
       setBuffer(rest);
       setSeenIds(idsSeen);
       setUsedPages(pagesSeen);
@@ -227,7 +273,10 @@ export default function ResultsPage({
     if (buffer.length > 0) {
       const chunk = buffer.slice(0, REVEAL_CHUNK);
       const rest = buffer.slice(REVEAL_CHUNK);
-      setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
+      setItems((prev) => [
+        ...prev,
+        ...groupForReveal(prev, chunk, screenSize, width),
+      ]);
       setBuffer(rest);
       setHasMore(rest.length > 0 || totalPages > usedPages.size);
       return;
@@ -253,7 +302,10 @@ export default function ResultsPage({
     const newItems = dedupedItems(data.results || [], idsSeen);
     const chunk = newItems.slice(0, REVEAL_CHUNK);
     const rest = newItems.slice(REVEAL_CHUNK);
-    setItems((prev) => [...prev, ...makeItemGroup(chunk)]);
+    setItems((prev) => [
+      ...prev,
+      ...groupForReveal(prev, chunk, screenSize, width),
+    ]);
     setBuffer(rest);
     setSeenIds(idsSeen);
     setUsedPages(nextUsedPages);

@@ -4,7 +4,8 @@ import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import ShareButtons from "./ShareButtons";
 import MovieCardLoading from "./MovieCardLoading";
-import YouTube from "react-youtube";
+import TrailerModal from "./TrailerModal";
+import OutsideClickHandler from "react-outside-click-handler";
 import TVStatus from "./TVStatus";
 
 async function getTvDetails(id, selectedProviders, country) {
@@ -57,6 +58,7 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
   const [trailerID, setTrailerID] = useState("");
   const [showTrailer, setShowTrailer] = useState(false);
   const [status, setStatus] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     async function setTvCard() {
@@ -103,15 +105,10 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
       border: `1px solid ${colors[mode]["cardBorder"]}`,
       cursor: "pointer",
       transition: "transform 0.15s ease",
-      "&:hover": {
-        transform: "translateY(-4px)",
-        zIndex: 5,
-      },
-      "&:hover .hoverPanel": {
-        opacity: 1,
-        pointerEvents: "auto",
-        transform: "translateY(0)",
-      },
+    }),
+    tileExpanded: css({
+      transform: "translateY(-4px)",
+      zIndex: 5,
     }),
     posterBox: css({
       position: "relative",
@@ -187,6 +184,11 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
       transition: "opacity 0.15s ease, transform 0.15s ease",
       zIndex: 10,
     }),
+    hoverPanelExpanded: css({
+      opacity: 1,
+      pointerEvents: "auto",
+      transform: "translateY(0)",
+    }),
     overview: css({
       margin: 0,
       fontSize: 12,
@@ -224,21 +226,6 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
       fontWeight: "bold",
       fontSize: 12,
     }),
-    trailerOverlay: css({
-      position: "relative",
-      width: "100%",
-      paddingTop: "56.25%",
-      marginTop: 8,
-      borderRadius: 8,
-      overflow: "hidden",
-    }),
-    trailerIframe: css({
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-    }),
     loadingWrap: css({
       aspectRatio: "2 / 3",
       display: "flex",
@@ -248,65 +235,71 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
   };
 
   return (
-    <div css={styles.tile}>
-      {loaded ? (
-        <React.Fragment>
-          <div css={styles.posterBox}>
-            <img css={styles.poster} src={image} alt={`${title} poster`} />
-            <div css={styles.statusBadge}>
-              <TVStatus status={status} />
-            </div>
-            <p css={styles.voteBadge}>{voteAverage}</p>
-          </div>
-          <div css={styles.info}>
-            <p css={styles.title}>{title}</p>
-            <p css={styles.meta}>
-              {year} &middot; {seasons} seasons
-            </p>
-          </div>
-          <div css={styles.hoverPanel} className="hoverPanel">
-            <p css={styles.overview}>{overview}</p>
-            <div css={styles.providerWrapper}>
-              {providerImages.map((item) => (
-                <img
-                  key={item}
-                  css={styles.providerImage}
-                  src={item}
-                  alt="provider"
-                />
-              ))}
-            </div>
-            <div css={styles.actionsRow}>
-              {hasTrailer ? (
-                <button
-                  css={styles.trailerButton}
-                  onClick={() => setShowTrailer(!showTrailer)}
-                >
-                  {showTrailer ? "CLOSE" : "TRAILER"}
-                </button>
-              ) : (
-                <span />
-              )}
-              <ShareButtons movie={title} tagline={tagline} />
-            </div>
-            {showTrailer && (
-              <div css={styles.trailerOverlay}>
-                <div css={styles.trailerIframe}>
-                  <YouTube
-                    videoId={trailerID}
-                    opts={{ width: "100%", height: "100%" }}
-                  />
-                </div>
+    <OutsideClickHandler onOutsideClick={() => setExpanded(false)}>
+      <div
+        css={[styles.tile, expanded && styles.tileExpanded]}
+        onClick={() => loaded && setExpanded(!expanded)}
+      >
+        {loaded ? (
+          <React.Fragment>
+            <div css={styles.posterBox}>
+              <img css={styles.poster} src={image} alt={`${title} poster`} />
+              <div css={styles.statusBadge}>
+                <TVStatus status={status} />
               </div>
-            )}
+              <p css={styles.voteBadge}>{voteAverage}</p>
+            </div>
+            <div css={styles.info}>
+              <p css={styles.title}>{title}</p>
+              <p css={styles.meta}>
+                {year} &middot; {seasons} seasons
+              </p>
+            </div>
+            <div
+              css={[styles.hoverPanel, expanded && styles.hoverPanelExpanded]}
+            >
+              <p css={styles.overview}>{overview}</p>
+              <div css={styles.providerWrapper}>
+                {providerImages.map((item) => (
+                  <img
+                    key={item}
+                    css={styles.providerImage}
+                    src={item}
+                    alt="provider"
+                  />
+                ))}
+              </div>
+              <div
+                css={styles.actionsRow}
+                onClick={(event) => event.stopPropagation()}
+              >
+                {hasTrailer ? (
+                  <button
+                    css={styles.trailerButton}
+                    onClick={() => setShowTrailer(true)}
+                  >
+                    TRAILER
+                  </button>
+                ) : (
+                  <span />
+                )}
+                <ShareButtons movie={title} tagline={tagline} />
+              </div>
+            </div>
+          </React.Fragment>
+        ) : (
+          <div css={styles.loadingWrap}>
+            <MovieCardLoading mode={mode} />
           </div>
-        </React.Fragment>
-      ) : (
-        <div css={styles.loadingWrap}>
-          <MovieCardLoading mode={mode} />
-        </div>
-      )}
-    </div>
+        )}
+        {showTrailer && (
+          <TrailerModal
+            videoId={trailerID}
+            onClose={() => setShowTrailer(false)}
+          />
+        )}
+      </div>
+    </OutsideClickHandler>
   );
 }
 
