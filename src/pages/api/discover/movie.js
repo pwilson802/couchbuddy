@@ -1,4 +1,3 @@
-import { certificationQueryValue } from "../../../data/certifications";
 import { rankByWeightedRating } from "../../../lib/weightedRating";
 
 const RATED_CANDIDATE_PAGES = 10;
@@ -43,12 +42,8 @@ function buildParams({
     params.set("with_watch_monetization_types", "flatrate");
   }
   if (certifications) {
-    const mapped = certifications
-      .split("|")
-      .map((label) => certificationQueryValue(country, label))
-      .join("|");
     params.set("certification_country", country);
-    params.set("certification", mapped);
+    params.set("certification", certifications);
   }
   if (runtime && Number(runtime) < 400) {
     params.set("with_runtime.lte", runtime);
