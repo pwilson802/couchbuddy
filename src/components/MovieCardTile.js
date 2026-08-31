@@ -57,30 +57,39 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
   const [trailerID, setTrailerID] = useState("");
   const [showTrailer, setShowTrailer] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     async function setMovieCard() {
-      const [movieData, trailer] = await Promise.all([
-        getMovieDetails(id, selectedProviders, country),
-        getMovieTrailer(id),
-      ]);
-      setTitle(movieData.title);
-      setOverview(movieData.overview);
-      setTagline(movieData.tagline);
-      setRuntime(movieData.runtime);
-      setYear(movieData.release_date.split("-")[0]);
-      setVoteAverage(Number(movieData.vote_average).toFixed(1));
-      setImage("https://image.tmdb.org/t/p/w342" + movieData.poster_path);
-      setProviderImages(
-        (movieData.matchedProviders || []).map(
-          (item) => allProviderData[item]["logo"]
-        )
-      );
-      if (trailer.result === true) {
-        setHasTrailer(true);
-        setTrailerID(trailer.id);
+      try {
+        const [movieData, trailer] = await Promise.all([
+          getMovieDetails(id, selectedProviders, country),
+          getMovieTrailer(id),
+        ]);
+        setTitle(movieData.title);
+        setOverview(movieData.overview);
+        setTagline(movieData.tagline);
+        setRuntime(movieData.runtime);
+        setYear(movieData.release_date.split("-")[0]);
+        setVoteAverage(Number(movieData.vote_average).toFixed(1));
+        setImage("https://image.tmdb.org/t/p/w342" + movieData.poster_path);
+        setProviderImages(
+          (movieData.matchedProviders || []).map(
+            (item) => allProviderData[item]["logo"]
+          )
+        );
+        if (trailer.result === true) {
+          setHasTrailer(true);
+          setTrailerID(trailer.id);
+        }
+        setLoaded(true);
+      } catch (err) {
+        // A malformed/failed response for this title must not leave the
+        // tile spinning forever - hide it instead of crashing the render
+        // with undefined fields.
+        console.error("Failed to load movie tile", id, err);
+        setFailed(true);
       }
-      setLoaded(true);
     }
     setMovieCard();
   }, [id]);
@@ -221,7 +230,7 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
         css={[styles.tile, expanded && styles.tileExpanded]}
         onClick={() => loaded && setExpanded(!expanded)}
       >
-        {loaded ? (
+        {failed ? null : loaded ? (
           <React.Fragment>
             <div css={styles.posterBox}>
               <img css={styles.poster} src={image} alt={`${title} poster`} />
