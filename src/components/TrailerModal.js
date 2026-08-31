@@ -1,6 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { jsx, css } from "@emotion/react";
+import { jsx, css, ClassNames } from "@emotion/react";
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import YouTube from "react-youtube";
@@ -33,12 +33,13 @@ function TrailerModal({ videoId, onClose }) {
       alignItems: "center",
       justifyContent: "center",
       zIndex: 1000,
-      padding: "8vh 5vw",
     }),
     playerWrap: css({
       position: "relative",
-      width: "100%",
-      maxWidth: "1100px",
+      // Fill roughly 3/4 of the screen while staying 16:9 and never
+      // overflowing the viewport in either dimension - whichever
+      // constraint (width or height) is tighter wins.
+      width: "min(75vw, calc(75vh * 16 / 9))",
       aspectRatio: "16 / 9",
     }),
     iframeWrap: css({
@@ -74,14 +75,25 @@ function TrailerModal({ videoId, onClose }) {
           &times;
         </button>
         <div css={styles.iframeWrap}>
-          <YouTube
-            videoId={videoId}
-            opts={{
-              width: "100%",
-              height: "100%",
-              playerVars: { autoplay: 1 },
-            }}
-          />
+          {/* react-youtube renders its own wrapper div (containerClassName)
+              around the actual iframe (className) - neither is sized by
+              default, so opts.width/height="100%" (an iframe HTML attribute)
+              has nothing to resolve against and collapses to a sliver.
+              ClassNames gets us real class strings to hand to both. */}
+          <ClassNames>
+            {({ css: cx }) => (
+              <YouTube
+                videoId={videoId}
+                containerClassName={cx({ width: "100%", height: "100%" })}
+                className={cx({ width: "100%", height: "100%" })}
+                opts={{
+                  width: "100%",
+                  height: "100%",
+                  playerVars: { autoplay: 1 },
+                }}
+              />
+            )}
+          </ClassNames>
         </div>
       </div>
     </div>,
