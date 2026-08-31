@@ -21,7 +21,20 @@ const EXCLUDED = new Set([
   "X18+",
   "X 18+",
   "RESTRICTED SCREENING",
+  "-", // stray placeholder value in TMDB's own TV data for Thailand
 ]);
+
+// A handful of specific, verified duplicate pairs that the general
+// digit-based dedupe below can't catch because neither code contains a
+// number - e.g. Portugal movie ratings list both "Públicos" and "P" for
+// the same general-audience tier. Deliberately NOT a generic "collapse
+// prefix matches" rule: that would also merge India's "U" and "UA", which
+// are genuinely different ratings (Universal vs Universal/Parental
+// Guidance), not duplicates. Keyed by "country:view" since a code can mean
+// different things between a country's movie and TV schemes.
+const KNOWN_DUPLICATE_LABELS = {
+  "PT:movie": new Set(["P"]),
+};
 
 // Several countries' schemes carry two parallel codes for the same
 // underlying age tier - e.g. NZ's "R13" and "RP13", GB's "12" and "12A",
@@ -65,9 +78,12 @@ export default async function handler(req, res) {
   }
   const data = await response.json();
   const entries = data.certifications?.[country] || [];
+  const knownDuplicates = KNOWN_DUPLICATE_LABELS[`${country}:${mediaType}`];
 
   const filtered = entries.filter(
-    (item) => !EXCLUDED.has(item.certification.toUpperCase())
+    (item) =>
+      !EXCLUDED.has(item.certification.toUpperCase()) &&
+      !knownDuplicates?.has(item.certification)
   );
   const certifications = dedupeByAgeTier(filtered)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
