@@ -55,11 +55,18 @@ function buildParams({
 async function fetchDiscoverPage(args) {
   const params = buildParams(args);
   const url = `https://api.themoviedb.org/3/discover/tv?${params.toString()}`;
-  const response = await fetch(url);
-  if (!response.ok) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return { results: [], page: args.page, total_pages: args.page, total_results: 0 };
+    }
+    return await response.json();
+  } catch {
+    // A transient network failure reaching TMDB shouldn't 500 the whole
+    // route - degrade to an empty page so the caller's own retry/backfill
+    // logic can move on to a different page instead.
     return { results: [], page: args.page, total_pages: args.page, total_results: 0 };
   }
-  return await response.json();
 }
 
 async function filterBySeasons(results, seasonsMin, seasonsMax) {
