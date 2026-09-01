@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import ShareButtons from "./ShareButtons";
 import TrailerModal from "./TrailerModal";
@@ -27,8 +27,10 @@ const colors = {
   },
 };
 
-function TitleDetail({ type, data, mode }) {
+function TitleDetail({ type, data, mode, location }) {
   const [showTrailer, setShowTrailer] = useState(false);
+  const [certification, setCertification] = useState(data.certification);
+  const [providers, setProviders] = useState(data.providers);
   const palette = colors[mode] || colors.dark;
   const posterUrl = data.posterPath
     ? `https://image.tmdb.org/t/p/w500${data.posterPath}`
@@ -38,7 +40,33 @@ function TitleDetail({ type, data, mode }) {
     : null;
   const similarHref = type === "movie" ? movieHref : tvHref;
   const similarLabel = type === "movie" ? "Similar Movies" : "Similar Shows";
-  const hasProviders = data.providers.flatrate.length > 0;
+  const hasProviders = providers.flatrate.length > 0;
+
+  // The page was rendered server-side for data.country (the URL's own
+  // ?country=, a Vercel geo header, or a US fallback) - if the viewer then
+  // picks a different country from the nav, refresh just the
+  // country-specific parts instead of leaving stale data on screen.
+  useEffect(() => {
+    if (!location || location === data.country) return;
+    let cancelled = false;
+    async function refresh() {
+      try {
+        const response = await fetch(
+          `/api/watchinfo/${data.id}?view=${type}&country=${location}`
+        );
+        const info = await response.json();
+        if (cancelled) return;
+        setCertification(info.certification);
+        setProviders(info.providers);
+      } catch {
+        // Leave the previously shown info in place on failure.
+      }
+    }
+    refresh();
+    return () => {
+      cancelled = true;
+    };
+  }, [location, data.country, data.id, type]);
 
   const styles = {
     hero: css({
@@ -288,8 +316,8 @@ function TitleDetail({ type, data, mode }) {
             <div css={styles.metaRow}>
               {data.year && <span>{data.year}</span>}
               {data.metaLabel && <span>{data.metaLabel}</span>}
-              {data.certification && (
-                <span css={styles.certBadge}>{data.certification}</span>
+              {certification && (
+                <span css={styles.certBadge}>{certification}</span>
               )}
               {data.voteAverage && (
                 <span css={styles.voteBadge}>{data.voteAverage}</span>
@@ -321,7 +349,7 @@ function TitleDetail({ type, data, mode }) {
               <div css={styles.providersSection}>
                 <p css={styles.providersLabel}>Where to Stream</p>
                 <div css={styles.providerLogos}>
-                  {data.providers.flatrate.map((provider) => (
+                  {providers.flatrate.map((provider) => (
                     <img
                       key={provider.id}
                       css={styles.providerLogo}
@@ -331,10 +359,10 @@ function TitleDetail({ type, data, mode }) {
                     />
                   ))}
                 </div>
-                {data.providers.link && (
+                {providers.link && (
                   <a
                     css={styles.justwatchLink}
-                    href={data.providers.link}
+                    href={providers.link}
                     target="_blank"
                     rel="noreferrer"
                   >

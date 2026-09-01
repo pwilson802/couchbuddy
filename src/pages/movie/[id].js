@@ -10,40 +10,7 @@ import LocationSelectSmall from "../../components/LocationSelectSmall";
 import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, movieHref } from "../../lib/slug";
 import { getCuratedProviders } from "../../lib/providers";
-
-function getCertification(releaseDatesResults, country) {
-  const entry = (releaseDatesResults || []).find(
-    (item) => item.iso_3166_1 === country
-  );
-  if (!entry) return null;
-  const withCert = (entry.release_dates || []).find(
-    (release) => release.certification
-  );
-  return withCert ? withCert.certification : null;
-}
-
-// Streaming (flatrate) only - buy/rent is deliberately left out, matching
-// the search feature's own with_watch_monetization_types=flatrate-only
-// focus. Also filtered down to curatedIds - TMDB's own flatrate list for a
-// title includes every regional bundle/add-on channel it knows about,
-// which is a lot noisier than the ~40 services the search page actually
-// offers as options.
-function getProviders(watchProviders, country, curatedIds) {
-  const entry = watchProviders?.results?.[country];
-  const mapList = (list) =>
-    (list || [])
-      .filter((provider) => curatedIds.has(String(provider.provider_id)))
-      .map((provider) => ({
-        id: provider.provider_id,
-        name: provider.provider_name,
-        logoPath: provider.logo_path,
-      }));
-  if (!entry) return { flatrate: [], link: null };
-  return {
-    flatrate: mapList(entry.flatrate),
-    link: entry.link || null,
-  };
-}
+import { getMovieCertification, filterProviders } from "../../lib/watchInfo";
 
 // Node's fetch has been observed to intermittently ETIMEDOUT against TMDB in
 // this environment even when the same request succeeds immediately via curl
@@ -65,6 +32,7 @@ function normalizeMovie(movie, country, curatedIds) {
   );
   return {
     id: movie.id,
+    country,
     title: movie.title,
     tagline: movie.tagline,
     overview: movie.overview,
@@ -78,7 +46,7 @@ function normalizeMovie(movie, country, curatedIds) {
       : null,
     voteCount: movie.vote_count || 0,
     genres: (movie.genres || []).map((genre) => genre.name),
-    certification: getCertification(
+    certification: getMovieCertification(
       movie.release_dates?.results,
       country
     ),
@@ -99,7 +67,7 @@ function normalizeMovie(movie, country, curatedIds) {
       posterPath: item.poster_path,
       year: (item.release_date || "").split("-")[0] || null,
     })),
-    providers: getProviders(movie["watch/providers"], country, curatedIds),
+    providers: filterProviders(movie["watch/providers"], country, curatedIds),
     trailerKey: trailer ? trailer.key : null,
     href: movieHref(movie.id, movie.title),
   };
@@ -190,7 +158,7 @@ export default function MoviePage({
       display: "grid",
       gridTemplateColumns: "1fr auto 1fr",
       alignItems: "center",
-      padding: "10px 16px",
+      margin: 10,
     }),
     locationWrap: css({
       display: "none",
@@ -276,7 +244,7 @@ export default function MoviePage({
             changeMode={changeMode}
           />
         </div>
-        <TitleDetail type="movie" data={data} mode={mode} />
+        <TitleDetail type="movie" data={data} mode={mode} location={location} />
         <Footer
           activePage="movie"
           mode={mode}

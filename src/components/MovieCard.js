@@ -258,7 +258,7 @@ function MovieCard({
     }),
   };
 
-  const href = movieHref(id, title);
+  const href = movieHref(id, title, country);
 
   return (
     <div css={styles.cardWrapper}>

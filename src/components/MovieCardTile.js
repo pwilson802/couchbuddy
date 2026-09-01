@@ -245,7 +245,7 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
     }),
   };
 
-  const href = movieHref(id, title);
+  const href = movieHref(id, title, country);
 
   return (
     <OutsideClickHandler onOutsideClick={() => setExpanded(false)}>

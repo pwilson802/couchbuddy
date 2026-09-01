@@ -16,10 +16,17 @@ export function parseIdParam(param) {
   return match ? match[1] : null;
 }
 
-export function movieHref(id, title) {
-  return `/movie/${id}-${slugify(title)}`;
+// country is passed through as a query param so the detail page's
+// country-specific data (certification, streaming providers) matches what
+// the user was actually searching in, rather than falling back to a guess
+// from the request's geo headers (which don't exist on localhost, and
+// don't reflect a country the user picked manually rather than lives in).
+export function movieHref(id, title, country) {
+  const suffix = country ? `?country=${country}` : "";
+  return `/movie/${id}-${slugify(title)}${suffix}`;
 }
 
-export function tvHref(id, title) {
-  return `/tv/${id}-${slugify(title)}`;
+export function tvHref(id, title, country) {
+  const suffix = country ? `?country=${country}` : "";
+  return `/tv/${id}-${slugify(title)}${suffix}`;
 }

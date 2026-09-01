@@ -286,7 +286,7 @@ function MovieCard({
     }),
   };
 
-  const href = tvHref(id, title);
+  const href = tvHref(id, title, country);
 
   return (
     <div css={styles.cardWrapper}>

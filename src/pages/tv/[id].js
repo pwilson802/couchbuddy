@@ -10,36 +10,7 @@ import LocationSelectSmall from "../../components/LocationSelectSmall";
 import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, tvHref } from "../../lib/slug";
 import { getCuratedProviders } from "../../lib/providers";
-
-function getContentRating(contentRatingsResults, country) {
-  const entry = (contentRatingsResults || []).find(
-    (item) => item.iso_3166_1 === country
-  );
-  return entry ? entry.rating || null : null;
-}
-
-// Streaming (flatrate) only - buy/rent is deliberately left out, matching
-// the search feature's own with_watch_monetization_types=flatrate-only
-// focus. Also filtered down to curatedIds - TMDB's own flatrate list for a
-// title includes every regional bundle/add-on channel it knows about,
-// which is a lot noisier than the ~40 services the search page actually
-// offers as options.
-function getProviders(watchProviders, country, curatedIds) {
-  const entry = watchProviders?.results?.[country];
-  const mapList = (list) =>
-    (list || [])
-      .filter((provider) => curatedIds.has(String(provider.provider_id)))
-      .map((provider) => ({
-        id: provider.provider_id,
-        name: provider.provider_name,
-        logoPath: provider.logo_path,
-      }));
-  if (!entry) return { flatrate: [], link: null };
-  return {
-    flatrate: mapList(entry.flatrate),
-    link: entry.link || null,
-  };
-}
+import { getTvContentRating, filterProviders } from "../../lib/watchInfo";
 
 // Node's fetch has been observed to intermittently ETIMEDOUT against TMDB in
 // this environment even when the same request succeeds immediately via curl
@@ -62,6 +33,7 @@ function normalizeTv(show, country, curatedIds) {
   const seasons = show.number_of_seasons;
   return {
     id: show.id,
+    country,
     title: show.name,
     tagline: show.tagline,
     overview: show.overview,
@@ -77,7 +49,7 @@ function normalizeTv(show, country, curatedIds) {
       : null,
     voteCount: show.vote_count || 0,
     genres: (show.genres || []).map((genre) => genre.name),
-    certification: getContentRating(
+    certification: getTvContentRating(
       show.content_ratings?.results,
       country
     ),
@@ -98,7 +70,7 @@ function normalizeTv(show, country, curatedIds) {
       posterPath: item.poster_path,
       year: (item.first_air_date || "").split("-")[0] || null,
     })),
-    providers: getProviders(show["watch/providers"], country, curatedIds),
+    providers: filterProviders(show["watch/providers"], country, curatedIds),
     trailerKey: trailer ? trailer.key : null,
     href: tvHref(show.id, show.name),
   };
@@ -189,7 +161,7 @@ export default function TvPage({
       display: "grid",
       gridTemplateColumns: "1fr auto 1fr",
       alignItems: "center",
-      padding: "10px 16px",
+      margin: 10,
     }),
     locationWrap: css({
       display: "none",
@@ -275,7 +247,7 @@ export default function TvPage({
             changeMode={changeMode}
           />
         </div>
-        <TitleDetail type="tv" data={data} mode={mode} />
+        <TitleDetail type="tv" data={data} mode={mode} location={location} />
         <Footer
           activePage="tv"
           mode={mode}

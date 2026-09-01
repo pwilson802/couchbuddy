@@ -264,7 +264,7 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
     }),
   };
 
-  const href = tvHref(id, title);
+  const href = tvHref(id, title, country);
 
   return (
     <OutsideClickHandler onOutsideClick={() => setExpanded(false)}>
