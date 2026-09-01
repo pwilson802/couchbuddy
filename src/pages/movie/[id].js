@@ -5,6 +5,8 @@ import React, { useEffect } from "react";
 import Head from "next/head";
 import Logo from "../../components/Logo";
 import Footer from "../../components/Footer";
+import Burger from "../../components/Burger";
+import LocationSelectSmall from "../../components/LocationSelectSmall";
 import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, movieHref } from "../../lib/slug";
 
@@ -19,6 +21,9 @@ function getCertification(releaseDatesResults, country) {
   return withCert ? withCert.certification : null;
 }
 
+// Streaming (flatrate) only - buy/rent is deliberately left out, matching
+// the search feature's own with_watch_monetization_types=flatrate-only
+// focus rather than covering every way to watch something.
 function getProviders(watchProviders, country) {
   const entry = watchProviders?.results?.[country];
   const mapList = (list) =>
@@ -27,11 +32,9 @@ function getProviders(watchProviders, country) {
       name: provider.provider_name,
       logoPath: provider.logo_path,
     }));
-  if (!entry) return { flatrate: [], rent: [], buy: [], link: null };
+  if (!entry) return { flatrate: [], link: null };
   return {
     flatrate: mapList(entry.flatrate),
-    rent: mapList(entry.rent),
-    buy: mapList(entry.buy),
     link: entry.link || null,
   };
 }
@@ -80,7 +83,11 @@ function normalizeMovie(movie, country) {
       character: member.character,
       profilePath: member.profile_path,
     })),
-    similar: (movie.similar?.results || []).slice(0, 12).map((item) => ({
+    // recommendations (collaborative, "people who liked this also liked")
+    // is noticeably higher quality than TMDB's own "similar" endpoint
+    // (keyword/genre matching, which can surface unrelated titles just for
+    // sharing a genre tag).
+    similar: (movie.recommendations?.results || []).slice(0, 12).map((item) => ({
       id: item.id,
       title: item.title,
       posterPath: item.poster_path,
@@ -102,7 +109,7 @@ export async function getServerSideProps({ params, query, req, res }) {
     "US"
   ).toUpperCase();
 
-  const url = `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMB_KEY}&language=en-US&append_to_response=videos,credits,similar,watch/providers,release_dates`;
+  const url = `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMB_KEY}&language=en-US&append_to_response=videos,credits,recommendations,watch/providers,release_dates`;
 
   let movie;
   try {
@@ -157,9 +164,19 @@ export default function MoviePage({
 
   const styles = {
     topBar: css({
+      display: "flex",
+      alignItems: "center",
       padding: "16px 16px 0",
       "@media(min-width: 768px)": {
         padding: "24px 32px 0",
+      },
+    }),
+    locationWrap: css({
+      display: "none",
+      "@media(min-width: 700px)": {
+        display: "block",
+        marginLeft: "auto",
+        marginRight: 48,
       },
     }),
   };
@@ -205,6 +222,21 @@ export default function MoviePage({
       <main>
         <div css={styles.topBar}>
           <Logo logo="main" width={140} />
+          {location && (
+            <div css={styles.locationWrap}>
+              <LocationSelectSmall
+                mode={mode}
+                location={location}
+                handleLocation={handleLocation}
+              />
+            </div>
+          )}
+          <Burger
+            handleLocation={handleLocation}
+            location={location}
+            mode={mode}
+            changeMode={changeMode}
+          />
         </div>
         <TitleDetail type="movie" data={data} mode={mode} />
         <Footer

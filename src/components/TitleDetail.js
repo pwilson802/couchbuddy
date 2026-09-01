@@ -38,10 +38,14 @@ function TitleDetail({ type, data, mode }) {
     : null;
   const similarHref = type === "movie" ? movieHref : tvHref;
   const similarLabel = type === "movie" ? "Similar Movies" : "Similar Shows";
-  const hasProviders =
-    data.providers.flatrate.length > 0 ||
-    data.providers.rent.length > 0 ||
-    data.providers.buy.length > 0;
+  const hasProviders = data.providers.flatrate.length > 0;
+  // A full synopsis crowds out the streaming/trailer info right below it -
+  // a short teaser is enough here (the card already showed more before you
+  // clicked through).
+  const overview =
+    data.overview && data.overview.length > 200
+      ? `${data.overview.slice(0, 200).replace(/\s+\S*$/, "")}...`
+      : data.overview;
 
   const styles = {
     hero: css({
@@ -155,14 +159,31 @@ function TitleDetail({ type, data, mode }) {
       flexWrap: "wrap",
     }),
     trailerButton: css({
-      padding: "8px 18px",
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "10px 20px",
       outline: "none",
       cursor: "pointer",
       backgroundColor: "#96D0D3",
       border: "none",
-      borderRadius: 20,
+      borderRadius: 24,
       fontWeight: "bold",
-      fontSize: 13,
+      fontSize: 14,
+      boxShadow: "0 4px 12px rgba(150,208,211,0.35)",
+    }),
+    trailerIcon: css({
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 20,
+      height: 20,
+      borderRadius: "50%",
+      backgroundColor: "rgba(0,0,0,0.75)",
+      color: "#96D0D3",
+      fontSize: 10,
+      lineHeight: 1,
+      paddingLeft: 2,
     }),
     providersSection: css({
       marginTop: 20,
@@ -290,13 +311,14 @@ function TitleDetail({ type, data, mode }) {
                 ))}
               </div>
             )}
-            <p css={styles.overview}>{data.overview}</p>
+            <p css={styles.overview}>{overview}</p>
             <div css={styles.actionsRow}>
               {data.trailerKey && (
                 <button
                   css={styles.trailerButton}
                   onClick={() => setShowTrailer(true)}
                 >
+                  <span css={styles.trailerIcon}>&#9654;</span>
                   WATCH TRAILER
                 </button>
               )}
@@ -304,26 +326,17 @@ function TitleDetail({ type, data, mode }) {
             </div>
             {hasProviders && (
               <div css={styles.providersSection}>
-                <p css={styles.providersLabel}>Where to watch</p>
+                <p css={styles.providersLabel}>Where to Stream</p>
                 <div css={styles.providerLogos}>
-                  {[
-                    ...data.providers.flatrate,
-                    ...data.providers.rent,
-                    ...data.providers.buy,
-                  ]
-                    .filter(
-                      (provider, index, all) =>
-                        all.findIndex((p) => p.id === provider.id) === index
-                    )
-                    .map((provider) => (
-                      <img
-                        key={provider.id}
-                        css={styles.providerLogo}
-                        src={`https://image.tmdb.org/t/p/w92${provider.logoPath}`}
-                        alt={provider.name}
-                        title={provider.name}
-                      />
-                    ))}
+                  {data.providers.flatrate.map((provider) => (
+                    <img
+                      key={provider.id}
+                      css={styles.providerLogo}
+                      src={`https://image.tmdb.org/t/p/w92${provider.logoPath}`}
+                      alt={provider.name}
+                      title={provider.name}
+                    />
+                  ))}
                 </div>
                 {data.providers.link && (
                   <a
