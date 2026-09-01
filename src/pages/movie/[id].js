@@ -9,6 +9,7 @@ import Burger from "../../components/Burger";
 import LocationSelectSmall from "../../components/LocationSelectSmall";
 import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, movieHref } from "../../lib/slug";
+import { getCuratedProviders } from "../../lib/providers";
 
 function getCertification(releaseDatesResults, country) {
   const entry = (releaseDatesResults || []).find(
@@ -23,15 +24,20 @@ function getCertification(releaseDatesResults, country) {
 
 // Streaming (flatrate) only - buy/rent is deliberately left out, matching
 // the search feature's own with_watch_monetization_types=flatrate-only
-// focus rather than covering every way to watch something.
-function getProviders(watchProviders, country) {
+// focus. Also filtered down to curatedIds - TMDB's own flatrate list for a
+// title includes every regional bundle/add-on channel it knows about,
+// which is a lot noisier than the ~40 services the search page actually
+// offers as options.
+function getProviders(watchProviders, country, curatedIds) {
   const entry = watchProviders?.results?.[country];
   const mapList = (list) =>
-    (list || []).map((provider) => ({
-      id: provider.provider_id,
-      name: provider.provider_name,
-      logoPath: provider.logo_path,
-    }));
+    (list || [])
+      .filter((provider) => curatedIds.has(String(provider.provider_id)))
+      .map((provider) => ({
+        id: provider.provider_id,
+        name: provider.provider_name,
+        logoPath: provider.logo_path,
+      }));
   if (!entry) return { flatrate: [], link: null };
   return {
     flatrate: mapList(entry.flatrate),
@@ -53,7 +59,7 @@ const fetchRetry = async (url, attemptsLeft) => {
   }
 };
 
-function normalizeMovie(movie, country) {
+function normalizeMovie(movie, country, curatedIds) {
   const trailer = (movie.videos?.results || []).find(
     (item) => item.type === "Trailer" && item.site === "YouTube"
   );
@@ -93,7 +99,7 @@ function normalizeMovie(movie, country) {
       posterPath: item.poster_path,
       year: (item.release_date || "").split("-")[0] || null,
     })),
-    providers: getProviders(movie["watch/providers"], country),
+    providers: getProviders(movie["watch/providers"], country, curatedIds),
     trailerKey: trailer ? trailer.key : null,
     href: movieHref(movie.id, movie.title),
   };
@@ -111,6 +117,12 @@ export async function getServerSideProps({ params, query, req, res }) {
 
   const url = `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMB_KEY}&language=en-US&append_to_response=videos,credits,recommendations,watch/providers,release_dates`;
 
+  // Kicked off alongside the main detail fetch rather than after it -
+  // independent TMDB calls, no reason to wait on one before starting the
+  // other. Never throws (see getCuratedProviders), so it's safe to leave
+  // outside the try/catch below.
+  const curatedProvidersPromise = getCuratedProviders(country, "movie");
+
   let movie;
   try {
     const response = await fetchRetry(url, 3);
@@ -120,6 +132,11 @@ export async function getServerSideProps({ params, query, req, res }) {
     return { notFound: true };
   }
   if (!movie || !movie.id) return { notFound: true };
+
+  const curatedProviders = await curatedProvidersPromise;
+  const curatedIds = new Set(
+    curatedProviders.map((provider) => String(provider.provider_id))
+  );
 
   const canonicalSlug = slugify(movie.title);
   const requestedSlug = params.id.slice(id.length).replace(/^-/, "");
@@ -138,7 +155,7 @@ export async function getServerSideProps({ params, query, req, res }) {
     "public, s-maxage=3600, stale-while-revalidate=86400"
   );
 
-  return { props: { data: normalizeMovie(movie, country) } };
+  return { props: { data: normalizeMovie(movie, country, curatedIds) } };
 }
 
 export default function MoviePage({
@@ -163,20 +180,34 @@ export default function MoviePage({
     : "https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png";
 
   const styles = {
+    // Mirrors SearchPage's own nav bar: location top-left, logo centered
+    // (desktop only - matches the rest of the site), burger top-right
+    // (Burger positions itself fixed).
     topBar: css({
       display: "flex",
       alignItems: "center",
-      padding: "16px 16px 0",
-      "@media(min-width: 768px)": {
-        padding: "24px 32px 0",
-      },
+      margin: 10,
     }),
     locationWrap: css({
       display: "none",
       "@media(min-width: 700px)": {
         display: "block",
-        marginLeft: "auto",
-        marginRight: 48,
+      },
+    }),
+    logoWrap: css({
+      display: "none",
+      "@media(min-width: 700px)": {
+        display: "block",
+        position: "absolute",
+        top: "5px",
+        left: "50%",
+        width: 140,
+        transform: "translate(-50%, -50%)",
+      },
+    }),
+    logoWrapMobile: css({
+      "@media(min-width: 700px)": {
+        display: "none",
       },
     }),
   };
@@ -221,7 +252,6 @@ export default function MoviePage({
       </Head>
       <main>
         <div css={styles.topBar}>
-          <Logo logo="main" width={140} />
           {location && (
             <div css={styles.locationWrap}>
               <LocationSelectSmall
@@ -231,6 +261,12 @@ export default function MoviePage({
               />
             </div>
           )}
+          <div css={styles.logoWrapMobile}>
+            <Logo logo="main" width={140} />
+          </div>
+          <div css={styles.logoWrap}>
+            <Logo logo="main" width={140} />
+          </div>
           <Burger
             handleLocation={handleLocation}
             location={location}

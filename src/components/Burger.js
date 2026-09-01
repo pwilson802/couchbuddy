@@ -26,7 +26,7 @@ function Burger({
       zIndex: 99,
       transition: "all 250mx ease-in-out",
       position: "fixed",
-      top: "0x",
+      top: 0,
       right: "3px",
     }),
     burgerNav: css({

@@ -39,13 +39,6 @@ function TitleDetail({ type, data, mode }) {
   const similarHref = type === "movie" ? movieHref : tvHref;
   const similarLabel = type === "movie" ? "Similar Movies" : "Similar Shows";
   const hasProviders = data.providers.flatrate.length > 0;
-  // A full synopsis crowds out the streaming/trailer info right below it -
-  // a short teaser is enough here (the card already showed more before you
-  // clicked through).
-  const overview =
-    data.overview && data.overview.length > 200
-      ? `${data.overview.slice(0, 200).replace(/\s+\S*$/, "")}...`
-      : data.overview;
 
   const styles = {
     hero: css({
@@ -311,7 +304,7 @@ function TitleDetail({ type, data, mode }) {
                 ))}
               </div>
             )}
-            <p css={styles.overview}>{overview}</p>
+            <p css={styles.overview}>{data.overview}</p>
             <div css={styles.actionsRow}>
               {data.trailerKey && (
                 <button

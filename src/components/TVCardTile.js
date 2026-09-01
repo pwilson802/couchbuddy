@@ -226,10 +226,14 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
     actionsRow: css({
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "flex-end",
       marginTop: 8,
     }),
     trailerButton: css({
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      marginTop: 8,
       padding: "4px 10px",
       outline: "none",
       cursor: "pointer",
@@ -238,6 +242,19 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
       borderRadius: 20,
       fontWeight: "bold",
       fontSize: 12,
+    }),
+    trailerIcon: css({
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 14,
+      height: 14,
+      borderRadius: "50%",
+      backgroundColor: "rgba(0,0,0,0.75)",
+      color: "#96D0D3",
+      fontSize: 7,
+      lineHeight: 1,
+      paddingLeft: 1,
     }),
     loadingWrap: css({
       aspectRatio: "2 / 3",
@@ -279,35 +296,39 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
               <p css={styles.meta}>
                 {year} &middot; {seasons} seasons
               </p>
+              {providerImages.length > 0 && (
+                <div css={styles.providerWrapper}>
+                  {providerImages.map((item) => (
+                    <img
+                      key={item}
+                      css={styles.providerImage}
+                      src={item}
+                      alt="provider"
+                    />
+                  ))}
+                </div>
+              )}
+              {hasTrailer && (
+                <button
+                  css={styles.trailerButton}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setShowTrailer(true);
+                  }}
+                >
+                  <span css={styles.trailerIcon}>&#9654;</span>
+                  TRAILER
+                </button>
+              )}
             </div>
             <div
               css={[styles.hoverPanel, expanded && styles.hoverPanelExpanded]}
             >
               <p css={styles.overview}>{overview}</p>
-              <div css={styles.providerWrapper}>
-                {providerImages.map((item) => (
-                  <img
-                    key={item}
-                    css={styles.providerImage}
-                    src={item}
-                    alt="provider"
-                  />
-                ))}
-              </div>
               <div
                 css={styles.actionsRow}
                 onClick={(event) => event.stopPropagation()}
               >
-                {hasTrailer ? (
-                  <button
-                    css={styles.trailerButton}
-                    onClick={() => setShowTrailer(true)}
-                  >
-                    TRAILER
-                  </button>
-                ) : (
-                  <span />
-                )}
                 <ShareButtons movie={title} tagline={tagline} />
               </div>
             </div>
