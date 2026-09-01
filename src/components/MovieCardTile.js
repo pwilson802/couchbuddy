@@ -2,10 +2,12 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import ShareButtons from "./ShareButtons";
 import MovieCardLoading from "./MovieCardLoading";
 import TrailerModal from "./TrailerModal";
 import OutsideClickHandler from "react-outside-click-handler";
+import { movieHref } from "../lib/slug";
 
 async function getMovieDetails(id, selectedProviders, country) {
   const params = new URLSearchParams();
@@ -108,6 +110,7 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       zIndex: 5,
     }),
     posterBox: css({
+      display: "block",
       position: "relative",
       width: "100%",
       aspectRatio: "2 / 3",
@@ -139,6 +142,7 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
     }),
     title: css({
       margin: 0,
+      textDecoration: "none",
       fontFamily: "Kanit",
       fontWeight: "bold",
       fontSize: 15,
@@ -224,6 +228,8 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
     }),
   };
 
+  const href = movieHref(id, title);
+
   return (
     <OutsideClickHandler onOutsideClick={() => setExpanded(false)}>
       <div
@@ -232,12 +238,22 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       >
         {failed ? null : loaded ? (
           <React.Fragment>
-            <div css={styles.posterBox}>
+            <Link
+              href={href}
+              css={styles.posterBox}
+              onClick={(event) => event.stopPropagation()}
+            >
               <img css={styles.poster} src={image} alt={`${title} poster`} />
               <p css={styles.voteBadge}>{voteAverage}</p>
-            </div>
+            </Link>
             <div css={styles.info}>
-              <p css={styles.title}>{title}</p>
+              <Link
+                href={href}
+                css={styles.title}
+                onClick={(event) => event.stopPropagation()}
+              >
+                {title}
+              </Link>
               <p css={styles.meta}>
                 {year} &middot; {runtime} min
               </p>

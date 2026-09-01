@@ -2,11 +2,11 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import ShareButtons from "./ShareButtons";
-import Image from "next/image";
 import MovieCardLoading from "./MovieCardLoading";
 import YouTubeVideo from "./YouTubeVideo";
-import { FONT_MANIFEST } from "next/dist/shared/lib/constants";
+import { movieHref } from "../lib/slug";
 
 async function getMovieDetails(id, selectedProviders, country) {
   const params = new URLSearchParams();
@@ -151,11 +151,14 @@ function MovieCard({
     }),
     imageBox: css({
       padding: 10,
+      display: "block",
     }),
     infoBox: css({
       width: "90%",
     }),
     title: css({
+      display: "block",
+      textDecoration: "none",
       fontSize: 18,
       fontFamily: "Kanit",
       fontWeight: "bold",
@@ -255,22 +258,32 @@ function MovieCard({
     }),
   };
 
+  const href = movieHref(id, title);
+
   return (
     <div css={styles.cardWrapper}>
       {failed ? null : loaded ? (
         <div>
-          {screenSize === "small" && <p css={styles.title}>{title}</p>}
+          {screenSize === "small" && (
+            <Link href={href} css={styles.title}>
+              {title}
+            </Link>
+          )}
           <div css={styles.bodyWrapper}>
-            <div onClick={onPress} css={styles.imageBox}>
+            <Link href={href} css={styles.imageBox}>
               <img
                 src={image}
                 alt={`${title} poster`}
                 width={111}
                 height={166.7}
               />
-            </div>
+            </Link>
             <div css={styles.infoBox}>
-              {screenSize === "large" && <p css={styles.title}>{title}</p>}
+              {screenSize === "large" && (
+                <Link href={href} css={styles.title}>
+                  {title}
+                </Link>
+              )}
               <div onClick={onPress} css={styles.dataWrap}>
                 <p css={styles.year}>{year}</p>
                 <p css={styles.runtime}>{runtime} minutes</p>

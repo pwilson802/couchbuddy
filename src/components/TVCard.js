@@ -2,11 +2,12 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import ShareButtons from "./ShareButtons";
-import Image from "next/image";
 import MovieCardLoading from "./MovieCardLoading";
 import YouTubeVideo from "./YouTubeVideo";
 import TVStatus from "./TVStatus";
+import { tvHref } from "../lib/slug";
 
 async function getTvDetails(id, selectedProviders, country) {
   const params = new URLSearchParams();
@@ -161,11 +162,14 @@ function MovieCard({
     }),
     imageBox: css({
       padding: 10,
+      display: "block",
     }),
     infoBox: css({
       width: "90%",
     }),
     title: css({
+      display: "block",
+      textDecoration: "none",
       width: "100%",
       fontSize: 18,
       fontFamily: "Kanit",
@@ -282,29 +286,35 @@ function MovieCard({
     }),
   };
 
+  const href = tvHref(id, title);
+
   return (
     <div css={styles.cardWrapper}>
       {failed ? null : loaded ? (
         <div>
           {screenSize === "small" && (
             <div css={styles.topWrap}>
-              <p css={styles.title}>{title}</p>
+              <Link href={href} css={styles.title}>
+                {title}
+              </Link>
               <TVStatus status={status} />
             </div>
           )}
           <div css={styles.bodyWrapper}>
-            <div onClick={onPress} css={styles.imageBox}>
+            <Link href={href} css={styles.imageBox}>
               <img
                 src={image}
                 alt={`${title} poster`}
                 width={111}
                 height={166.7}
               />
-            </div>
+            </Link>
             <div css={styles.infoBox}>
               {screenSize === "large" && (
                 <div css={styles.titleStatusWrap}>
-                  <p css={styles.title}>{title}</p>
+                  <Link href={href} css={styles.title}>
+                    {title}
+                  </Link>
                   <TVStatus status={status} />
                 </div>
               )}
