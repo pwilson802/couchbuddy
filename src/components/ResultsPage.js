@@ -51,10 +51,12 @@ function genreIds(selectedGenres, view) {
 }
 
 function certificationLabels(selectedCertifications) {
-  const keys = Object.keys(selectedCertifications || {});
-  if (keys.length === 0) return null;
-  const anyUnselected = keys.some((key) => !selectedCertifications[key]);
-  if (!anyUnselected) return null; // nothing narrowed, don't filter
+  // Just the selected keys, same as genres/providers - no longer special-
+  // cases "every certification checked" as "no filter", since that
+  // required the full false-for-unselected domain to detect and a
+  // URL-restored selection only carries the true keys. Functionally
+  // equivalent for normal use (an explicit list of every current
+  // certification narrows to the same results as no filter).
   const selected = selectedKeys(selectedCertifications);
   return selected.length > 0 ? selected : null;
 }
