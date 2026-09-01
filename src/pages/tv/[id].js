@@ -179,32 +179,34 @@ export default function TvPage({
     : "https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png";
 
   const styles = {
-    // Mirrors SearchPage's own nav bar: location top-left, logo centered
-    // (desktop only - matches the rest of the site), burger top-right
-    // (Burger positions itself fixed).
+    // A 3-column grid centers the logo reliably regardless of ancestor
+    // positioning context - the previous position:absolute + translate
+    // approach copied from SearchPage's nav relied on an ancestor
+    // positioning context SearchPage happens to have and this page
+    // doesn't, which clipped the logo against the top of the viewport
+    // instead of centering it.
     topBar: css({
-      display: "flex",
+      display: "grid",
+      gridTemplateColumns: "1fr auto 1fr",
       alignItems: "center",
-      margin: 10,
+      padding: "10px 16px",
     }),
     locationWrap: css({
       display: "none",
       "@media(min-width: 700px)": {
         display: "block",
+        justifySelf: "start",
       },
     }),
     logoWrap: css({
       display: "none",
       "@media(min-width: 700px)": {
         display: "block",
-        position: "absolute",
-        top: "5px",
-        left: "50%",
-        width: 140,
-        transform: "translate(-50%, -50%)",
+        justifySelf: "center",
       },
     }),
     logoWrapMobile: css({
+      justifySelf: "start",
       "@media(min-width: 700px)": {
         display: "none",
       },
@@ -261,10 +263,10 @@ export default function TvPage({
             </div>
           )}
           <div css={styles.logoWrapMobile}>
-            <Logo logo="main" width={140} />
+            <Logo logo="main" width={250} />
           </div>
           <div css={styles.logoWrap}>
-            <Logo logo="main" width={140} />
+            <Logo logo="main" width={250} />
           </div>
           <Burger
             handleLocation={handleLocation}
