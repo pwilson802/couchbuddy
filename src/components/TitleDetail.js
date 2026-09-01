@@ -6,7 +6,7 @@ import Link from "next/link";
 import ShareButtons from "./ShareButtons";
 import TrailerModal from "./TrailerModal";
 import TVStatus from "./TVStatus";
-import { movieHref, tvHref } from "../lib/slug";
+import { movieHref, tvHref, personHref } from "../lib/slug";
 
 const colors = {
   light: {
@@ -257,6 +257,8 @@ function TitleDetail({ type, data, mode, location }) {
       flex: "0 0 auto",
       width: 100,
       textAlign: "center",
+      textDecoration: "none",
+      display: "block",
     }),
     castPhoto: css({
       width: 100,
@@ -380,7 +382,11 @@ function TitleDetail({ type, data, mode, location }) {
           <h2 css={styles.sectionTitle}>Cast</h2>
           <div css={styles.scrollRow}>
             {data.cast.map((member) => (
-              <div key={member.id} css={styles.castCard}>
+              <Link
+                key={member.id}
+                href={personHref(member.id, member.name)}
+                css={styles.castCard}
+              >
                 {member.profilePath ? (
                   <img
                     css={styles.castPhoto}
@@ -392,7 +398,7 @@ function TitleDetail({ type, data, mode, location }) {
                 )}
                 <p css={styles.castName}>{member.name}</p>
                 <p css={styles.castCharacter}>{member.character}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

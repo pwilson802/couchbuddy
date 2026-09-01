@@ -30,3 +30,7 @@ export function tvHref(id, title, country) {
   const suffix = country ? `?country=${country}` : "";
   return `/tv/${id}-${slugify(title)}${suffix}`;
 }
+
+export function personHref(id, name) {
+  return `/person/${id}-${slugify(name)}`;
+}

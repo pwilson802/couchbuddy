@@ -3,10 +3,8 @@
 import { jsx, css } from "@emotion/react";
 import React, { useEffect } from "react";
 import Head from "next/head";
-import Logo from "../../components/Logo";
 import Footer from "../../components/Footer";
-import Burger from "../../components/Burger";
-import LocationSelectSmall from "../../components/LocationSelectSmall";
+import DetailPageNav from "../../components/DetailPageNav";
 import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, tvHref } from "../../lib/slug";
 import { getCuratedProviders } from "../../lib/providers";
@@ -150,41 +148,6 @@ export default function TvPage({
     ? `https://image.tmdb.org/t/p/w500${data.posterPath}`
     : "https://couchbuddy-images.s3.amazonaws.com/twitter-card-main5.png";
 
-  const styles = {
-    // A 3-column grid centers the logo reliably regardless of ancestor
-    // positioning context - the previous position:absolute + translate
-    // approach copied from SearchPage's nav relied on an ancestor
-    // positioning context SearchPage happens to have and this page
-    // doesn't, which clipped the logo against the top of the viewport
-    // instead of centering it.
-    topBar: css({
-      display: "grid",
-      gridTemplateColumns: "1fr auto 1fr",
-      alignItems: "center",
-      margin: 10,
-    }),
-    locationWrap: css({
-      display: "none",
-      "@media(min-width: 700px)": {
-        display: "block",
-        justifySelf: "start",
-      },
-    }),
-    logoWrap: css({
-      display: "none",
-      "@media(min-width: 700px)": {
-        display: "block",
-        justifySelf: "center",
-      },
-    }),
-    logoWrapMobile: css({
-      justifySelf: "start",
-      "@media(min-width: 700px)": {
-        display: "none",
-      },
-    }),
-  };
-
   return (
     <div>
       <Head>
@@ -224,29 +187,12 @@ export default function TvPage({
         />
       </Head>
       <main>
-        <div css={styles.topBar}>
-          {location && (
-            <div css={styles.locationWrap}>
-              <LocationSelectSmall
-                mode={mode}
-                location={location}
-                handleLocation={handleLocation}
-              />
-            </div>
-          )}
-          <div css={styles.logoWrapMobile}>
-            <Logo logo="main" width={250} />
-          </div>
-          <div css={styles.logoWrap}>
-            <Logo logo="main" width={250} />
-          </div>
-          <Burger
-            handleLocation={handleLocation}
-            location={location}
-            mode={mode}
-            changeMode={changeMode}
-          />
-        </div>
+        <DetailPageNav
+          mode={mode}
+          changeMode={changeMode}
+          location={location}
+          handleLocation={handleLocation}
+        />
         <TitleDetail type="tv" data={data} mode={mode} location={location} />
         <Footer
           activePage="tv"
