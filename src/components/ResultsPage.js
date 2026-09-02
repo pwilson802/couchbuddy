@@ -3,8 +3,6 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import Logo from "./Logo";
-import MovieCard from "./MovieCard";
-import TVCard from "./TVCard";
 import MovieCardTile from "./MovieCardTile";
 import TVCardTile from "./TVCardTile";
 import SpinnerMovie from "./SpinnerMovie";
@@ -22,9 +20,9 @@ const MAX_RANDOM_PAGE = 500;
 // trailer). Revealing them in chunks of 10 keeps the concurrent-request burst
 // the same size as before this migration, even though each API call to our
 // own /api/discover/* route now pulls a full TMDB page (20 results) to
-// minimize round trips. This is the list/mobile reveal size - grid mode
-// computes its own target based on actual column count, see
-// computeRevealTarget below.
+// minimize round trips. This is the floor computeRevealTarget scales up from
+// based on actual column count - a narrow phone grid (2-3 columns) mostly
+// just hits this floor, a wide desktop grid multiplies it up.
 const REVEAL_CHUNK = 10;
 // A fixed reveal count doesn't make sense once a row can hold 7+ tiles - 10
 // items barely fills a row and a half on a wide grid, leaving it looking
@@ -122,31 +120,32 @@ function buildDiscoverUrl({
   return `/api/discover/tv?${params.toString()}`;
 }
 
-function makeItemGroup(items) {
-  if (items.length > 7) {
-    items.splice(7, 0, "ad");
-    return items;
-  }
-  return items;
-}
-
 // Must match styles.tileGrid's own grid-template-columns math below, since
 // there's no clean way to ask a CSS auto-fill grid how many columns it
-// actually rendered.
+// actually rendered. Mobile gets a smaller minimum + gap than desktop - at
+// 170px, a 390px phone (95% = 370.5px container) falls just 4.5px short of
+// fitting a second column (2*170 + 16 gap = 356... except the real
+// container after scrollbar/rounding lands under that), collapsing to a
+// single column instead of the 2-3 it should show.
+const GRID_BREAKPOINT = 700;
 const TILE_MIN_WIDTH = 170;
 const TILE_GAP = 16;
+const MOBILE_TILE_MIN_WIDTH = 150;
+const MOBILE_TILE_GAP = 12;
 
 function computeGridColumns(width) {
   if (!width) return 1;
+  const isMobile = width < GRID_BREAKPOINT;
+  const minWidth = isMobile ? MOBILE_TILE_MIN_WIDTH : TILE_MIN_WIDTH;
+  const tileGap = isMobile ? MOBILE_TILE_GAP : TILE_GAP;
   const containerWidth = Math.min(width * 0.95, 1400);
   return Math.max(
     1,
-    Math.floor((containerWidth + TILE_GAP) / (TILE_MIN_WIDTH + TILE_GAP))
+    Math.floor((containerWidth + tileGap) / (minWidth + tileGap))
   );
 }
 
-function computeRevealTarget(screenSize, width) {
-  if (screenSize !== "large") return REVEAL_CHUNK;
+function computeRevealTarget(width) {
   const columns = computeGridColumns(width);
   return Math.min(
     MAX_REVEAL,
@@ -177,12 +176,9 @@ function interleaveGridAds(existingRealCount, chunk, columns) {
   return result;
 }
 
-function groupForReveal(prevItems, chunk, screenSize, width) {
-  if (screenSize === "large") {
-    const realCount = prevItems.filter((item) => item !== "ad").length;
-    return interleaveGridAds(realCount, chunk, computeGridColumns(width));
-  }
-  return makeItemGroup(chunk);
+function groupForReveal(prevItems, chunk, width) {
+  const realCount = prevItems.filter((item) => item !== "ad").length;
+  return interleaveGridAds(realCount, chunk, computeGridColumns(width));
 }
 
 export default function ResultsPage({
@@ -329,7 +325,7 @@ export default function ResultsPage({
         return;
       }
 
-      const target = computeRevealTarget(screenSize, width);
+      const target = computeRevealTarget(width);
       const pagesSeen = new Set([1]);
       const idsSeen = new Set();
       let accumulated = dedupedItems(firstPage.results || [], idsSeen);
@@ -358,7 +354,7 @@ export default function ResultsPage({
 
       const firstChunk = accumulated.slice(0, target);
       const rest = accumulated.slice(target);
-      setItems(groupForReveal([], firstChunk, screenSize, width));
+      setItems(groupForReveal([], firstChunk, width));
       setBuffer(rest);
       setSeenIds(idsSeen);
       setUsedPages(pagesSeen);
@@ -369,7 +365,7 @@ export default function ResultsPage({
   }, []);
 
   const fetchMoreData = async () => {
-    const target = computeRevealTarget(screenSize, width);
+    const target = computeRevealTarget(width);
     const idsSeen = new Set(seenIds);
     const pagesSeen = new Set(usedPages);
     let accumulated = [...buffer];
@@ -389,7 +385,7 @@ export default function ResultsPage({
     const rest = accumulated.slice(target);
     setItems((prev) => [
       ...prev,
-      ...groupForReveal(prev, chunk, screenSize, width),
+      ...groupForReveal(prev, chunk, width),
     ]);
     setBuffer(rest);
     setSeenIds(idsSeen);
@@ -446,11 +442,15 @@ export default function ResultsPage({
     }),
     tileGrid: css({
       display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
-      gap: "24px 16px",
+      gridTemplateColumns: `repeat(auto-fill, minmax(${MOBILE_TILE_MIN_WIDTH}px, 1fr))`,
+      gap: `16px ${MOBILE_TILE_GAP}px`,
       width: "95%",
       maxWidth: "1400px",
       margin: "20px auto 0",
+      [`@media(min-width: ${GRID_BREAKPOINT}px)`]: {
+        gridTemplateColumns: `repeat(auto-fill, minmax(${TILE_MIN_WIDTH}px, 1fr))`,
+        gap: `24px ${TILE_GAP}px`,
+      },
     }),
     adWrapGrid: css({
       gridColumn: "1 / -1",
@@ -464,13 +464,6 @@ export default function ResultsPage({
     }),
     nextButton: css({
       marginLeft: 10,
-    }),
-    adWrap: css({
-      paddingTop: "1rem",
-      paddingBottom: "1rem",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
     }),
     loader: css({
       display: "flex",
@@ -505,19 +498,11 @@ export default function ResultsPage({
               next={fetchMoreData}
               hasMore={hasMore}
             ></InfiniteScroll>
-            <div css={screenSize === "large" ? styles.tileGrid : undefined}>
+            <div css={styles.tileGrid}>
               {items.map((item, index) => {
                 if (item == "ad") {
                   return (
-                    <div
-                      css={
-                        screenSize === "large"
-                          ? styles.adWrapGrid
-                          : styles.adWrap
-                      }
-                      key={`Ad${index}`}
-                    >
-                      {/* <FakeAd key={`add-${index}`} num={"1"} /> */}
+                    <div css={styles.adWrapGrid} key={`Ad${index}`}>
                       {screenSize === "small" ? (
                         <Adsense
                           client="ca-pub-9245347946008848"
@@ -536,48 +521,23 @@ export default function ResultsPage({
                     </div>
                   );
                 }
-                if (screenSize === "large") {
-                  return view == "movie" ? (
-                    <MovieCardTile
-                      id={item.id}
-                      selectedProviders={selectedProviderIds}
-                      country={location}
-                      allProviderData={allProviderData}
-                      mode={mode}
-                      key={item.id}
-                    />
-                  ) : (
-                    <TVCardTile
-                      id={item.id}
-                      selectedProviders={selectedProviderIds}
-                      country={location}
-                      allProviderData={allProviderData}
-                      mode={mode}
-                      key={item.id}
-                    />
-                  );
-                }
                 return view == "movie" ? (
-                  <MovieCard
+                  <MovieCardTile
                     id={item.id}
                     selectedProviders={selectedProviderIds}
                     country={location}
                     allProviderData={allProviderData}
-                    screenSize={screenSize}
                     mode={mode}
                     key={item.id}
-                    width={width}
-                  ></MovieCard>
+                  />
                 ) : (
-                  <TVCard
+                  <TVCardTile
                     id={item.id}
                     selectedProviders={selectedProviderIds}
                     country={location}
                     allProviderData={allProviderData}
-                    screenSize={screenSize}
                     mode={mode}
                     key={item.id}
-                    width={width}
                   />
                 );
               })}

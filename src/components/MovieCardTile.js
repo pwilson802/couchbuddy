@@ -9,6 +9,8 @@ import TrailerModal from "./TrailerModal";
 import OutsideClickHandler from "react-outside-click-handler";
 import { movieHref } from "../lib/slug";
 
+const MAX_VISIBLE_PROVIDERS = 4;
+
 async function getMovieDetails(id, selectedProviders, country) {
   const params = new URLSearchParams();
   if (selectedProviders && selectedProviders.length > 0) {
@@ -110,13 +112,17 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       zIndex: 5,
     }),
     posterBox: css({
-      display: "block",
       position: "relative",
       width: "100%",
       aspectRatio: "2 / 3",
       borderRadius: "12px 12px 0 0",
       overflow: "hidden",
       backgroundColor: "rgba(0,0,0,0.2)",
+    }),
+    posterLink: css({
+      display: "block",
+      width: "100%",
+      height: "100%",
     }),
     poster: css({
       width: "100%",
@@ -193,25 +199,41 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       WebkitBoxOrient: "vertical",
       overflow: "hidden",
     }),
-    // Always present with a fixed min-height (not just rendered when there
-    // happens to be a provider or trailer) so every card is the same
-    // height regardless of what that title actually has - previously a
-    // title with no trailer produced a visibly shorter card.
+    // Fixed min-height regardless of whether this title has any providers
+    // to show, so cards stay a consistent height either way.
     metaActionsRow: css({
       display: "flex",
       alignItems: "center",
       minHeight: 26,
       marginTop: 8,
     }),
+    // Capped to MAX_VISIBLE_PROVIDERS (+ an overflow badge) rather than
+    // wrapping - a title on many services (e.g. a popular sitcom bundled
+    // across half a dozen add-on channels) would otherwise wrap to a
+    // second line and make that one card taller than the rest.
     providerWrapper: css({
       display: "flex",
-      flexWrap: "wrap",
       gap: 4,
+      overflow: "hidden",
     }),
     providerImage: css({
       width: 26,
       height: 26,
       borderRadius: 6,
+      flexShrink: 0,
+    }),
+    providerMore: css({
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 26,
+      height: 26,
+      borderRadius: 6,
+      backgroundColor: "rgba(255,255,255,0.15)",
+      color: colors[mode]["text"],
+      fontSize: 11,
+      fontWeight: "bold",
+      flexShrink: 0,
     }),
     actionsRow: css({
       display: "flex",
@@ -219,24 +241,32 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       justifyContent: "flex-end",
       marginTop: 8,
     }),
-    // Icon-only, inline with the provider logos instead of its own labeled
-    // row below - a play glyph reads as "press to watch" without needing
-    // the word "TRAILER" spelled out, and keeps the card more compact.
+    // Overlaid on the poster (bottom-right, opposite the vote badge)
+    // instead of living in the same row as the provider logos - a title
+    // available on many services no longer pushes the trailer button
+    // around or forces it to wrap.
     trailerIconButton: css({
-      display: "inline-flex",
+      position: "absolute",
+      bottom: 8,
+      right: 8,
+      width: 34,
+      height: 34,
+      display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      width: 26,
-      height: 26,
-      marginLeft: "auto",
-      flexShrink: 0,
       borderRadius: "50%",
-      backgroundColor: "#96D0D3",
-      border: "none",
+      backgroundColor: "rgba(0,0,0,0.7)",
+      border: `2px solid #96D0D3`,
+      color: "#96D0D3",
       cursor: "pointer",
-      color: "#152025",
-      fontSize: 10,
-      paddingLeft: 2,
+      fontSize: 13,
+      paddingLeft: 3,
+      zIndex: 2,
+      transition: "background-color 0.15s ease, color 0.15s ease",
+      "&:hover": {
+        backgroundColor: "#96D0D3",
+        color: "#152025",
+      },
     }),
     loadingWrap: css({
       aspectRatio: "2 / 3",
@@ -247,6 +277,8 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
   };
 
   const href = movieHref(id, title, country);
+  const visibleProviders = providerImages.slice(0, MAX_VISIBLE_PROVIDERS);
+  const extraProviders = providerImages.length - visibleProviders.length;
 
   return (
     <OutsideClickHandler onOutsideClick={() => setExpanded(false)}>
@@ -256,14 +288,33 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       >
         {failed ? null : loaded ? (
           <React.Fragment>
-            <Link
-              href={href}
-              css={styles.posterBox}
-              onClick={(event) => event.stopPropagation()}
-            >
-              <img css={styles.poster} src={image} alt={`${title} poster`} />
+            <div css={styles.posterBox}>
+              <Link
+                href={href}
+                css={styles.posterLink}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <img
+                  css={styles.poster}
+                  src={image}
+                  alt={`${title} poster`}
+                />
+              </Link>
               <p css={styles.voteBadge}>{voteAverage}</p>
-            </Link>
+              {hasTrailer && (
+                <button
+                  css={styles.trailerIconButton}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setShowTrailer(true);
+                  }}
+                  aria-label="Watch trailer"
+                  title="Watch trailer"
+                >
+                  &#9654;
+                </button>
+              )}
+            </div>
             <div css={styles.info}>
               <Link
                 href={href}
@@ -276,9 +327,9 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
                 {year} &middot; {runtime} min
               </p>
               <div css={styles.metaActionsRow}>
-                {providerImages.length > 0 && (
+                {visibleProviders.length > 0 && (
                   <div css={styles.providerWrapper}>
-                    {providerImages.map((item) => (
+                    {visibleProviders.map((item) => (
                       <img
                         key={item}
                         css={styles.providerImage}
@@ -286,20 +337,10 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
                         alt="provider"
                       />
                     ))}
+                    {extraProviders > 0 && (
+                      <span css={styles.providerMore}>+{extraProviders}</span>
+                    )}
                   </div>
-                )}
-                {hasTrailer && (
-                  <button
-                    css={styles.trailerIconButton}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setShowTrailer(true);
-                    }}
-                    aria-label="Watch trailer"
-                    title="Watch trailer"
-                  >
-                    &#9654;
-                  </button>
                 )}
               </div>
             </div>
