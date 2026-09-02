@@ -24,17 +24,51 @@ const fetchRetry = async (url, attemptsLeft) => {
   }
 };
 
+// Talk, News, Reality - sorting combined_credits by raw popularity surfaces
+// these constantly, since a long-running talk show accrues huge popularity
+// from its own audience regardless of how incidental a single guest
+// appearance was to the actual person (a one-episode "Self" credit on The
+// Tonight Show can out-popularity an actor's own starring films). Excluding
+// the format outright is more reliable than trying to detect "Self" credits
+// by name, since talk shows use it inconsistently.
+const EXCLUDED_TV_GENRES = new Set([10767, 10763, 10764]);
+
+// How central the role actually was, not how popular the title is - a movie
+// billed order:0 (lead) scores 1.0, tapering off for lower billing; a TV
+// role scores by episode_count, capped at 20 since a long-running regular
+// doesn't need to keep outscoring an already-clear "regular" once there.
+// TMDB doesn't populate `order` on TV combined_credits, so episode_count is
+// the only signal available there.
+function roleProminence(item) {
+  if (item.media_type === "movie") {
+    const order = item.order ?? 15;
+    return 1 / (1 + order);
+  }
+  return Math.min((item.episode_count || 0) / 20, 1);
+}
+
 function normalizePerson(person) {
-  // Acting credits only (not crew/directing) - "movies they are in", sorted
-  // by TMDB's own popularity so the most notable work leads, and capped so
-  // a prolific actor's page doesn't turn into an unbounded grid.
+  // Acting credits only (not crew/directing) - "movies they are in", ranked
+  // by role prominence (see roleProminence) scaled by the title's own
+  // popularity so well-known work still edges out equally-prominent but
+  // obscure work, then capped so a prolific actor's page doesn't turn into
+  // an unbounded grid.
   const credits = (person.combined_credits?.cast || [])
     .filter(
       (item) =>
         (item.media_type === "movie" || item.media_type === "tv") &&
         item.poster_path
     )
-    .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+    .filter(
+      (item) =>
+        item.media_type !== "tv" ||
+        !(item.genre_ids || []).some((id) => EXCLUDED_TV_GENRES.has(id))
+    )
+    .map((item) => ({
+      ...item,
+      _score: roleProminence(item) * Math.sqrt(item.popularity || 0),
+    }))
+    .sort((a, b) => b._score - a._score)
     .slice(0, MAX_CREDITS)
     .map((item) => ({
       id: item.id,
