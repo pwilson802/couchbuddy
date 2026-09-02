@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState } from "react";
 import QuizAnswer from "../randomquiz/QuizAnswer";
+import TitleQuizImageAnswer from "./TitleQuizImageAnswer";
 
 const colors = {
   light: { text: "black" },
@@ -35,6 +36,11 @@ function TitleQuizQuestion({ questionDetails, handleQuestion, mode }) {
       maxWidth: "100%",
       maxHeight: 260,
     }),
+    imageGrid: css({
+      display: "grid",
+      gridTemplateColumns: "repeat(2, 1fr)",
+      gap: 10,
+    }),
   };
 
   const handleAnswered = (isAnswered, correct, answer) => {
@@ -58,17 +64,32 @@ function TitleQuizQuestion({ questionDetails, handleQuestion, mode }) {
         </div>
       )}
       <div css={styles.question}>{questionDetails.question}</div>
-      {questionDetails.answers.map((item, index) => (
-        <div key={index} data-testid="quiz-answer">
-          <QuizAnswer
-            answer={item}
-            handleAnswered={handleAnswered}
-            finished={isFinished}
-            locked={isLocked}
-            mode={mode}
-          />
+      {questionDetails.isImageChoice ? (
+        <div css={styles.imageGrid}>
+          {questionDetails.answers.map((item, index) => (
+            <div key={index} data-testid="quiz-answer">
+              <TitleQuizImageAnswer
+                answer={item}
+                handleAnswered={handleAnswered}
+                finished={isFinished}
+                locked={isLocked}
+              />
+            </div>
+          ))}
         </div>
-      ))}
+      ) : (
+        questionDetails.answers.map((item, index) => (
+          <div key={index} data-testid="quiz-answer">
+            <QuizAnswer
+              answer={item}
+              handleAnswered={handleAnswered}
+              finished={isFinished}
+              locked={isLocked}
+              mode={mode}
+            />
+          </div>
+        ))
+      )}
     </div>
   );
 }

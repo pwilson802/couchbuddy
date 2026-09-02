@@ -1,5 +1,13 @@
 const MAX_QUESTIONS = 10;
 
+// Every question must be ABOUT the title the viewer is already looking at
+// (named as the subject in the question text) - never a hidden answer
+// choice among several movies, since the viewer already knows which
+// title's page they're on. That's why e.g. the foreign-title question asks
+// "what was THIS movie called in French" rather than "which movie is
+// called X in French" (the latter would just be answerable by re-reading
+// the page you're on).
+
 // A handful of clearly-unrelated keywords used as the "odd one out" in the
 // keyword question - filtered per-title against the real keyword list so a
 // genuine coincidence (a movie actually about a cooking competition) can't
@@ -19,6 +27,77 @@ const GENERIC_KEYWORDS = [
   "crossword puzzles",
 ];
 
+const DISTRACTOR_COUNTRIES = [
+  "Germany",
+  "Brazil",
+  "South Korea",
+  "Canada",
+  "India",
+  "Mexico",
+  "Spain",
+  "Sweden",
+  "Italy",
+  "Japan",
+  "Australia",
+  "France",
+  "United Kingdom",
+  "United States of America",
+];
+
+const FRANCHISE_NAMES = [
+  "Marvel Cinematic Universe",
+  "Fast & Furious",
+  "James Bond Collection",
+  "Harry Potter Collection",
+  "Star Wars Collection",
+  "Mission: Impossible Collection",
+  "Jurassic Park Collection",
+  "Toy Story Collection",
+  "The Matrix Collection",
+  "Shrek Collection",
+];
+
+const LANGUAGE_NAMES = {
+  en: "English",
+  fr: "French",
+  es: "Spanish",
+  de: "German",
+  it: "Italian",
+  ja: "Japanese",
+  ko: "Korean",
+  zh: "Mandarin",
+  cn: "Cantonese",
+  ru: "Russian",
+  hi: "Hindi",
+  pt: "Portuguese",
+  sv: "Swedish",
+  da: "Danish",
+  nl: "Dutch",
+  fi: "Finnish",
+  no: "Norwegian",
+  pl: "Polish",
+  tr: "Turkish",
+  th: "Thai",
+  ar: "Arabic",
+  he: "Hebrew",
+  el: "Greek",
+  cs: "Czech",
+  hu: "Hungarian",
+  ro: "Romanian",
+  uk: "Ukrainian",
+  vi: "Vietnamese",
+  id: "Indonesian",
+  ta: "Tamil",
+  te: "Telugu",
+  fa: "Persian",
+  ur: "Urdu",
+  is: "Icelandic",
+};
+
+function languageName(code) {
+  return LANGUAGE_NAMES[code] || null;
+}
+
 function shuffle(data) {
   const arr = [...data];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -29,7 +108,7 @@ function shuffle(data) {
 }
 
 function uniqueSample(pool, count, exclude = []) {
-  const excluded = new Set(exclude.map((item) => String(item).toLowerCase()));
+  const excluded = new Set(exclude.filter(Boolean).map((item) => String(item).toLowerCase()));
   const seen = new Set();
   const result = [];
   for (const item of shuffle(pool)) {
@@ -48,7 +127,7 @@ function makeQuestionObject(question, correctAnswer, distractorAnswers, imageUrl
     { answer: correctAnswer, correct: true },
     ...distractorAnswers.map((answer) => ({ answer, correct: false })),
   ]);
-  return { question, answers, imageUrl: imageUrl || false };
+  return { question, answers, imageUrl: imageUrl || false, isImageChoice: false };
 }
 
 function formatMoney(amount) {
@@ -64,47 +143,65 @@ function formatMoney(amount) {
   return `$${amount}`;
 }
 
-function distractorTitles(distractors, exclude, count = 3) {
-  return uniqueSample(
-    distractors.map((item) => item.title).filter(Boolean),
-    count,
-    exclude
-  );
-}
-
+// "What was this called on its French release?" - tries each language the
+// main title has a real translation in until we find one where at least 3
+// distractor movies also have a genuine translation, so every wrong answer
+// is a real title in that same language rather than a guess.
 function makeForeignTitleQuestion(main, distractors, label) {
   if (!main.translations || main.translations.length === 0) return null;
-  const pick = main.translations[Math.floor(Math.random() * main.translations.length)];
-  const options = distractorTitles(distractors, [main.title]);
-  if (options.length < 3) return null;
-  return makeQuestionObject(
-    `This ${label} is called "${pick.title}" in ${pick.language}. Which ${label} is it?`,
-    main.title,
-    options,
-    false
-  );
+  for (const pick of shuffle(main.translations)) {
+    const sameLanguageTitles = distractors
+      .map((d) => (d.translations || []).find((t) => t.language === pick.language))
+      .filter(Boolean)
+      .map((t) => t.title);
+    const options = uniqueSample(sameLanguageTitles, 3, [pick.title]);
+    if (options.length >= 3) {
+      return makeQuestionObject(
+        `What was this ${label} called on its ${pick.language} release?`,
+        pick.title,
+        options,
+        false
+      );
+    }
+  }
+  return null;
 }
 
+// "Which of these is a scene from this movie?" - answer OPTIONS are images
+// (one real backdrop from this title, three from other movies), not movie
+// titles, so the image-choice UI is needed (see TitleQuizQuestion.js).
 function makeBackdropQuestion(main, distractors, label) {
   if (!main.backdrops || main.backdrops.length === 0) return null;
-  const options = distractorTitles(distractors, [main.title]);
+  const distractorBackdrops = distractors
+    .filter((item) => item.backdrops && item.backdrops.length > 0)
+    .map((item) => item.backdrops[Math.floor(Math.random() * item.backdrops.length)]);
+  const options = uniqueSample(distractorBackdrops, 3);
   if (options.length < 3) return null;
-  const backdrop = main.backdrops[Math.floor(Math.random() * main.backdrops.length)];
-  return makeQuestionObject(
-    `Which ${label} is this a scene from?`,
-    main.title,
-    options,
-    `https://image.tmdb.org/t/p/w500${backdrop}`
-  );
+  const correctBackdrop = main.backdrops[Math.floor(Math.random() * main.backdrops.length)];
+  const toUrl = (path) => `https://image.tmdb.org/t/p/w500${path}`;
+  const answers = shuffle([
+    { answer: toUrl(correctBackdrop), correct: true },
+    ...options.map((path) => ({ answer: toUrl(path), correct: false })),
+  ]);
+  return {
+    question: `Which of these is a scene from this ${label}?`,
+    answers,
+    imageUrl: false,
+    isImageChoice: true,
+  };
 }
 
 function makeTaglineQuestion(main, distractors, label) {
   if (!main.tagline || !main.tagline.trim()) return null;
-  const options = distractorTitles(distractors, [main.title]);
+  const options = uniqueSample(
+    distractors.map((item) => item.tagline).filter((tagline) => tagline && tagline.trim()),
+    3,
+    [main.tagline]
+  );
   if (options.length < 3) return null;
   return makeQuestionObject(
-    `Which ${label} has the tagline: "${main.tagline}"?`,
-    main.title,
+    `What is the tagline for this ${label}?`,
+    main.tagline,
     options,
     false
   );
@@ -158,7 +255,7 @@ function makeYearQuestion(main, distractors, label) {
   );
 }
 
-function makeRuntimeQuestion(main, distractors, label, type) {
+function makeRuntimeQuestion(main, distractors, type, label) {
   if (!main.runtime) return null;
   const options = uniqueSample(
     distractors.map((item) => item.runtime).filter(Boolean),
@@ -168,8 +265,8 @@ function makeRuntimeQuestion(main, distractors, label, type) {
   if (options.length < 3) return null;
   const questionText =
     type === "tv"
-      ? `How many episodes does this show have?`
-      : `How long is this movie (in minutes)?`;
+      ? "How many episodes does this show have?"
+      : `How long is this ${label} (in minutes)?`;
   const format = (value) => (type === "tv" ? `${value} episodes` : `${value} min`);
   return makeQuestionObject(questionText, format(main.runtime), options.map(format), false);
 }
@@ -206,19 +303,78 @@ function makeKeywordQuestion(main, distractors, label) {
   );
 }
 
-function makeCollectionQuestion(main) {
+function makeCollectionCountQuestion(main) {
   if (!main.collection || !main.collection.count || main.collection.count < 2) {
     return null;
   }
   const correct = main.collection.count;
-  const candidates = [correct - 1, correct + 1, correct + 2, correct - 2, correct + 3]
-    .filter((value) => value >= 2 && value !== correct);
+  const candidates = [correct - 1, correct + 1, correct + 2, correct - 2, correct + 3].filter(
+    (value) => value >= 2 && value !== correct
+  );
   const options = uniqueSample(candidates, 3, [correct]);
   if (options.length < 3) return null;
   return makeQuestionObject(
     `How many films are in the ${main.collection.name}?`,
     String(correct),
     options.map(String),
+    false
+  );
+}
+
+function makeFranchiseNameQuestion(main, label) {
+  if (!main.collection) return null;
+  const options = uniqueSample(FRANCHISE_NAMES, 3, [main.collection.name]);
+  if (options.length < 3) return null;
+  return makeQuestionObject(
+    `Which film franchise does this ${label} belong to?`,
+    main.collection.name,
+    options,
+    false
+  );
+}
+
+function makeOriginalLanguageQuestion(main, distractors, label) {
+  const correct = languageName(main.originalLanguage);
+  if (!correct) return null;
+  const options = uniqueSample(
+    distractors.map((item) => languageName(item.originalLanguage)).filter(Boolean),
+    3,
+    [correct]
+  );
+  if (options.length < 3) return null;
+  return makeQuestionObject(
+    `What language was this ${label} originally made in?`,
+    correct,
+    options,
+    false
+  );
+}
+
+function makeOriginalTitleQuestion(main, distractors, label) {
+  if (!main.originalTitle) return null;
+  const options = uniqueSample(
+    distractors.map((item) => item.title).filter(Boolean),
+    3,
+    [main.originalTitle, main.title]
+  );
+  if (options.length < 3) return null;
+  return makeQuestionObject(
+    `This ${label} was released in English as "${main.title}". What was its original title?`,
+    main.originalTitle,
+    options,
+    false
+  );
+}
+
+function makeCountryQuestion(main, label) {
+  if (!main.productionCountries || main.productionCountries.length === 0) return null;
+  const correct = main.productionCountries[0];
+  const options = uniqueSample(DISTRACTOR_COUNTRIES, 3, main.productionCountries);
+  if (options.length < 3) return null;
+  return makeQuestionObject(
+    `Which country was this ${label} produced in?`,
+    correct,
+    options,
     false
   );
 }
@@ -235,12 +391,14 @@ export function makeTitleQuestions(main, distractors, type) {
     makeBudgetQuestion(main, distractors, label),
     makeRevenueQuestion(main, distractors, label),
     makeYearQuestion(main, distractors, label),
-    type === "tv"
-      ? makeSeasonsQuestion(main, distractors)
-      : makeRuntimeQuestion(main, distractors, label, type),
-    type === "tv" ? makeRuntimeQuestion(main, distractors, label, type) : null,
+    type === "tv" ? makeSeasonsQuestion(main, distractors) : null,
+    makeRuntimeQuestion(main, distractors, type, label),
     makeKeywordQuestion(main, distractors, label),
-    makeCollectionQuestion(main),
+    makeCollectionCountQuestion(main),
+    makeFranchiseNameQuestion(main, label),
+    makeOriginalLanguageQuestion(main, distractors, label),
+    makeOriginalTitleQuestion(main, distractors, label),
+    makeCountryQuestion(main, label),
   ].filter(Boolean);
 
   return shuffle(candidates).slice(0, MAX_QUESTIONS);

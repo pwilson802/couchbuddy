@@ -18,6 +18,28 @@ async function fetchJson(url) {
   return response.json();
 }
 
+// Every quiz question must be ABOUT the title the viewer is already looking
+// at (it's the subject named in the question), never a hidden answer choice
+// among several movies - the viewer already knows which title's page
+// they're on, so "which movie is this from?" gives nothing away to guess.
+// Translations/backdrops are therefore needed for distractor titles too
+// (real foreign titles / real stills from OTHER movies, used as wrong
+// answers), not just the main title.
+function normalizeTranslations(item, mediaType) {
+  const ownTitle = mediaType === "tv" ? item.name : item.title;
+  return (item.translations?.translations || [])
+    .map((entry) => ({
+      language: entry.english_name,
+      title: mediaType === "tv" ? entry.data?.name : entry.data?.title,
+    }))
+    .filter(
+      (entry) =>
+        entry.title &&
+        entry.title.trim() &&
+        entry.title.trim().toLowerCase() !== (ownTitle || "").trim().toLowerCase()
+    );
+}
+
 function normalizeDistractor(item, mediaType) {
   if (!item) return null;
   return {
@@ -34,6 +56,9 @@ function normalizeDistractor(item, mediaType) {
     seasons: mediaType === "tv" ? item.number_of_seasons || null : null,
     budget: mediaType === "movie" ? item.budget || 0 : 0,
     revenue: mediaType === "movie" ? item.revenue || 0 : 0,
+    originalLanguage: item.original_language || null,
+    backdrops: (item.images?.backdrops || []).map((b) => b.file_path).filter(Boolean),
+    translations: normalizeTranslations(item, mediaType),
   };
 }
 
@@ -60,7 +85,7 @@ export default async function handler(req, res) {
   const distractorResults = await Promise.all(
     recommendations.map(async (item) => {
       try {
-        const detailUrl = `https://api.themoviedb.org/3/${mediaType}/${item.id}?api_key=${key}&language=en-US`;
+        const detailUrl = `https://api.themoviedb.org/3/${mediaType}/${item.id}?api_key=${key}&language=en-US&append_to_response=translations,images`;
         const detail = await fetchJson(detailUrl);
         return normalizeDistractor(detail, mediaType);
       } catch {
@@ -75,22 +100,8 @@ export default async function handler(req, res) {
       ? main.keywords?.results || []
       : main.keywords?.keywords || [];
   const mainTitle = mediaType === "tv" ? main.name : main.title;
-  // Pre-normalized here (movie translations use data.title, tv uses
-  // data.name) so the client doesn't need media-type branching. Only kept
-  // when it's both present and actually different from the English title -
-  // several languages just carry the English title through unchanged,
-  // which makes for a useless "guess the movie" question.
-  const translations = (main.translations?.translations || [])
-    .map((item) => ({
-      language: item.english_name,
-      title: mediaType === "tv" ? item.data?.name : item.data?.title,
-    }))
-    .filter(
-      (item) =>
-        item.title &&
-        item.title.trim() &&
-        item.title.trim().toLowerCase() !== (mainTitle || "").trim().toLowerCase()
-    );
+  const mainOriginalTitle = mediaType === "tv" ? main.original_name : main.original_title;
+  const translations = normalizeTranslations(main, mediaType);
   const backdrops = (main.images?.backdrops || [])
     .map((item) => item.file_path)
     .filter(Boolean);
@@ -119,6 +130,16 @@ export default async function handler(req, res) {
     main: {
       id: main.id,
       title: mainTitle,
+      // Only worth asking about when it's genuinely different from the
+      // display title - most English-language titles are identical to
+      // their own "original title" and that makes for a useless question.
+      originalTitle:
+        mainOriginalTitle &&
+        mainOriginalTitle.trim().toLowerCase() !== (mainTitle || "").trim().toLowerCase()
+          ? mainOriginalTitle
+          : null,
+      originalLanguage: main.original_language || null,
+      productionCountries: (main.production_countries || []).map((c) => c.name),
       tagline: main.tagline || null,
       releaseYear:
         (mediaType === "tv" ? main.first_air_date : main.release_date || "").split(
