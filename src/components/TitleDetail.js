@@ -6,6 +6,7 @@ import Link from "next/link";
 import ShareButtons from "./ShareButtons";
 import TrailerModal from "./TrailerModal";
 import TVStatus from "./TVStatus";
+import TitleQuiz from "./titlequiz/TitleQuiz";
 import { movieHref, tvHref, personHref } from "../lib/slug";
 
 const colors = {
@@ -429,6 +430,16 @@ function TitleDetail({ type, data, mode, location }) {
           </div>
         </section>
       )}
+
+      <section css={styles.section}>
+        <TitleQuiz
+          type={type}
+          id={data.id}
+          title={data.title}
+          href={data.href}
+          mode={mode}
+        />
+      </section>
 
       {showTrailer && data.trailerKey && (
         <TrailerModal
