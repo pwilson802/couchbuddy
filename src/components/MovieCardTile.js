@@ -193,11 +193,20 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       WebkitBoxOrient: "vertical",
       overflow: "hidden",
     }),
+    // Always present with a fixed min-height (not just rendered when there
+    // happens to be a provider or trailer) so every card is the same
+    // height regardless of what that title actually has - previously a
+    // title with no trailer produced a visibly shorter card.
+    metaActionsRow: css({
+      display: "flex",
+      alignItems: "center",
+      minHeight: 26,
+      marginTop: 8,
+    }),
     providerWrapper: css({
       display: "flex",
       flexWrap: "wrap",
       gap: 4,
-      marginTop: 8,
     }),
     providerImage: css({
       width: 26,
@@ -210,32 +219,24 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       justifyContent: "flex-end",
       marginTop: 8,
     }),
-    trailerButton: css({
-      display: "flex",
-      alignItems: "center",
-      gap: 6,
-      marginTop: 8,
-      padding: "4px 10px",
-      outline: "none",
-      cursor: "pointer",
-      backgroundColor: "#96D0D3",
-      border: "none",
-      borderRadius: 20,
-      fontWeight: "bold",
-      fontSize: 12,
-    }),
-    trailerIcon: css({
+    // Icon-only, inline with the provider logos instead of its own labeled
+    // row below - a play glyph reads as "press to watch" without needing
+    // the word "TRAILER" spelled out, and keeps the card more compact.
+    trailerIconButton: css({
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
-      width: 14,
-      height: 14,
+      width: 26,
+      height: 26,
+      marginLeft: "auto",
+      flexShrink: 0,
       borderRadius: "50%",
-      backgroundColor: "rgba(0,0,0,0.75)",
-      color: "#96D0D3",
-      fontSize: 7,
-      lineHeight: 1,
-      paddingLeft: 1,
+      backgroundColor: "#96D0D3",
+      border: "none",
+      cursor: "pointer",
+      color: "#152025",
+      fontSize: 10,
+      paddingLeft: 2,
     }),
     loadingWrap: css({
       aspectRatio: "2 / 3",
@@ -274,30 +275,33 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
               <p css={styles.meta}>
                 {year} &middot; {runtime} min
               </p>
-              {providerImages.length > 0 && (
-                <div css={styles.providerWrapper}>
-                  {providerImages.map((item) => (
-                    <img
-                      key={item}
-                      css={styles.providerImage}
-                      src={item}
-                      alt="provider"
-                    />
-                  ))}
-                </div>
-              )}
-              {hasTrailer && (
-                <button
-                  css={styles.trailerButton}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setShowTrailer(true);
-                  }}
-                >
-                  <span css={styles.trailerIcon}>&#9654;</span>
-                  TRAILER
-                </button>
-              )}
+              <div css={styles.metaActionsRow}>
+                {providerImages.length > 0 && (
+                  <div css={styles.providerWrapper}>
+                    {providerImages.map((item) => (
+                      <img
+                        key={item}
+                        css={styles.providerImage}
+                        src={item}
+                        alt="provider"
+                      />
+                    ))}
+                  </div>
+                )}
+                {hasTrailer && (
+                  <button
+                    css={styles.trailerIconButton}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setShowTrailer(true);
+                    }}
+                    aria-label="Watch trailer"
+                    title="Watch trailer"
+                  >
+                    &#9654;
+                  </button>
+                )}
+              </div>
             </div>
             <div
               css={[styles.hoverPanel, expanded && styles.hoverPanelExpanded]}
