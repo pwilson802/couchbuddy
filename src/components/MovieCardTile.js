@@ -2,10 +2,14 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import ShareButtons from "./ShareButtons";
 import MovieCardLoading from "./MovieCardLoading";
 import TrailerModal from "./TrailerModal";
 import OutsideClickHandler from "react-outside-click-handler";
+import { movieHref } from "../lib/slug";
+
+const MAX_VISIBLE_PROVIDERS = 4;
 
 async function getMovieDetails(id, selectedProviders, country) {
   const params = new URLSearchParams();
@@ -115,6 +119,11 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       overflow: "hidden",
       backgroundColor: "rgba(0,0,0,0.2)",
     }),
+    posterLink: css({
+      display: "block",
+      width: "100%",
+      height: "100%",
+    }),
     poster: css({
       width: "100%",
       height: "100%",
@@ -137,22 +146,8 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
     info: css({
       padding: "8px 10px 10px",
     }),
-    title: css({
-      margin: 0,
-      fontFamily: "Kanit",
-      fontWeight: "bold",
-      fontSize: 15,
-      lineHeight: 1.3,
-      color: colors[mode]["text"],
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      display: "-webkit-box",
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: "vertical",
-      minHeight: "2.6em",
-    }),
     meta: css({
-      margin: "4px 0 0 0",
+      margin: 0,
       fontSize: 12,
       color: colors[mode]["text"],
       opacity: 0.7,
@@ -189,32 +184,79 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       WebkitBoxOrient: "vertical",
       overflow: "hidden",
     }),
+    // Fixed min-height regardless of whether this title has any providers
+    // to show, so cards stay a consistent height either way.
+    metaActionsRow: css({
+      display: "flex",
+      alignItems: "center",
+      minHeight: 26,
+      marginTop: 8,
+    }),
+    // Capped to MAX_VISIBLE_PROVIDERS (+ an overflow badge) rather than
+    // wrapping - a title on many services (e.g. a popular sitcom bundled
+    // across half a dozen add-on channels) would otherwise wrap to a
+    // second line and make that one card taller than the rest.
     providerWrapper: css({
       display: "flex",
-      flexWrap: "wrap",
       gap: 4,
-      marginTop: 8,
+      overflow: "hidden",
     }),
     providerImage: css({
       width: 26,
       height: 26,
       borderRadius: 6,
+      flexShrink: 0,
+    }),
+    providerMore: css({
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: 26,
+      height: 26,
+      borderRadius: 6,
+      backgroundColor: "rgba(255,255,255,0.15)",
+      color: colors[mode]["text"],
+      fontSize: 11,
+      fontWeight: "bold",
+      flexShrink: 0,
     }),
     actionsRow: css({
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "flex-end",
       marginTop: 8,
     }),
-    trailerButton: css({
-      padding: "4px 10px",
-      outline: "none",
+    // Overlaid on the poster (bottom-right, opposite the vote badge)
+    // instead of living in the same row as the provider logos - a title
+    // available on many services no longer pushes the trailer button
+    // around or forces it to wrap. Frosted-glass look (translucent +
+    // blurred rather than a solid fill) so it sits quietly on top of any
+    // poster art instead of reading as an opaque UI chrome element.
+    trailerIconButton: css({
+      position: "absolute",
+      bottom: 8,
+      right: 8,
+      width: 34,
+      height: 34,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "50%",
+      backgroundColor: "rgba(255,255,255,0.18)",
+      backdropFilter: "blur(6px)",
+      WebkitBackdropFilter: "blur(6px)",
+      border: "1px solid rgba(255,255,255,0.4)",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
+      color: "white",
       cursor: "pointer",
-      backgroundColor: "#96D0D3",
-      border: "none",
-      borderRadius: 20,
-      fontWeight: "bold",
-      fontSize: 12,
+      fontSize: 13,
+      paddingLeft: 3,
+      zIndex: 2,
+      transition: "background-color 0.15s ease, transform 0.15s ease",
+      "&:hover": {
+        backgroundColor: "rgba(255,255,255,0.32)",
+        transform: "scale(1.08)",
+      },
     }),
     loadingWrap: css({
       aspectRatio: "2 / 3",
@@ -223,6 +265,10 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       justifyContent: "center",
     }),
   };
+
+  const href = movieHref(id, title, country);
+  const visibleProviders = providerImages.slice(0, MAX_VISIBLE_PROVIDERS);
+  const extraProviders = providerImages.length - visibleProviders.length;
 
   return (
     <OutsideClickHandler onOutsideClick={() => setExpanded(false)}>
@@ -233,43 +279,62 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
         {failed ? null : loaded ? (
           <React.Fragment>
             <div css={styles.posterBox}>
-              <img css={styles.poster} src={image} alt={`${title} poster`} />
+              <Link
+                href={href}
+                css={styles.posterLink}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <img
+                  css={styles.poster}
+                  src={image}
+                  alt={`${title} poster`}
+                />
+              </Link>
               <p css={styles.voteBadge}>{voteAverage}</p>
+              {hasTrailer && (
+                <button
+                  css={styles.trailerIconButton}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setShowTrailer(true);
+                  }}
+                  aria-label="Watch trailer"
+                  title="Watch trailer"
+                >
+                  &#9654;
+                </button>
+              )}
             </div>
             <div css={styles.info}>
-              <p css={styles.title}>{title}</p>
               <p css={styles.meta}>
                 {year} &middot; {runtime} min
               </p>
+              <div css={styles.metaActionsRow}>
+                {visibleProviders.length > 0 && (
+                  <div css={styles.providerWrapper}>
+                    {visibleProviders.map((item) => (
+                      <img
+                        key={item}
+                        css={styles.providerImage}
+                        src={item}
+                        alt="provider"
+                      />
+                    ))}
+                    {extraProviders > 0 && (
+                      <span css={styles.providerMore}>+{extraProviders}</span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div
               css={[styles.hoverPanel, expanded && styles.hoverPanelExpanded]}
             >
               <p css={styles.overview}>{overview}</p>
-              <div css={styles.providerWrapper}>
-                {providerImages.map((item) => (
-                  <img
-                    key={item}
-                    css={styles.providerImage}
-                    src={item}
-                    alt="provider"
-                  />
-                ))}
-              </div>
               <div
                 css={styles.actionsRow}
                 onClick={(event) => event.stopPropagation()}
               >
-                {hasTrailer ? (
-                  <button
-                    css={styles.trailerButton}
-                    onClick={() => setShowTrailer(true)}
-                  >
-                    TRAILER
-                  </button>
-                ) : (
-                  <span />
-                )}
                 <ShareButtons movie={title} tagline={tagline} />
               </div>
             </div>
