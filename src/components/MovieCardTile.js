@@ -146,23 +146,8 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
     info: css({
       padding: "8px 10px 10px",
     }),
-    title: css({
-      margin: 0,
-      textDecoration: "none",
-      fontFamily: "Kanit",
-      fontWeight: "bold",
-      fontSize: 15,
-      lineHeight: 1.3,
-      color: colors[mode]["text"],
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      display: "-webkit-box",
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: "vertical",
-      minHeight: "2.6em",
-    }),
     meta: css({
-      margin: "4px 0 0 0",
+      margin: 0,
       fontSize: 12,
       color: colors[mode]["text"],
       opacity: 0.7,
@@ -244,7 +229,9 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
     // Overlaid on the poster (bottom-right, opposite the vote badge)
     // instead of living in the same row as the provider logos - a title
     // available on many services no longer pushes the trailer button
-    // around or forces it to wrap.
+    // around or forces it to wrap. Frosted-glass look (translucent +
+    // blurred rather than a solid fill) so it sits quietly on top of any
+    // poster art instead of reading as an opaque UI chrome element.
     trailerIconButton: css({
       position: "absolute",
       bottom: 8,
@@ -255,17 +242,20 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
       alignItems: "center",
       justifyContent: "center",
       borderRadius: "50%",
-      backgroundColor: "rgba(0,0,0,0.7)",
-      border: `2px solid #96D0D3`,
-      color: "#96D0D3",
+      backgroundColor: "rgba(255,255,255,0.18)",
+      backdropFilter: "blur(6px)",
+      WebkitBackdropFilter: "blur(6px)",
+      border: "1px solid rgba(255,255,255,0.4)",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
+      color: "white",
       cursor: "pointer",
       fontSize: 13,
       paddingLeft: 3,
       zIndex: 2,
-      transition: "background-color 0.15s ease, color 0.15s ease",
+      transition: "background-color 0.15s ease, transform 0.15s ease",
       "&:hover": {
-        backgroundColor: "#96D0D3",
-        color: "#152025",
+        backgroundColor: "rgba(255,255,255,0.32)",
+        transform: "scale(1.08)",
       },
     }),
     loadingWrap: css({
@@ -316,13 +306,6 @@ function MovieCardTile({ id, allProviderData, selectedProviders, country, mode }
               )}
             </div>
             <div css={styles.info}>
-              <Link
-                href={href}
-                css={styles.title}
-                onClick={(event) => event.stopPropagation()}
-              >
-                {title}
-              </Link>
               <p css={styles.meta}>
                 {year} &middot; {runtime} min
               </p>
