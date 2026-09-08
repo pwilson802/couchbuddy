@@ -9,6 +9,7 @@ import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, tvHref } from "../../lib/slug";
 import { getCuratedProviders } from "../../lib/providers";
 import { getTvContentRating, filterProviders } from "../../lib/watchInfo";
+import { hasPremadeQuiz } from "../../lib/premadeQuiz";
 
 // Node's fetch has been observed to intermittently ETIMEDOUT against TMDB in
 // this environment even when the same request succeeds immediately via curl
@@ -24,7 +25,7 @@ const fetchRetry = async (url, attemptsLeft) => {
   }
 };
 
-function normalizeTv(show, country, curatedIds) {
+function normalizeTv(show, country, curatedIds, hasQuiz) {
   const trailer = (show.videos?.results || []).find(
     (item) => item.type === "Trailer" && item.site === "YouTube"
   );
@@ -71,6 +72,7 @@ function normalizeTv(show, country, curatedIds) {
     providers: filterProviders(show["watch/providers"], country, curatedIds),
     trailerKey: trailer ? trailer.key : null,
     href: tvHref(show.id, show.name),
+    hasQuiz,
   };
 }
 
@@ -91,6 +93,7 @@ export async function getServerSideProps({ params, query, req, res }) {
   // other. Never throws (see getCuratedProviders), so it's safe to leave
   // outside the try/catch below.
   const curatedProvidersPromise = getCuratedProviders(country, "tv");
+  const hasQuizPromise = hasPremadeQuiz("tv", id);
 
   let show;
   try {
@@ -103,6 +106,7 @@ export async function getServerSideProps({ params, query, req, res }) {
   if (!show || !show.id) return { notFound: true };
 
   const curatedProviders = await curatedProvidersPromise;
+  const hasQuiz = await hasQuizPromise;
   const curatedIds = new Set(
     curatedProviders.map((provider) => String(provider.provider_id))
   );
@@ -124,7 +128,7 @@ export async function getServerSideProps({ params, query, req, res }) {
     "public, s-maxage=3600, stale-while-revalidate=86400"
   );
 
-  return { props: { data: normalizeTv(show, country, curatedIds) } };
+  return { props: { data: normalizeTv(show, country, curatedIds, hasQuiz) } };
 }
 
 export default function TvPage({

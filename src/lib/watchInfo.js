@@ -1,4 +1,4 @@
-import { getCuratedProviders } from "./providers";
+import { getCuratedProviders, NOT_A_REAL_SERVICE_IDS } from "./providers";
 
 export function getMovieCertification(releaseDatesResults, country) {
   const entry = (releaseDatesResults || []).find(
@@ -18,25 +18,36 @@ export function getTvContentRating(contentRatingsResults, country) {
   return entry ? entry.rating || null : null;
 }
 
-// Streaming (flatrate) only - buy/rent is deliberately left out, matching
-// the search feature's own with_watch_monetization_types=flatrate-only
-// focus. Also filtered down to curatedIds - TMDB's own flatrate list for a
-// title includes every regional bundle/add-on channel it knows about,
-// which is a lot noisier than the ~40 services the search page actually
-// offers as options.
+// Flatrate (subscription) is filtered down to curatedIds - TMDB's own
+// flatrate list for a title includes every regional bundle/add-on channel
+// it knows about, which is a lot noisier than the ~40 services the search
+// feature's provider picker actually offers as filter options (and matches
+// its own with_watch_monetization_types=flatrate-only discover queries).
+//
+// Rent/buy is a different case: there's no discover-filter equivalent to
+// stay consistent with, and TMDB's per-title rent/buy list is already just
+// the handful of real storefronts that actually sell/rent that title (not
+// a firehose of every regional service) - including transactional-only
+// ones like Apple TV Store, Google Play, Amazon Video, Vudu, YouTube that
+// curatedIds deliberately excludes for the flatrate picker. So rent/buy is
+// mapped straight through, uncurated.
 export function filterProviders(watchProviders, country, curatedIds) {
   const entry = watchProviders?.results?.[country];
-  const mapList = (list) =>
+  const mapAll = (list) =>
     (list || [])
-      .filter((provider) => curatedIds.has(String(provider.provider_id)))
+      .filter((provider) => !NOT_A_REAL_SERVICE_IDS.has(provider.provider_id))
       .map((provider) => ({
         id: provider.provider_id,
         name: provider.provider_name,
         logoPath: provider.logo_path,
       }));
-  if (!entry) return { flatrate: [], link: null };
+  const mapCurated = (list) =>
+    mapAll(list).filter((provider) => curatedIds.has(String(provider.id)));
+  if (!entry) return { flatrate: [], rent: [], buy: [], link: null };
   return {
-    flatrate: mapList(entry.flatrate),
+    flatrate: mapCurated(entry.flatrate),
+    rent: mapAll(entry.rent),
+    buy: mapAll(entry.buy),
     link: entry.link || null,
   };
 }
