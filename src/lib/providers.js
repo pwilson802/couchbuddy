@@ -27,7 +27,12 @@ const TRANSACTIONAL_ONLY_IDS = new Set([
 // every country worldwide, unlike a genuine regional service, which
 // points to it being a data-aggregation artifact rather than a curated
 // catalog someone actually subscribes to.
-const NOT_A_REAL_SERVICE_IDS = new Set([
+// Exported (unlike TRANSACTIONAL_ONLY_IDS above) because this exclusion
+// isn't specific to the flatrate curated-provider picker - a data-artifact
+// "service" like this has no business showing up anywhere a real
+// storefront/subscription logo would, including the uncurated rent/buy row
+// on a title's own detail page (see filterProviders in watchInfo.js).
+export const NOT_A_REAL_SERVICE_IDS = new Set([
   2285, // JustWatch TV
 ]);
 

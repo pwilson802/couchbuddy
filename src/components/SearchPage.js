@@ -15,10 +15,10 @@ import GeneralButton from "./GeneralButton";
 import SpinnerMovie from "./SpinnerMovie";
 import Footer from "./Footer";
 import Burger from "./Burger";
-import LocationSelectSmall from "./LocationSelectSmall";
 import CookieBanner from "../components/CookieBanner";
 import SelectionItem from "./SelectionItem";
 import SearchSwitch from "./SearchSwitch";
+import SearchBox from "./SearchBox";
 
 const genreObj = {
   Action: false,
@@ -399,21 +399,21 @@ export default function SearchPage({
         marginTop: "30px",
       },
     }),
-    locationSmall: css({
-      display: "none",
-      "@media(min-width: 700px)": {
-        display: "block",
-      },
-    }),
     selectionWrapper: css({
       display: "flex",
       justifyContent: "center",
       marginTop: 5,
     }),
+    // marginLeft (desktop only - full-width on mobile makes it moot)
+    // roughly reserves the same left-edge space the old desktop location
+    // selector used to take up, so the switch reads as sitting near the
+    // (separately centered) logo instead of hugging the bare left edge
+    // now that nothing precedes it in flow any more.
     searchSwitchWrap: css({
       width: "100%",
       "@media(min-width: 700px)": {
         width: "auto",
+        marginLeft: 64,
       },
     }),
   };
@@ -421,15 +421,6 @@ export default function SearchPage({
     <div>
       <div css={styles.wrapper}>
         <div css={styles.nav}>
-          {location && (
-            <div css={styles.locationSmall}>
-              <LocationSelectSmall
-                mode={mode}
-                location={location}
-                handleLocation={handleLocation}
-              />
-            </div>
-          )}
           {width > 700 && (
             <div css={styles.logoWrap}>
               <Logo setPage={setPage} logo={"main"} width={250} />
@@ -442,6 +433,7 @@ export default function SearchPage({
               handleViewChange={handleViewChange}
             />
           </div>
+          <SearchBox mode={mode} location={location} corner="left" />
           <Burger
             handleLocation={handleLocation}
             location={location}

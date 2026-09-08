@@ -6,6 +6,7 @@ import Link from "next/link";
 import Burger from "./Burger";
 import ResultsNavButton from "./ResultsNavButton";
 import SearchPage from "./SearchPage";
+import SearchBox from "./SearchBox";
 
 const colors = {
   light: {
@@ -106,6 +107,7 @@ function NavResults({
         <img src={"/CouchBuddyLogo.png"} alt="CouchBuddy Logo" width={250} />
       </div>
       <div css={styles.navLinks}>
+        <SearchBox mode={mode} location={location} />
         <Burger
           handleLocation={handleLocation}
           location={location}
