@@ -1,5 +1,25 @@
-function keysWhereTrue(obj) {
+import { movieGenres, tvGenres } from "../data/genres";
+
+export function keysWhereTrue(obj) {
   return Object.keys(obj || {}).filter((key) => obj[key]);
+}
+
+export function genreIds(selectedGenres, view) {
+  const map = view === "movie" ? movieGenres : tvGenres;
+  return keysWhereTrue(selectedGenres)
+    .map((name) => map[name])
+    .filter((id) => id != null);
+}
+
+// Just the selected keys, same as genres/providers - no longer special-cases
+// "every certification checked" as "no filter", since that required the
+// full false-for-unselected domain to detect and a URL-restored selection
+// only carries the true keys. Functionally equivalent for normal use (an
+// explicit list of every current certification narrows to the same results
+// as no filter).
+export function certificationLabels(selectedCertifications) {
+  const selected = keysWhereTrue(selectedCertifications);
+  return selected.length > 0 ? selected : null;
 }
 
 function firstValue(value) {
@@ -100,4 +120,55 @@ export function searchDetailsFromQuery(query) {
   }
 
   return details;
+}
+
+// Turns a SearchPage submission into the exact query object /api/discover/*
+// (and, server-side, discover.js's runDiscoverMovie/runDiscoverTv directly -
+// see movieStack.js) expects. Shared by ResultsPage's own infinite-scroll
+// fetching and the "Play as a Group" stack generator so both read filters
+// identically.
+export function toDiscoverParams(searchDetails, location, page) {
+  const {
+    view,
+    selectedGenres,
+    selectedProviders,
+    selectedCertifications,
+    sortByVote,
+    dateRange,
+    duration,
+    seasons,
+    onlyfinishedTv,
+  } = searchDetails;
+
+  const params = {
+    country: location,
+    page: String(page),
+    sortByVote: sortByVote ? "true" : "false",
+  };
+
+  const genres = genreIds(selectedGenres, view);
+  if (genres.length > 0) params.genres = genres.join("|");
+
+  const providers = keysWhereTrue(selectedProviders);
+  if (providers.length > 0) params.providers = providers.join("|");
+
+  const certifications = certificationLabels(selectedCertifications);
+  if (certifications) params.certifications = certifications.join("|");
+
+  if (dateRange && (dateRange[0] !== 1950 || dateRange[1] !== 2030)) {
+    params.dateStart = String(dateRange[0]);
+    params.dateEnd = String(dateRange[1]);
+  }
+
+  if (view === "movie") {
+    if (duration != null && duration !== 400) params.runtime = String(duration);
+  } else {
+    if (seasons && (seasons[0] !== 1 || seasons[1] !== 50)) {
+      params.seasonsMin = String(seasons[0]);
+      params.seasonsMax = String(seasons[1]);
+    }
+    if (onlyfinishedTv) params.status = "finished";
+  }
+
+  return params;
 }
