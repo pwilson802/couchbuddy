@@ -6,7 +6,7 @@ import RandomQuizButton from "../randomquiz/RandomQuizButton";
 import RandomQuizSpinner from "../randomquiz/RandomQuizSpinner";
 import TitleQuizQuestion from "./TitleQuizQuestion";
 import TitleQuizEnd from "./TitleQuizEnd";
-import { makeTitleQuestions } from "./makeTitleQuestions";
+import { preparePremadeQuestions } from "./makeTitleQuestions";
 
 const colors = {
   light: { text: "black", heading: "black" },
@@ -34,7 +34,7 @@ function TitleQuiz({ type, id, title, href, mode }) {
         data = await response.json();
         setQuizData(data);
       }
-      const built = makeTitleQuestions(data.main, data.distractors, type);
+      const built = preparePremadeQuestions(data.questions);
       setQuestions(built);
       setActiveQuestion(0);
       setScore(0);
@@ -45,7 +45,7 @@ function TitleQuiz({ type, id, title, href, mode }) {
   }
 
   function replay() {
-    const built = makeTitleQuestions(quizData.main, quizData.distractors, type);
+    const built = preparePremadeQuestions(quizData.questions);
     setQuestions(built);
     setActiveQuestion(0);
     setScore(0);
@@ -81,6 +81,15 @@ function TitleQuiz({ type, id, title, href, mode }) {
     intro: css({
       textAlign: "center",
       color: colors[mode]["text"],
+      marginBottom: 4,
+    }),
+    spoilerWarning: css({
+      textAlign: "center",
+      color: colors[mode]["text"],
+      opacity: 0.7,
+      fontSize: 12.5,
+      fontStyle: "italic",
+      marginTop: 0,
       marginBottom: 16,
     }),
     numbers: css({
@@ -102,6 +111,7 @@ function TitleQuiz({ type, id, title, href, mode }) {
       {stage === "intro" && (
         <div data-testid="quiz-start">
           <p css={styles.intro}>How well do you really know {title}?</p>
+          <p css={styles.spoilerWarning}>⚠️ Heads up — these questions contain spoilers</p>
           <RandomQuizButton mode={mode} setupQuiz={loadAndStart} />
         </div>
       )}

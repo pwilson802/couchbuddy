@@ -7,6 +7,7 @@ import ShareButtons from "./ShareButtons";
 import TrailerModal from "./TrailerModal";
 import TVStatus from "./TVStatus";
 import TitleQuiz from "./titlequiz/TitleQuiz";
+import WatchlistButton from "./WatchlistButton";
 import { movieHref, tvHref, personHref } from "../lib/slug";
 
 const colors = {
@@ -42,6 +43,17 @@ function TitleDetail({ type, data, mode, location }) {
   const similarHref = type === "movie" ? movieHref : tvHref;
   const similarLabel = type === "movie" ? "Similar Movies" : "Similar Shows";
   const hasProviders = providers.flatrate.length > 0;
+  // A service offering both rent and buy for a title (common) should only
+  // show its logo once in this row, not twice.
+  const transactionalProviders = Array.from(
+    new Map(
+      [...(providers.rent || []), ...(providers.buy || [])].map((provider) => [
+        provider.id,
+        provider,
+      ])
+    ).values()
+  );
+  const hasTransactionalProviders = transactionalProviders.length > 0;
 
   // The page was rendered server-side for data.country (the URL's own
   // ?country=, a Vercel geo header, or a US fallback) - if the viewer then
@@ -346,6 +358,17 @@ function TitleDetail({ type, data, mode, location }) {
                   WATCH TRAILER
                 </button>
               )}
+              <WatchlistButton
+                item={{
+                  id: data.id,
+                  mediaType: type,
+                  title: data.title,
+                  posterPath: data.posterPath,
+                  year: data.year,
+                  href: data.href,
+                }}
+                mode={mode}
+              />
               <ShareButtons movie={data.title} tagline={data.tagline} />
             </div>
             {hasProviders && (
@@ -363,6 +386,32 @@ function TitleDetail({ type, data, mode, location }) {
                   ))}
                 </div>
                 {providers.link && (
+                  <a
+                    css={styles.justwatchLink}
+                    href={providers.link}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Streaming data provided by JustWatch
+                  </a>
+                )}
+              </div>
+            )}
+            {hasTransactionalProviders && (
+              <div css={styles.providersSection}>
+                <p css={styles.providersLabel}>Rent or Buy</p>
+                <div css={styles.providerLogos}>
+                  {transactionalProviders.map((provider) => (
+                    <img
+                      key={provider.id}
+                      css={styles.providerLogo}
+                      src={`https://image.tmdb.org/t/p/w92${provider.logoPath}`}
+                      alt={provider.name}
+                      title={provider.name}
+                    />
+                  ))}
+                </div>
+                {!hasProviders && providers.link && (
                   <a
                     css={styles.justwatchLink}
                     href={providers.link}
@@ -431,15 +480,17 @@ function TitleDetail({ type, data, mode, location }) {
         </section>
       )}
 
-      <section css={styles.section}>
-        <TitleQuiz
-          type={type}
-          id={data.id}
-          title={data.title}
-          href={data.href}
-          mode={mode}
-        />
-      </section>
+      {data.hasQuiz && (
+        <section css={styles.section}>
+          <TitleQuiz
+            type={type}
+            id={data.id}
+            title={data.title}
+            href={data.href}
+            mode={mode}
+          />
+        </section>
+      )}
 
       {showTrailer && data.trailerKey && (
         <TrailerModal

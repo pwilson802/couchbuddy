@@ -110,6 +110,12 @@ function Footer({ activePage, mode, setPage, location, handleLocation }) {
           </Link>
         )}
         <p css={styles.seperator}>|</p>
+        <Link href="/watchlist" css={styles.text}>
+          <span css={activePage === "watchlist" ? styles.linkSelected : styles.link}>
+            WATCHLIST
+          </span>
+        </Link>
+        <p css={styles.seperator}>|</p>
         <Link href="/blog" css={styles.text}>
           <span css={activePage === "blog" ? styles.linkSelected : styles.link}>
             BLOG

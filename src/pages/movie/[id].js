@@ -9,6 +9,7 @@ import TitleDetail from "../../components/TitleDetail";
 import { slugify, parseIdParam, movieHref } from "../../lib/slug";
 import { getCuratedProviders } from "../../lib/providers";
 import { getMovieCertification, filterProviders } from "../../lib/watchInfo";
+import { hasPremadeQuiz } from "../../lib/premadeQuiz";
 
 // Node's fetch has been observed to intermittently ETIMEDOUT against TMDB in
 // this environment even when the same request succeeds immediately via curl
@@ -24,7 +25,7 @@ const fetchRetry = async (url, attemptsLeft) => {
   }
 };
 
-function normalizeMovie(movie, country, curatedIds) {
+function normalizeMovie(movie, country, curatedIds, hasQuiz) {
   const trailer = (movie.videos?.results || []).find(
     (item) => item.type === "Trailer" && item.site === "YouTube"
   );
@@ -68,6 +69,7 @@ function normalizeMovie(movie, country, curatedIds) {
     providers: filterProviders(movie["watch/providers"], country, curatedIds),
     trailerKey: trailer ? trailer.key : null,
     href: movieHref(movie.id, movie.title),
+    hasQuiz,
   };
 }
 
@@ -88,6 +90,7 @@ export async function getServerSideProps({ params, query, req, res }) {
   // other. Never throws (see getCuratedProviders), so it's safe to leave
   // outside the try/catch below.
   const curatedProvidersPromise = getCuratedProviders(country, "movie");
+  const hasQuizPromise = hasPremadeQuiz("movie", id);
 
   let movie;
   try {
@@ -100,6 +103,7 @@ export async function getServerSideProps({ params, query, req, res }) {
   if (!movie || !movie.id) return { notFound: true };
 
   const curatedProviders = await curatedProvidersPromise;
+  const hasQuiz = await hasQuizPromise;
   const curatedIds = new Set(
     curatedProviders.map((provider) => String(provider.provider_id))
   );
@@ -121,7 +125,7 @@ export async function getServerSideProps({ params, query, req, res }) {
     "public, s-maxage=3600, stale-while-revalidate=86400"
   );
 
-  return { props: { data: normalizeMovie(movie, country, curatedIds) } };
+  return { props: { data: normalizeMovie(movie, country, curatedIds, hasQuiz) } };
 }
 
 export default function MoviePage({

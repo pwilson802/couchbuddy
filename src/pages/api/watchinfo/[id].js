@@ -8,7 +8,10 @@ export default async function handler(req, res) {
   const { id, view = "movie", country = "US" } = req.query;
   const info = await fetchWatchInfo(id, view, country.toUpperCase());
   if (!info) {
-    res.status(200).json({ certification: null, providers: { flatrate: [], link: null } });
+    res.status(200).json({
+      certification: null,
+      providers: { flatrate: [], rent: [], buy: [], link: null },
+    });
     return;
   }
   res.setHeader(
