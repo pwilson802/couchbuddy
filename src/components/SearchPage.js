@@ -2,6 +2,7 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Logo from "./Logo";
 import Genres from "./Genres";
 import Providers from "./Providers";
@@ -19,6 +20,7 @@ import CookieBanner from "../components/CookieBanner";
 import SelectionItem from "./SelectionItem";
 import SearchSwitch from "./SearchSwitch";
 import SearchBox from "./SearchBox";
+import PlayGroupButton from "./PlayGroupButton";
 
 const genreObj = {
   Action: false,
@@ -131,6 +133,8 @@ export default function SearchPage({
   setView,
   handleViewChange,
 }) {
+  const router = useRouter();
+  const [creatingRoom, setCreatingRoom] = useState(false);
   const [selectedGenres, setSelectedGenres] = useState(genreObj);
   const [selectedProviders, setSelectedProviders] = useState({});
   const [allProviderData, setAllProviderData] = useState();
@@ -197,11 +201,7 @@ export default function SearchPage({
     setSeasons(item);
   };
 
-  const handleSubmit = () => {
-    const dataMissing = CheckMissingData();
-    if (dataMissing) {
-      return;
-    }
+  const buildSearchData = () => {
     const searchData = {
       allProviderData: allProviderData,
       selectedGenres: selectedGenres,
@@ -219,8 +219,39 @@ export default function SearchPage({
       searchData["view"] = "tv";
       searchData["seasons"] = seasons;
     }
-    handleSearchDetails(searchData);
+    return searchData;
+  };
+
+  const handleSubmit = () => {
+    const dataMissing = CheckMissingData();
+    if (dataMissing) {
+      return;
+    }
+    handleSearchDetails(buildSearchData());
     setPage("ResultsPage");
+  };
+
+  const handlePlayAsGroup = async () => {
+    const dataMissing = CheckMissingData();
+    if (dataMissing) {
+      return;
+    }
+    setCreatingRoom(true);
+    try {
+      // allProviderData is large and purely derived (see searchQuery.js's
+      // searchDetailsToQuery) - dropped here too rather than stored on the
+      // room row.
+      const { allProviderData: _allProviderData, ...filters } = buildSearchData();
+      const response = await fetch("/api/party/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ view: filters.view, filters, location }),
+      });
+      const data = await response.json();
+      if (data.code) router.push(`/play/${data.code}`);
+    } finally {
+      setCreatingRoom(false);
+    }
   };
 
   const CheckMissingData = () => {
@@ -528,6 +559,7 @@ export default function SearchPage({
               handleSubmit={handleSubmit}
               buttonText={view == "movie" ? "Get Movies" : "Get TV"}
             />
+            <PlayGroupButton handleClick={handlePlayAsGroup} loading={creatingRoom} />
             <Footer
               activePage="app"
               setPage={setPage}

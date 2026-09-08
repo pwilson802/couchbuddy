@@ -13,7 +13,7 @@ import { Adsense } from "@ctrl/react-adsense";
 import InfiniteScroll from "react-infinite-scroll-component";
 import NavResults from "./NavResults";
 import Footer from "./Footer";
-import { movieGenres, tvGenres } from "../data/genres";
+import { keysWhereTrue as selectedKeys, toDiscoverParams } from "../lib/searchQuery";
 
 const MAX_RANDOM_PAGE = 500;
 // Cards each trigger several TMDB calls on mount (detail + watch/providers +
@@ -37,28 +37,6 @@ const MAX_REVEAL = 40;
 const MAX_FETCH_ROUNDS = 3;
 const MAX_BATCH_PAGES = 6;
 
-function selectedKeys(obj) {
-  return Object.keys(obj || {}).filter((key) => obj[key]);
-}
-
-function genreIds(selectedGenres, view) {
-  const map = view === "movie" ? movieGenres : tvGenres;
-  return selectedKeys(selectedGenres)
-    .map((name) => map[name])
-    .filter((id) => id != null);
-}
-
-function certificationLabels(selectedCertifications) {
-  // Just the selected keys, same as genres/providers - no longer special-
-  // cases "every certification checked" as "no filter", since that
-  // required the full false-for-unselected domain to detect and a
-  // URL-restored selection only carries the true keys. Functionally
-  // equivalent for normal use (an explicit list of every current
-  // certification narrows to the same results as no filter).
-  const selected = selectedKeys(selectedCertifications);
-  return selected.length > 0 ? selected : null;
-}
-
 function randomPage(totalPages, exclude) {
   const ceiling = Math.max(1, Math.min(totalPages || 1, MAX_RANDOM_PAGE));
   if (ceiling <= 1) return 1;
@@ -71,53 +49,11 @@ function randomPage(totalPages, exclude) {
   return page;
 }
 
-function buildDiscoverUrl({
-  view,
-  page,
-  searchDetails,
-  location,
-}) {
-  const {
-    selectedGenres,
-    selectedProviders,
-    selectedCertifications,
-    sortByVote,
-    dateRange,
-    duration,
-    seasons,
-    onlyfinishedTv,
-  } = searchDetails;
-
-  const params = new URLSearchParams();
-  params.set("country", location);
-  params.set("page", String(page));
-  params.set("sortByVote", sortByVote ? "true" : "false");
-
-  const genres = genreIds(selectedGenres, view);
-  if (genres.length > 0) params.set("genres", genres.join("|"));
-
-  const providers = selectedKeys(selectedProviders);
-  if (providers.length > 0) params.set("providers", providers.join("|"));
-
-  const certifications = certificationLabels(selectedCertifications);
-  if (certifications) params.set("certifications", certifications.join("|"));
-
-  if (dateRange && (dateRange[0] !== 1950 || dateRange[1] !== 2030)) {
-    params.set("dateStart", String(dateRange[0]));
-    params.set("dateEnd", String(dateRange[1]));
-  }
-
-  if (view === "movie") {
-    if (duration !== 400) params.set("runtime", String(duration));
-    return `/api/discover/movie?${params.toString()}`;
-  }
-
-  if (seasons && (seasons[0] !== 1 || seasons[1] !== 50)) {
-    params.set("seasonsMin", String(seasons[0]));
-    params.set("seasonsMax", String(seasons[1]));
-  }
-  if (onlyfinishedTv) params.set("status", "finished");
-  return `/api/discover/tv?${params.toString()}`;
+function buildDiscoverUrl({ view, page, searchDetails, location }) {
+  const params = new URLSearchParams(toDiscoverParams(searchDetails, location, page));
+  return view === "movie"
+    ? `/api/discover/movie?${params.toString()}`
+    : `/api/discover/tv?${params.toString()}`;
 }
 
 // Must match styles.tileGrid's own grid-template-columns math below, since
