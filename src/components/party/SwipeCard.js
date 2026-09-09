@@ -94,61 +94,66 @@ const SwipeCard = forwardRef(function SwipeCard({ movie, isTop, stackDepth, onDe
   };
 
   return (
-    <motion.div
-      css={styles.card}
+    // Depth positioning lives on a plain (non-motion) div, deliberately
+    // outside framer-motion's own value tracking - a framer `style` prop
+    // change (even with transition:{duration:0} set) still goes through
+    // its animation pipeline and could pick up a stray transition from
+    // somewhere else; a bare DOM style update never animates unless a CSS
+    // `transition` is explicitly declared, which it isn't here. Keeps the
+    // "cards stack up behind the top one" depth effect fully inert, so it
+    // can't compound into a zoom pulse when stackDepth changes twice in
+    // quick succession (two swipes close together).
+    <div
       style={{
-        x,
-        rotate,
-        scale: 1 - stackDepth * 0.04,
-        top: stackDepth * 10,
+        position: "absolute",
+        inset: 0,
+        transform: `scale(${1 - stackDepth * 0.04}) translateY(${stackDepth * 10}px)`,
       }}
-      // scale/top above are plain numbers, not drag-driven motion values -
-      // framer-motion auto-animates those with a default spring whenever
-      // stackDepth changes (i.e. every time a card above this one is
-      // swiped and it moves up a stack position). Two swipes close
-      // together retriggers that mid-flight, which read as an odd zoom
-      // pulse - stackDepth is only ever meant to reposition instantly.
-      transition={{ duration: 0 }}
-      // No dragConstraints/dragElastic here on purpose: a zero-width
-      // constraint box (the usual way to get "elastic pull that wants to
-      // return to center") makes framer-motion run its OWN automatic
-      // snap-back-into-constraints animation on release, racing our own
-      // onDragEnd logic below for control of the same x value - that race
-      // is what caused an occasional snap-back right after a clean swipe.
-      // Dragging freely and handling both outcomes (fling away via
-      // commit(), or spring back to 0 below threshold) entirely ourselves
-      // in onDragEnd avoids the race completely.
-      drag={isTop && !decided ? "x" : false}
-      dragMomentum={false}
-      onDragEnd={handleDragEnd}
     >
-      {movie.posterPath ? (
-        <img
-          css={styles.poster}
-          src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
-          alt={movie.title}
-        />
-      ) : (
-        <div css={styles.posterFallback}>{movie.title}</div>
-      )}
-      <div css={styles.info}>
-        <p css={styles.title}>{movie.title}</p>
-        <p css={styles.meta}>
-          {movie.year}
-          {movie.voteAverage ? ` · ★ ${movie.voteAverage}` : ""}
-        </p>
-      </div>
-      {isTop && (
-        <React.Fragment>
-          <motion.div css={[styles.badge, styles.like]} style={{ opacity: likeOpacity }}>
-            Yes
-          </motion.div>
-          <motion.div css={[styles.badge, styles.nope]} style={{ opacity: nopeOpacity }}>
-            No
-          </motion.div>
-        </React.Fragment>
-      )}
-    </motion.div>
+      <motion.div
+        css={styles.card}
+        style={{ x, rotate }}
+        // No dragConstraints/dragElastic here on purpose: a zero-width
+        // constraint box (the usual way to get "elastic pull that wants to
+        // return to center") makes framer-motion run its OWN automatic
+        // snap-back-into-constraints animation on release, racing our own
+        // onDragEnd logic below for control of the same x value - that race
+        // is what caused an occasional snap-back right after a clean swipe.
+        // Dragging freely and handling both outcomes (fling away via
+        // commit(), or spring back to 0 below threshold) entirely ourselves
+        // in onDragEnd avoids the race completely.
+        drag={isTop && !decided ? "x" : false}
+        dragMomentum={false}
+        onDragEnd={handleDragEnd}
+      >
+        {movie.posterPath ? (
+          <img
+            css={styles.poster}
+            src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
+            alt={movie.title}
+          />
+        ) : (
+          <div css={styles.posterFallback}>{movie.title}</div>
+        )}
+        <div css={styles.info}>
+          <p css={styles.title}>{movie.title}</p>
+          <p css={styles.meta}>
+            {movie.year}
+            {movie.voteAverage ? ` · ★ ${movie.voteAverage}` : ""}
+          </p>
+        </div>
+        {isTop && (
+          <React.Fragment>
+            <motion.div css={[styles.badge, styles.like]} style={{ opacity: likeOpacity }}>
+              Yes
+            </motion.div>
+            <motion.div css={[styles.badge, styles.nope]} style={{ opacity: nopeOpacity }}>
+              No
+            </motion.div>
+          </React.Fragment>
+        )}
+      </motion.div>
+    </div>
   );
 });
 
