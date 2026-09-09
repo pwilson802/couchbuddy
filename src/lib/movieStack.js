@@ -35,6 +35,14 @@ function normalizeStub(item, view) {
 // a separate copy rather than shared, since this one runs server-side
 // against a TMDB total_pages count from a fresh discover call, not a
 // client-side one already in React state.
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 function randomPage(ceiling, exclude) {
   if (ceiling <= 1) return 1;
   let page;
@@ -65,34 +73,40 @@ export async function generateStack({ view, filters, location }) {
     }
   }
 
-  const first = await run(toDiscoverParams(filters, location, 1));
-  addResults(first.results || []);
-
+  // Page 1 has to be fetched regardless, purely to learn total_pages - but
+  // its results are NOT added unconditionally below. Treating page 1 as a
+  // guaranteed "seed" (added every time, only the rest randomized) was
+  // the previous approach here, and it was still wrong: the same ~20
+  // most-popular titles opened every single round regardless of how
+  // random the rest of the stack was, which is exactly the repetition
+  // that's noticeable in practice - people mostly see the first handful
+  // of cards. Page 1 is now just another equally-likely random pick.
+  const probe = await run(toDiscoverParams(filters, location, 1));
   const isSortByVote = filters.sortByVote === true;
-  const totalPages = first.total_pages || 1;
+  const totalPages = probe.total_pages || 1;
 
-  // "Top Rated" already returns one large, deterministically-ranked pool
-  // from page 1 (see discover.js's sortByVote branch) - nothing more to
-  // fetch, and staying deterministic there is the whole point of a ranked
-  // list. Otherwise, pick further pages RANDOMLY rather than sequentially
-  // (1, 2, 3...) - sequential pages are the same every time for the same
-  // filters, which is why repeated "Play as a Group" rounds kept
-  // generating the identical stack. The regular results page doesn't have
-  // this problem because it already picks a random starting page (see
-  // ResultsPage.js's own randomPage) - this mirrors that.
-  if (!isSortByVote && totalPages > 1) {
-    const pageCeiling = Math.min(totalPages, MAX_RANDOM_PAGE);
-    const pagesUsed = new Set([1]);
-    let fetches = 0;
-    while (stack.length < STACK_SIZE && pagesUsed.size < pageCeiling && fetches < MAX_PAGE_FETCHES) {
-      const page = randomPage(pageCeiling, pagesUsed);
-      if (pagesUsed.has(page)) break; // ran out of unused pages in range
-      pagesUsed.add(page);
-      fetches++;
-      const data = await run(toDiscoverParams(filters, location, page));
-      addResults(data.results || []);
-    }
+  if (isSortByVote) {
+    // "Top Rated" already returns one large, deterministically-ranked
+    // pool from page 1 in a single call (see discover.js) - staying
+    // deterministic there is the whole point of a ranked list.
+    addResults(probe.results || []);
+    return stack;
   }
 
-  return stack;
+  const pageCeiling = Math.min(totalPages, MAX_RANDOM_PAGE);
+  const pagesUsed = new Set();
+  let fetches = 0;
+  while (stack.length < STACK_SIZE && pagesUsed.size < pageCeiling && fetches < MAX_PAGE_FETCHES) {
+    const page = randomPage(pageCeiling, pagesUsed);
+    if (pagesUsed.has(page)) break; // ran out of unused pages in range
+    pagesUsed.add(page);
+    fetches++;
+    const data = page === 1 ? probe : await run(toDiscoverParams(filters, location, page));
+    addResults(data.results || []);
+  }
+
+  // Otherwise titles from the same TMDB page still cluster together in
+  // that page's own popularity order, which can make even a genuinely
+  // different set of pages feel patterned round to round.
+  return shuffle(stack);
 }
