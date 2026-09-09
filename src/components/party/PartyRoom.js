@@ -54,7 +54,15 @@ function PartyRoom({ code, mode, location }) {
     }
     if (data.me) {
       setParticipantId(data.me.participantId);
-      setMySwipes(data.me.swipes || {});
+      // Merge, never replace: a poll started just before a swipe's own
+      // request can resolve just after it and still reflect the
+      // pre-swipe server state, since the two requests race independently.
+      // Overwriting mySwipes with that stale snapshot would silently
+      // un-record the swipe the user just made (the card reappearing in
+      // the queue). Server data can only ever ADD swipes we don't already
+      // know about locally (e.g. a genuine resume) - the locally-recorded
+      // ones always win.
+      setMySwipes((prev) => ({ ...(data.me.swipes || {}), ...prev }));
       setPhase(data.status); // "lobby" | "active" | "finished"
     } else if (data.status === "lobby") {
       setPhase("join");
