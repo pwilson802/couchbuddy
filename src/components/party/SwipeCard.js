@@ -102,9 +102,17 @@ const SwipeCard = forwardRef(function SwipeCard({ movie, isTop, stackDepth, onDe
         scale: 1 - stackDepth * 0.04,
         top: stackDepth * 10,
       }}
+      // No dragConstraints/dragElastic here on purpose: a zero-width
+      // constraint box (the usual way to get "elastic pull that wants to
+      // return to center") makes framer-motion run its OWN automatic
+      // snap-back-into-constraints animation on release, racing our own
+      // onDragEnd logic below for control of the same x value - that race
+      // is what caused an occasional snap-back right after a clean swipe.
+      // Dragging freely and handling both outcomes (fling away via
+      // commit(), or spring back to 0 below threshold) entirely ourselves
+      // in onDragEnd avoids the race completely.
       drag={isTop && !decided ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.85}
+      dragMomentum={false}
       onDragEnd={handleDragEnd}
     >
       {movie.posterPath ? (
