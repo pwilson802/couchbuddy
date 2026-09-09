@@ -1,8 +1,9 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import SwipeCard from "./SwipeCard";
+import SwipeCardGhost from "./SwipeCardGhost";
 
 const VISIBLE_CARDS = 3;
 
@@ -14,6 +15,7 @@ const colors = {
 function SwipeDeck({ stack, mySwipes, onSwipe, participants, mode }) {
   const palette = colors[mode] || colors.dark;
   const topCardRef = useRef(null);
+  const [ghost, setGhost] = useState(null);
 
   // Filtering the already-swiped titles out (rather than tracking a
   // separate index) is what makes a resumed session just work - a reload
@@ -26,8 +28,13 @@ function SwipeDeck({ stack, mySwipes, onSwipe, participants, mode }) {
   const swipedCount = stack.length - remaining.length;
   const visible = remaining.slice(0, VISIBLE_CARDS);
 
-  function handleDecided(movieId, direction) {
-    onSwipe(movieId, direction);
+  function handleDecided(movie, direction, startX) {
+    // Advance the queue immediately - the next card must be interactive
+    // the instant a choice is made (see SwipeCard.js). The fly-off visual
+    // for the just-decided card continues separately via the ghost below,
+    // which is non-interactive so it can never block the real next swipe.
+    onSwipe(movie.id, direction);
+    setGhost({ key: `${movie.id}-${Date.now()}`, movie, direction, startX });
   }
 
   const styles = {
@@ -102,10 +109,19 @@ function SwipeDeck({ stack, mySwipes, onSwipe, participants, mode }) {
               movie={movie}
               isTop={index === 0}
               stackDepth={index}
-              onDecided={(direction) => handleDecided(movie.id, direction)}
+              onDecided={(direction, startX) => handleDecided(movie, direction, startX)}
             />
           ))
           .reverse()}
+        {ghost && (
+          <SwipeCardGhost
+            key={ghost.key}
+            movie={ghost.movie}
+            direction={ghost.direction}
+            startX={ghost.startX}
+            onFinished={() => setGhost(null)}
+          />
+        )}
       </div>
       <div css={styles.actions}>
         <button
