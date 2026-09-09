@@ -102,6 +102,13 @@ const SwipeCard = forwardRef(function SwipeCard({ movie, isTop, stackDepth, onDe
         scale: 1 - stackDepth * 0.04,
         top: stackDepth * 10,
       }}
+      // scale/top above are plain numbers, not drag-driven motion values -
+      // framer-motion auto-animates those with a default spring whenever
+      // stackDepth changes (i.e. every time a card above this one is
+      // swiped and it moves up a stack position). Two swipes close
+      // together retriggers that mid-flight, which read as an odd zoom
+      // pulse - stackDepth is only ever meant to reposition instantly.
+      transition={{ duration: 0 }}
       // No dragConstraints/dragElastic here on purpose: a zero-width
       // constraint box (the usual way to get "elastic pull that wants to
       // return to center") makes framer-motion run its OWN automatic
