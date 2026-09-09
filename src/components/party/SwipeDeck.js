@@ -38,19 +38,40 @@ function SwipeDeck({ stack, mySwipes, onSwipe, participants, mode }) {
   }
 
   const styles = {
-    wrapper: css({ maxWidth: 420, margin: "0 auto", padding: "16px 20px 40px", color: palette.text }),
-    progress: css({ textAlign: "center", fontSize: 13, opacity: 0.6, marginBottom: 12 }),
+    // flex:1/minHeight:0 makes this fill exactly whatever's left below
+    // PartyRoom's header inside its fixed-height, overflow:hidden page
+    // (see there) - the stage below then flex-fills whatever's left here
+    // in turn, instead of sizing itself from a fixed aspect-ratio/vh
+    // value that doesn't account for how much room the header, progress
+    // text and action buttons actually took. That mismatch was exactly
+    // what could push this screen taller than the viewport and force a
+    // page scroll - one a horizontal swipe gesture could then fight with.
+    wrapper: css({
+      flex: 1,
+      minHeight: 0,
+      display: "flex",
+      flexDirection: "column",
+      maxWidth: 420,
+      width: "100%",
+      margin: "0 auto",
+      padding: "8px 20px 16px",
+      boxSizing: "border-box",
+      color: palette.text,
+    }),
+    progress: css({ textAlign: "center", fontSize: 13, opacity: 0.6, marginBottom: 12, flexShrink: 0 }),
     stage: css({
       position: "relative",
       width: "100%",
-      aspectRatio: "2 / 3",
-      maxHeight: "60vh",
+      flex: "1 1 auto",
+      minHeight: 0,
+      maxHeight: "70vh",
     }),
     actions: css({
       display: "flex",
       justifyContent: "center",
       gap: 24,
-      marginTop: 24,
+      marginTop: 16,
+      flexShrink: 0,
     }),
     actionButton: css({
       width: 64,
@@ -66,7 +87,16 @@ function SwipeDeck({ stack, mySwipes, onSwipe, participants, mode }) {
     }),
     nopeButton: css({ backgroundColor: "#2A1616", color: "#F87171" }),
     likeButton: css({ backgroundColor: "#16241A", color: "#4ADE80" }),
-    waitingWrap: css({ textAlign: "center", padding: "60px 10px" }),
+    waitingWrap: css({
+      flex: 1,
+      minHeight: 0,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      textAlign: "center",
+      padding: "20px 10px",
+      overflowY: "auto",
+    }),
     waitingHeading: css({ fontSize: 20, marginBottom: 8 }),
     waitingSub: css({ fontSize: 14, opacity: 0.7, marginBottom: 24 }),
     participantRow: css({

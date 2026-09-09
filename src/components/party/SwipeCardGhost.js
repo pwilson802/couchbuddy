@@ -68,7 +68,14 @@ function SwipeCardGhost({ movie, direction, startX, onFinished }) {
       css={styles.card}
       initial={{ x: from, rotate: clampRotate(from) }}
       animate={{ x: to, rotate: clampRotate(to) }}
-      transition={{ type: "spring", stiffness: 260, damping: 26 }}
+      // A spring starting from rest ramps up gradually rather than moving
+      // fast immediately - for a short time the two nearly-full-size
+      // cards sit heavily overlapped, which reads as a "zoom" even though
+      // nothing is actually flashing or popping (see the declarative
+      // initial/animate fix above for that separate issue). An ease-out
+      // tween moves fastest right at the start, clearing the overlap
+      // quickly instead of lingering in it.
+      transition={{ duration: 0.32, ease: "easeOut" }}
       onAnimationComplete={onFinished}
     >
       {movie.posterPath ? (

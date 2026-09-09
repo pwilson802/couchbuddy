@@ -164,8 +164,30 @@ function PartyRoom({ code, mode, location }) {
   }
 
   const styles = {
-    page: css({ minHeight: "100vh", paddingBottom: 40, color: palette.text }),
-    header: css({ display: "flex", justifyContent: "center", padding: "20px 0" }),
+    // The swipe screen itself must never scroll - a page-level scrollbar
+    // (or worse, an actual scroll mid-drag) fighting a horizontal swipe
+    // gesture is exactly the "feels like it scrolls sometimes" report.
+    // 100dvh (falls back fine where unsupported) plus overflow:hidden
+    // pins this phase to exactly the visible viewport instead of relying
+    // on its content happening to be short enough; every other phase
+    // keeps the normal scrollable page since they're not drag surfaces.
+    page: css(
+      phase === "active"
+        ? {
+            height: "100dvh",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            color: palette.text,
+          }
+        : { minHeight: "100vh", paddingBottom: 40, color: palette.text }
+    ),
+    header: css({
+      display: "flex",
+      justifyContent: "center",
+      padding: phase === "active" ? "10px 0" : "20px 0",
+      flexShrink: 0,
+    }),
     centered: css({ textAlign: "center", padding: "80px 20px", color: palette.subtleText }),
   };
 
