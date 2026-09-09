@@ -1,10 +1,14 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
-import React, { useEffect } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 
 const EXIT_DISTANCE = 600;
+
+function clampRotate(x) {
+  return Math.max(-16, Math.min(16, (x / 250) * 16));
+}
 
 // Purely decorative - SwipeDeck spawns one of these in a card's place the
 // instant a swipe is committed (see SwipeCard's commit()), so the "flying
@@ -12,20 +16,17 @@ const EXIT_DISTANCE = 600;
 // actual next card underneath is already interactive from frame one, and
 // pointerEvents:none here means a fast second swipe passes straight
 // through to it instead of landing on this fading-out ghost.
+//
+// Uses framer-motion's declarative initial/animate (not a manual
+// useMotionValue + an animate() call kicked off from useEffect) - a
+// useEffect only fires after React has already committed and painted the
+// mounted-at-rest frame, so for a frame or two the ghost would sit fully
+// overlapping the real next card before its animation even started,
+// reading as a jarring double-card "zoom" flash. The declarative form
+// starts the transition as part of the mount itself.
 function SwipeCardGhost({ movie, direction, startX, onFinished }) {
-  const x = useMotionValue(startX || 0);
-  const rotate = useTransform(x, [-250, 250], [-16, 16]);
-
-  useEffect(() => {
-    const controls = animate(x, direction === "yes" ? EXIT_DISTANCE : -EXIT_DISTANCE, {
-      type: "spring",
-      stiffness: 260,
-      damping: 26,
-      onComplete: onFinished,
-    });
-    return () => controls.stop();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const from = startX || 0;
+  const to = direction === "yes" ? EXIT_DISTANCE : -EXIT_DISTANCE;
 
   const styles = {
     card: css({
@@ -63,7 +64,13 @@ function SwipeCardGhost({ movie, direction, startX, onFinished }) {
   };
 
   return (
-    <motion.div css={styles.card} style={{ x, rotate }}>
+    <motion.div
+      css={styles.card}
+      initial={{ x: from, rotate: clampRotate(from) }}
+      animate={{ x: to, rotate: clampRotate(to) }}
+      transition={{ type: "spring", stiffness: 260, damping: 26 }}
+      onAnimationComplete={onFinished}
+    >
       {movie.posterPath ? (
         <img
           css={styles.poster}
