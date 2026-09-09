@@ -4,28 +4,26 @@ import { jsx, css } from "@emotion/react";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
-const EXIT_DISTANCE = 600;
 const DECIDE_THRESHOLD = 120;
 
-// Imperative commit() lets SwipeDeck's on-screen Yes/No buttons trigger the
-// exact same fly-off animation as a drag release, instead of duplicating
-// the animation logic in the parent.
+// commit() reports the decision to SwipeDeck IMMEDIATELY (not after a fly-
+// off animation finishes) - the queue has to advance and the next card has
+// to become interactive the instant a choice is made, or a second quick
+// swipe can land on this card while it's still mid-animation and snap it
+// back to center (looks like "the previous movie came back"). The actual
+// fly-off visual is handled separately by a decorative, non-interactive
+// SwipeCardGhost that SwipeDeck spawns in this card's place - see there.
 const SwipeCard = forwardRef(function SwipeCard({ movie, isTop, stackDepth, onDecided }, ref) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-250, 250], [-16, 16]);
   const likeOpacity = useTransform(x, [20, 140], [0, 1]);
   const nopeOpacity = useTransform(x, [-140, -20], [1, 0]);
-  const [locked, setLocked] = useState(false);
+  const [decided, setDecided] = useState(false);
 
   function commit(direction) {
-    if (locked) return;
-    setLocked(true);
-    animate(x, direction === "yes" ? EXIT_DISTANCE : -EXIT_DISTANCE, {
-      type: "spring",
-      stiffness: 260,
-      damping: 26,
-      onComplete: () => onDecided(direction),
-    });
+    if (decided) return;
+    setDecided(true);
+    onDecided(direction, x.get());
   }
 
   useImperativeHandle(ref, () => ({ commit }));
@@ -104,7 +102,7 @@ const SwipeCard = forwardRef(function SwipeCard({ movie, isTop, stackDepth, onDe
         scale: 1 - stackDepth * 0.04,
         top: stackDepth * 10,
       }}
-      drag={isTop ? "x" : false}
+      drag={isTop && !decided ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.85}
       onDragEnd={handleDragEnd}
