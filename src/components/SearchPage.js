@@ -148,6 +148,16 @@ export default function SearchPage({
   const [loaded, setLoaded] = useState(false);
   const [onlyfinishedTv, setOnlyFinishedTv] = useState(false);
 
+  // Returns the full provider map instead of setting selectedProviders
+  // itself - the refine flow (see pageLoad below) needs the complete set
+  // of available providers to merge its own previous true/false selections
+  // into, not to have them replaced by it. refineData.selectedProviders
+  // only ever carries the previously-selected keys (see
+  // searchDetailsToQuery, which deliberately omits false ones to keep the
+  // URL compact) - setting it directly wholesale, as this used to, left
+  // every other provider missing from the object entirely, not just
+  // unchecked, so Providers.js (which renders Object.keys(selectedProviders))
+  // had nothing to show for them.
   async function configureProviders(location) {
     const providerData = await getProviderData(location, view);
     const providersObj = makeProvidersObj(providerData);
@@ -158,14 +168,16 @@ export default function SearchPage({
     for (let provider of cachedProviders) {
       providersObj[provider] = true;
     }
-    setSelectedProviders(providersObj);
     setAllProviderData(providerData);
     setSortedProviders(sortProvidersByPriority(providerData));
+    return providersObj;
   }
 
+  // Same reasoning as configureProviders above - returns the full map for
+  // the caller to merge refineData into, rather than setting it directly.
   async function configureCertifications(location) {
     const list = await getCertificationList(location, view);
-    setSelectedCertifications(makeCertificationsObj(list));
+    return makeCertificationsObj(list);
   }
 
   const handleGenre = (genre) => {
@@ -290,11 +302,17 @@ export default function SearchPage({
     setLoaded(false);
     async function pageLoad() {
       if (refine == true) {
-        await configureProviders(location);
-        await configureCertifications(location);
-        setSelectedCertifications(refineData.selectedCertifications);
-        setSelectedProviders(refineData.selectedProviders);
-        setSelectedGenres(refineData.selectedGenres);
+        const fullProviders = await configureProviders(location);
+        const fullCertifications = await configureCertifications(location);
+        // Merge (not replace) - refineData only carries the previously
+        // TRUE selections, so every other option would otherwise vanish
+        // from the picker entirely instead of just showing unchecked.
+        setSelectedCertifications({ ...fullCertifications, ...refineData.selectedCertifications });
+        setSelectedProviders({ ...fullProviders, ...refineData.selectedProviders });
+        setSelectedGenres({
+          ...(view === "movie" ? genreObj : tvGenreObj),
+          ...refineData.selectedGenres,
+        });
         setSortByVote(refineData.sortByVote);
         setDateRange(refineData.dateRange);
         setDateFilter(refineData.dateFilter);
@@ -316,8 +334,8 @@ export default function SearchPage({
         } else {
           setSelectedGenres(tvGenreObj);
         }
-        await configureProviders(location);
-        await configureCertifications(location);
+        setSelectedProviders(await configureProviders(location));
+        setSelectedCertifications(await configureCertifications(location));
       }
       setLoaded(true);
     }
