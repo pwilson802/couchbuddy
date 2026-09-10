@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Logo from "../../components/Logo";
 import Image from "next/image";
+import { Adsense } from "@ctrl/react-adsense";
 import Footer from "../../components/Footer";
 
 function changeBackground(mode) {
@@ -92,6 +93,10 @@ function About({ setConsent, location, handleLocation }) {
     policyLink: css({
       textDecoration: "none",
       color: colors[mode]["text"],
+    }),
+    adWrap: css({
+      width: "100%",
+      marginTop: "2rem",
     }),
     clearButton: css({
       background: "#E12C86",
@@ -252,6 +257,14 @@ function About({ setConsent, location, handleLocation }) {
           >
             <div css={styles.policy}>COOKIE POLICY</div>
           </a>
+        </div>
+        <div css={styles.adWrap}>
+          <Adsense
+            client="ca-pub-9245347946008848"
+            slot="5327454859"
+            style={{ display: "block" }}
+            responsive={true}
+          />
         </div>
       </main>
       <footer>
