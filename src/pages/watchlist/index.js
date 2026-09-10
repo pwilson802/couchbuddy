@@ -4,6 +4,7 @@ import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { Adsense } from "@ctrl/react-adsense";
 import Footer from "../../components/Footer";
 import DetailPageNav from "../../components/DetailPageNav";
 import {
@@ -120,6 +121,9 @@ function WatchlistPage({ mode, changeMode, location, handleLocation }) {
       fontSize: 11,
       color: palette.subtleText,
     }),
+    adWrap: css({
+      marginTop: 32,
+    }),
     removeButton: css({
       marginTop: "auto",
       alignSelf: "flex-start",
@@ -188,6 +192,16 @@ function WatchlistPage({ mode, changeMode, location, handleLocation }) {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+          {items && items.length > 0 && (
+            <div css={styles.adWrap}>
+              <Adsense
+                client="ca-pub-9245347946008848"
+                slot="5327454859"
+                style={{ display: "block" }}
+                responsive={true}
+              />
             </div>
           )}
         </div>
