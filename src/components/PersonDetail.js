@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 import Link from "next/link";
+import { Adsense } from "@ctrl/react-adsense";
 import { movieHref, tvHref } from "../lib/slug";
 
 const colors = {
@@ -183,6 +184,15 @@ function PersonDetail({ data, mode }) {
           </div>
         </div>
       </div>
+
+      <section css={styles.section}>
+        <Adsense
+          client="ca-pub-9245347946008848"
+          slot="5327454859"
+          style={{ display: "block" }}
+          responsive={true}
+        />
+      </section>
 
       {data.credits.length > 0 && (
         <section css={styles.section}>

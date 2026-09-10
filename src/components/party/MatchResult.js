@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React from "react";
 import Link from "next/link";
+import { Adsense } from "@ctrl/react-adsense";
 import { movieHref, tvHref } from "../../lib/slug";
 
 const colors = {
@@ -96,6 +97,11 @@ function MatchResult({ view, winner, mode, location, onPlayAgain, onBackToSearch
       marginBottom: 12,
       boxSizing: "border-box",
     }),
+    // Well clear of the button stack above (not right below "Back to
+    // search", which people tap right after the reveal) - this is a
+    // static end-of-round screen with no swipe/tap gestures near it,
+    // unlike the deck itself, so it doesn't carry the same misclick risk.
+    adWrap: css({ marginTop: 32 }),
   };
 
   return (
@@ -136,6 +142,14 @@ function MatchResult({ view, winner, mode, location, onPlayAgain, onBackToSearch
       <button css={styles.secondaryButton} onClick={onBackToSearch}>
         Back to search
       </button>
+      <div css={styles.adWrap}>
+        <Adsense
+          client="ca-pub-9245347946008848"
+          slot="5327454859"
+          style={{ display: "block" }}
+          responsive={true}
+        />
+      </div>
     </div>
   );
 }

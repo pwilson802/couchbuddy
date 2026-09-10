@@ -3,6 +3,7 @@
 import { jsx, css } from "@emotion/react";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { Adsense } from "@ctrl/react-adsense";
 import ShareButtons from "./ShareButtons";
 import TrailerModal from "./TrailerModal";
 import TVStatus from "./TVStatus";
@@ -426,6 +427,15 @@ function TitleDetail({ type, data, mode, location }) {
           </div>
         </div>
       </div>
+
+      <section css={styles.section}>
+        <Adsense
+          client="ca-pub-9245347946008848"
+          slot="5327454859"
+          style={{ display: "block" }}
+          responsive={true}
+        />
+      </section>
 
       {data.cast.length > 0 && (
         <section css={styles.section}>

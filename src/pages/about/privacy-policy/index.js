@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Logo from "../../../components/Logo";
 import Image from "next/image";
+import { Adsense } from "@ctrl/react-adsense";
 import Footer from "../../../components/Footer";
 
 function changeBackground(mode) {
@@ -476,6 +477,14 @@ function PrivacyPolicy({ location, handleLocation }) {
           &#105;&#110;&#102;o&#64;&#99;&#111;u&#99;h&#98;u&#100;&#100;&#121;&#46;&#105;nfo.
         </p>
         <p>This document was last updated on April 17, 2021</p>
+        <div css={{ width: "100%", marginTop: "2rem" }}>
+          <Adsense
+            client="ca-pub-9245347946008848"
+            slot="5327454859"
+            style={{ display: "block" }}
+            responsive={true}
+          />
+        </div>
       </main>
       <footer>
         <Footer

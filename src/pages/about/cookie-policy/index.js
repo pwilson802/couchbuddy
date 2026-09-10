@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Logo from "../../../components/Logo";
 import Image from "next/image";
+import { Adsense } from "@ctrl/react-adsense";
 import Footer from "../../../components/Footer";
 
 function changeBackground(mode) {
@@ -302,6 +303,14 @@ function CookiePolicy({ consent, updateConsent, location, handleLocation }) {
           &#105;&#110;f&#111;&#64;c&#111;&#117;c&#104;&#98;&#117;&#100;dy&#46;&#105;n&#102;o.
         </p>
         <p>This document was last updated on April 17, 2021</p>
+        <div css={{ width: "100%", marginTop: "2rem" }}>
+          <Adsense
+            client="ca-pub-9245347946008848"
+            slot="5327454859"
+            style={{ display: "block" }}
+            responsive={true}
+          />
+        </div>
       </main>
       <footer>
         <Footer
