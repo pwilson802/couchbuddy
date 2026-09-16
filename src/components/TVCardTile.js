@@ -357,7 +357,7 @@ function TVCardTile({ id, allProviderData, selectedProviders, country, mode }) {
                 css={styles.actionsRow}
                 onClick={(event) => event.stopPropagation()}
               >
-                <ShareButtons movie={title} tagline={tagline} />
+                <ShareButtons movie={title} tagline={tagline} href={href} />
               </div>
             </div>
           </React.Fragment>
