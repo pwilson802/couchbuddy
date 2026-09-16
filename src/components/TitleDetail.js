@@ -370,7 +370,7 @@ function TitleDetail({ type, data, mode, location }) {
                 }}
                 mode={mode}
               />
-              <ShareButtons movie={data.title} tagline={data.tagline} />
+              <ShareButtons movie={data.title} tagline={data.tagline} href={data.href} />
             </div>
             {hasProviders && (
               <div css={styles.providersSection}>
