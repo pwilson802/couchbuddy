@@ -260,7 +260,18 @@ export default function SearchPage({
         body: JSON.stringify({ view: filters.view, filters, location }),
       });
       const data = await response.json();
-      if (data.code) router.push(`/play/${data.code}`);
+      // A non-2xx response still has a JSON body ({error: ...}, see
+      // src/pages/api/party/rooms/index.js) so this doesn't throw - it just
+      // has no code. Without this branch the button silently did nothing
+      // on any server-side failure, with no feedback at all.
+      if (data.code) {
+        router.push(`/play/${data.code}`);
+      } else {
+        window.alert("Couldn't set up the group right now - please try again.");
+      }
+    } catch (err) {
+      console.error("Failed to create party room", err);
+      window.alert("Couldn't set up the group right now - please try again.");
     } finally {
       setCreatingRoom(false);
     }
